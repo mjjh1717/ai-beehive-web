@@ -1,6 +1,6 @@
 <!--
  * @Author: mjjh
- * @LastEditTime: 2023-04-09 15:27:02
+ * @LastEditTime: 2023-04-09 17:26:12
  * @FilePath: \chagpt-shuowen\src\components\UserAvatar\index.vue
  * @Description: 头像配置 自动从pinia中读取数据
 -->
@@ -33,7 +33,7 @@ const userInfo = computed(() => userStore.userInfo)
     </div>
     <div class="flex-1 min-w-0 ml-2">
       <h2 class="overflow-hidden font-bold text-md text-ellipsis whitespace-nowrap">
-        {{ userInfo.name ?? 'user' }}
+        {{ userInfo.name ?? $t('chat.defaultName') }}
       </h2>
       <p class="overflow-hidden text-xs text-gray-500 text-ellipsis whitespace-nowrap">
         <span

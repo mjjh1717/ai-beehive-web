@@ -1,6 +1,6 @@
 /*
  * @Author: mjjh
- * @LastEditTime: 2023-04-09 15:27:17
+ * @LastEditTime: 2023-04-09 17:23:20
  * @FilePath: \chagpt-shuowen\src\locales\en-US.ts
  * @Description: 英文配置文件夹
  */
@@ -34,6 +34,7 @@ export default {
     unauthorizedTips: 'Unauthorized, please verify first.',
   },
   chat: {
+    defaultName: 'shouwen',
     newChatButton: 'New Chat',
     placeholder: 'Ask me anything...(Shift + Enter = line break, "/" to trigger prompts)',
     placeholderMobile: 'Ask me anything...',

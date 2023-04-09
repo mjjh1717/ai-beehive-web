@@ -1,7 +1,7 @@
 /*
  * @Author: mjjh
- * @LastEditTime: 2023-04-08 14:13:55
- * @FilePath: \chatgpt-shuowen\src\locales\zh-TW.ts
+ * @LastEditTime: 2023-04-09 17:23:05
+ * @FilePath: \chagpt-shuowen\src\locales\zh-TW.ts
  * @Description: 繁体中文配置文件
  */
 export default {
@@ -34,6 +34,7 @@ export default {
     unauthorizedTips: '未經授權，請先進行驗證。',
   },
   chat: {
+    defaultName: '説文',
     newChatButton: '新建對話',
     placeholder: '來說點什麼...（Shift + Enter = 換行，"/" 觸發提示詞）',
     placeholderMobile: '來說點什麼...',

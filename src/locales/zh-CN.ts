@@ -1,6 +1,6 @@
 /*
  * @Author: mjjh
- * @LastEditTime: 2023-04-09 15:27:21
+ * @LastEditTime: 2023-04-09 17:22:45
  * @FilePath: \chagpt-shuowen\src\locales\zh-CN.ts
  * @Description: 简体中文配置文件
  */
@@ -34,6 +34,7 @@ export default {
     unauthorizedTips: '未经授权，请先进行验证。',
   },
   chat: {
+    defaultName: '说文',
     newChatButton: '新建聊天',
     placeholder: '来说点什么吧...（Shift + Enter = 换行，"/" 触发提示词）',
     placeholderMobile: '来说点什么...',
