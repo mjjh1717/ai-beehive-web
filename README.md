@@ -6,12 +6,17 @@
 - 前端开发[@mjjh](https://github.com/mjjh1717)
 - 后端开发[@hncboy](https://github.com/hncboy)
 - [客户端 chatgpt-shuowen](https://github.com/mjjh1717/chatgpt-shuowen)
-- [管理端 chatgpt-admin](https://github.com/hncboy/chatgpt-jiezi)
+- [管理端 chatgpt-jiezi](https://github.com/hncboy/chatgpt-jiezi)
 - [后台 chatgpt-web-java](https://github.com/hncboy/chatgpt-web-java)
 
 ## 预览地址
 
-- 客户端：https://front.stargpt.top/ 密码：stargpt
+- 客户端：
+  - https://front.stargpt.top/ (失效)
+    https://front1.stargpt.top/
+    https://front2.stargpt.top/
+    https://front3.stargpt.top/
+
 - 管理端：暂不开放
 
 ## 已实现功能
