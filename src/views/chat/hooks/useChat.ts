@@ -1,0 +1,34 @@
+/*
+ * @Author: mjjh
+ * @LastEditTime: 2023-04-09 14:17:50
+ * @FilePath: \chatgpt-web\src\views\chat\hooks\useChat.ts
+ * @Description: 使用chat相关函数
+ */
+import { useChatStore } from '@/store'
+
+export function useChat() {
+  const chatStore = useChatStore()
+
+  const getChatByUuidAndIndex = (uuid: number, index: number) => {
+    return chatStore.getChatByUuidAndIndex(uuid, index)
+  }
+
+  const addChat = (uuid: number, chat: Chat.Chat) => {
+    chatStore.addChatByUuid(uuid, chat)
+  }
+
+  const updateChat = (uuid: number, index: number, chat: Chat.Chat) => {
+    chatStore.updateChatByUuid(uuid, index, chat)
+  }
+
+  const updateChatSome = (uuid: number, index: number, chat: Partial<Chat.Chat>) => {
+    chatStore.updateChatSomeByUuid(uuid, index, chat)
+  }
+
+  return {
+    addChat,
+    updateChat,
+    updateChatSome,
+    getChatByUuidAndIndex,
+  }
+}
