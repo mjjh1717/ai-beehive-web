@@ -13,11 +13,9 @@
 
 - 客户端：
   - https://front.stargpt.top/ (失效)
-    https://front1.stargpt.top/
-    https://front2.stargpt.top/
-    https://front3.stargpt.top/
-
-- 管理端：暂不开放
+  - https://front1.stargpt.top/
+  - https://front2.stargpt.top/
+  - https://front3.stargpt.top/
 
 ## 已实现功能
 
@@ -26,8 +24,6 @@
 [✓] 多会话储存和上下文逻辑
 
 [✓] 对代码等消息类型的格式化美化处理
-
-[✓] 访问权限控制
 
 [✓] 数据导入、导出
 
