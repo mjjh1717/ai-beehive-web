@@ -1,7 +1,7 @@
 <!--
  * @Author: mjjh
  * @LastEditTime: 2023-04-09 12:40:24
- * @FilePath: \chatgpt-web\src\views\chat\layout\sider\index.vue
+ * @FilePath: \chatgpt-shuowen\src\views\chat\layout\sider\index.vue
  * @Description: 侧边栏主体布局
 -->
 <script setup lang='ts'>

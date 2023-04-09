@@ -1,7 +1,7 @@
 <!--
  * @Author: mjjh
  * @LastEditTime: 2023-04-09 11:53:21
- * @FilePath: \chatgpt-web\src\views\chat\layout\sider\List.vue
+ * @FilePath: \chatgpt-shuowen\src\views\chat\layout\sider\List.vue
  * @Description: 聊天室的样式,包含编辑聊天室名称功能
 -->
 <script setup lang='ts'>

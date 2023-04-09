@@ -1,7 +1,7 @@
 <!--
  * @Author: mjjh
  * @LastEditTime: 2023-04-09 14:22:04
- * @FilePath: \chatgpt-web\src\views\chat\components\Message\Avatar.vue
+ * @FilePath: \chatgpt-shuowen\src\views\chat\components\Message\Avatar.vue
  * @Description: 用户头像组件
 -->
 <script lang="ts" setup>

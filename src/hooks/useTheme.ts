@@ -1,7 +1,7 @@
 /*
  * @Author: mjjh
- * @LastEditTime: 2023-04-08 14:15:40
- * @FilePath: \chatgpt-web\src\hooks\useTheme.ts
+ * @LastEditTime: 2023-04-09 15:27:14
+ * @FilePath: \chagpt-shuowen\src\hooks\useTheme.ts
  * @Description: auto/日间/夜间模式 切换
  */
 import type { GlobalThemeOverrides } from 'naive-ui'

@@ -1,7 +1,7 @@
 <!--
  * @Author: mjjh
  * @LastEditTime: 2023-04-08 13:29:46
- * @FilePath: \chatgpt-web\src\views\exception\500\index.vue
+ * @FilePath: \chatgpt-shuowen\src\views\exception\500\index.vue
  * @Description: 500页面
 -->
 <script lang="ts" setup>

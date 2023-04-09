@@ -1,7 +1,7 @@
 /*
  * @Author: mjjh
  * @LastEditTime: 2023-04-09 14:19:38
- * @FilePath: \chatgpt-web\src\views\chat\hooks\useScroll.ts
+ * @FilePath: \chatgpt-shuowen\src\views\chat\hooks\useScroll.ts
  * @Description: 使用Scroll滚动相关函数
  */
 import type { Ref } from 'vue'

@@ -1,7 +1,7 @@
 /*
  * @Author: mjjh
  * @LastEditTime: 2023-04-08 15:01:04
- * @FilePath: \chatgpt-web\src\router\permission.ts
+ * @FilePath: \chatgpt-shuowen\src\router\permission.ts
  * @Description: 路由导航守卫
  */
 import type { Router } from 'vue-router'

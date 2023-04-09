@@ -1,7 +1,7 @@
 <!--
  * @Author: mjjh
- * @LastEditTime: 2023-04-08 14:43:27
- * @FilePath: \chatgpt-web\src\components\common\UserAvatar\index.vue
+ * @LastEditTime: 2023-04-09 15:27:02
+ * @FilePath: \chagpt-shuowen\src\components\UserAvatar\index.vue
  * @Description: 头像配置 自动从pinia中读取数据
 -->
 <script setup lang='ts'>

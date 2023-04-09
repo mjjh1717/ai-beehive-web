@@ -1,7 +1,7 @@
 /*
  * @Author: mjjh
  * @LastEditTime: 2023-04-08 15:05:01
- * @FilePath: \chatgpt-web\src\store\modules\prompt\index.ts
+ * @FilePath: \chatgpt-shuowen\src\store\modules\prompt\index.ts
  * @Description: 提示词商店相关数据
  */
 import { defineStore } from 'pinia'

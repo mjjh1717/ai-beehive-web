@@ -1,7 +1,7 @@
 /*
  * @Author: mjjh
- * @LastEditTime: 2023-04-08 14:16:32
- * @FilePath: \chatgpt-web\src\hooks\useLanguage.ts
+ * @LastEditTime: 2023-04-09 15:27:08
+ * @FilePath: \chagpt-shuowen\src\hooks\useLanguage.ts
  * @Description: 国际化
  */
 import { computed } from 'vue'

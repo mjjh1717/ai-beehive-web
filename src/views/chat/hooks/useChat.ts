@@ -1,7 +1,7 @@
 /*
  * @Author: mjjh
  * @LastEditTime: 2023-04-09 14:17:50
- * @FilePath: \chatgpt-web\src\views\chat\hooks\useChat.ts
+ * @FilePath: \chatgpt-shuowen\src\views\chat\hooks\useChat.ts
  * @Description: 使用chat相关函数
  */
 import { useChatStore } from '@/store'

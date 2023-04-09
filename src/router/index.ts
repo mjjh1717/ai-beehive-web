@@ -1,7 +1,7 @@
 /*
  * @Author: mjjh
  * @LastEditTime: 2023-04-08 15:00:07
- * @FilePath: \chatgpt-web\src\router\index.ts
+ * @FilePath: \chatgpt-shuowen\src\router\index.ts
  * @Description: 路由配置文件出口
  */
 import type { App } from 'vue'

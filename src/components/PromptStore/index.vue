@@ -1,7 +1,7 @@
 <!--
  * @Author: mjjh
- * @LastEditTime: 2023-04-08 14:59:29
- * @FilePath: \chatgpt-web\src\components\PromptStore\index.vue
+ * @LastEditTime: 2023-04-09 15:26:51
+ * @FilePath: \chagpt-shuowen\src\components\PromptStore\index.vue
  * @Description: 提示词商店弹出组件
 -->
 <script setup lang='ts'>

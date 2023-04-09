@@ -1,7 +1,7 @@
 <!--
  * @Author: mjjh
  * @LastEditTime: 2023-04-09 11:37:20
- * @FilePath: \chatgpt-web\src\views\chat\layout\sider\Footer.vue
+ * @FilePath: \chatgpt-shuowen\src\views\chat\layout\sider\Footer.vue
  * @Description: 侧边栏底部内容
 -->
 <script setup lang='ts'>

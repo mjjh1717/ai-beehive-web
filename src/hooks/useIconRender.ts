@@ -1,7 +1,7 @@
 /*
  * @Author: mjjh
  * @LastEditTime: 2023-04-08 14:50:17
- * @FilePath: \chatgpt-web\src\hooks\useIconRender.ts
+ * @FilePath: \chatgpt-shuowen\src\hooks\useIconRender.ts
  * @Description: 使用svg图标
  */
 import { h } from 'vue'

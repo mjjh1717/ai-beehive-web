@@ -1,7 +1,7 @@
 /*
  * @Author: mjjh
  * @LastEditTime: 2023-04-08 15:15:27
- * @FilePath: \chatgpt-web\src\store\index.ts
+ * @FilePath: \chatgpt-shuowen\src\store\index.ts
  * @Description: 使用pinia
  */
 import type { App } from 'vue'

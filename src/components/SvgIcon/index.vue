@@ -1,7 +1,7 @@
 <!--
  * @Author: mjjh
- * @LastEditTime: 2023-04-08 14:53:47
- * @FilePath: \chatgpt-web\src\components\SvgIcon\index.vue
+ * @LastEditTime: 2023-04-09 15:26:59
+ * @FilePath: \chagpt-shuowen\src\components\SvgIcon\index.vue
  * @Description: svg组件
  * 可配置项 icon string | IconifyIcon 图标
 -->

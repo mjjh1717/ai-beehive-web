@@ -1,7 +1,7 @@
 /*
  * @Author: mjjh
- * @LastEditTime: 2023-04-08 14:14:40
- * @FilePath: \chatgpt-web\src\plugins\assets.ts
+ * @LastEditTime: 2023-04-09 15:27:25
+ * @FilePath: \chagpt-shuowen\src\plugins\assets.ts
  * @Description: 导入css样式
  */
 import 'katex/dist/katex.min.css'

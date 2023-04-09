@@ -1,7 +1,7 @@
 <!--
  * @Author: mjjh
- * @LastEditTime: 2023-04-08 14:26:07
- * @FilePath: \chatgpt-web\src\components\common\HoverButton\index.vue
+ * @LastEditTime: 2023-04-09 15:26:49
+ * @FilePath: \chagpt-shuowen\src\components\HoverButton\index.vue
  * @Description: button按钮组件
  * 可配置项: tooltip string 弹出提示
  *          placement PopoverPlacement 弹出提示的位置

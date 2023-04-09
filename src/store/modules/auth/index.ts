@@ -1,7 +1,7 @@
 /*
  * @Author: mjjh
  * @LastEditTime: 2023-04-08 15:03:38
- * @FilePath: \chatgpt-web\src\store\modules\auth\index.ts
+ * @FilePath: \chatgpt-shuowen\src\store\modules\auth\index.ts
  * @Description: 存储用户数据
  */
 import { defineStore } from 'pinia'

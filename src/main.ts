@@ -1,7 +1,7 @@
 /*
  * @Author: mjjh
- * @LastEditTime: 2023-04-08 13:36:51
- * @FilePath: \chatgpt-web\src\main.ts
+ * @LastEditTime: 2023-04-09 15:26:43
+ * @FilePath: \chagpt-shuowen\src\main.ts
  * @Description: main文件 配置项目
  */
 import { createApp } from 'vue'

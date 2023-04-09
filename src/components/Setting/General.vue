@@ -1,7 +1,7 @@
 <!--
  * @Author: mjjh
- * @LastEditTime: 2023-04-08 14:57:10
- * @FilePath: \chatgpt-web\src\components\Setting\General.vue
+ * @LastEditTime: 2023-04-09 15:26:54
+ * @FilePath: \chagpt-shuowen\src\components\Setting\General.vue
  * @Description: 设置/总览
  * 配置聊天记录
  * 配置主题

@@ -1,7 +1,7 @@
 /*
  * @Author: mjjh
- * @LastEditTime: 2023-04-08 14:13:42
- * @FilePath: \chatgpt-web\src\locales\zh-CN.ts
+ * @LastEditTime: 2023-04-09 15:27:21
+ * @FilePath: \chagpt-shuowen\src\locales\zh-CN.ts
  * @Description: 简体中文配置文件
  */
 export default {

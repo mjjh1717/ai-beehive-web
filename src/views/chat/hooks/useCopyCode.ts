@@ -1,7 +1,7 @@
 /*
  * @Author: mjjh
  * @LastEditTime: 2023-04-09 14:19:13
- * @FilePath: \chatgpt-web\src\views\chat\hooks\useCopyCode.ts
+ * @FilePath: \chatgpt-shuowen\src\views\chat\hooks\useCopyCode.ts
  * @Description: 使用拷贝相关函数
  */
 import { onMounted, onUpdated } from 'vue'

@@ -1,7 +1,7 @@
 /*
  * @Author: mjjh
- * @LastEditTime: 2023-04-08 13:33:12
- * @FilePath: \chatgpt-web\src\plugins\scrollbarStyle.ts
+ * @LastEditTime: 2023-04-09 15:28:37
+ * @FilePath: \chagpt-shuowen\src\plugins\scrollbarStyle.ts
  * @Description: 滚动条
  */
 import { darkTheme, lightTheme } from 'naive-ui'

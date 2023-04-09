@@ -1,7 +1,7 @@
 /*
  * @Author: mjjh
  * @LastEditTime: 2023-04-09 14:20:16
- * @FilePath: \chatgpt-web\src\views\chat\hooks\useUsingContext.ts
+ * @FilePath: \chatgpt-shuowen\src\views\chat\hooks\useUsingContext.ts
  * @Description: 使用上下文相关函数
  */
 import { computed } from 'vue'

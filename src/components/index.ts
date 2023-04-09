@@ -1,7 +1,7 @@
 /*
  * @Author: mjjh
  * @LastEditTime: 2023-04-08 14:56:26
- * @FilePath: \chatgpt-web\src\components\index.ts
+ * @FilePath: \chatgpt-shuowen\src\components\index.ts
  * @Description: 组件出口
  */
 import HoverButton from './HoverButton/index.vue'

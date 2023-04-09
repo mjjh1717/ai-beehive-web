@@ -1,7 +1,7 @@
 /*
  * @Author: mjjh
- * @LastEditTime: 2023-04-08 13:31:16
- * @FilePath: \chatgpt-web\src\locales\index.ts
+ * @LastEditTime: 2023-04-09 15:27:19
+ * @FilePath: \chagpt-shuowen\src\locales\index.ts
  * @Description: 国际化配置 i18n
  */
 import type { App } from 'vue'

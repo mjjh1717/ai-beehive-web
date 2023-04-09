@@ -1,7 +1,7 @@
 <!--
  * @Author: mjjh
  * @LastEditTime: 2023-04-09 14:18:25
- * @FilePath: \chatgpt-web\src\views\chat\index.vue
+ * @FilePath: \chatgpt-shuowen\src\views\chat\index.vue
  * @Description: chat页面index.vue
 -->
 <script setup lang='ts'>
