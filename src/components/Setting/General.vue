@@ -1,6 +1,6 @@
 <!--
  * @Author: mjjh
- * @LastEditTime: 2023-04-09 15:26:54
+ * @LastEditTime: 2023-04-09 18:02:27
  * @FilePath: \chagpt-shuowen\src\components\Setting\General.vue
  * @Description: 设置/总览
  * 配置聊天记录
@@ -10,7 +10,7 @@
 
 <script lang="ts" setup>
 import { computed } from 'vue'
-import { NButton, NPopconfirm, NSelect } from 'naive-ui'
+import { NButton, NSelect } from 'naive-ui'
 import type { Language, Theme } from '@/store/modules/app/helper'
 import { SvgIcon } from '@/components/index'
 import { useAppStore } from '@/store'
@@ -81,14 +81,6 @@ function exportData(): void {
   link.click()
   document.body.removeChild(link)
 }
-
-/**
- * @description: 清除本地缓存的聊天记录数据
- */
-function clearData(): void {
-  localStorage.removeItem('chatStorage')
-  location.reload()
-}
 </script>
 
 <template>
@@ -107,18 +99,6 @@ function clearData(): void {
             </template>
             {{ $t('common.export') }}
           </NButton>
-
-          <NPopconfirm placement="bottom" @positive-click="clearData">
-            <template #trigger>
-              <NButton size="small">
-                <template #icon>
-                  <SvgIcon icon="ri:close-circle-line" />
-                </template>
-                {{ $t('common.clear') }}
-              </NButton>
-            </template>
-            {{ $t('chat.clearHistoryConfirm') }}
-          </NPopconfirm>
         </div>
       </div>
       <div class="flex items-center space-x-4">
