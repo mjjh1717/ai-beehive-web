@@ -1,6 +1,6 @@
-const { createProxyMiddleware } = require('http-proxy-middleware')
+import { createProxyMiddleware } from 'http-proxy-middleware'
 
-module.exports = (req, res) => {
+export default (req, res) => {
   let target = ''
   if (req.url.startsWith('/api'))
     target = process.env.VITE_BASE_URL
