@@ -1,7 +1,4 @@
 {
-  "regions": [
-    "pdx1"
-  ],
   "rewrites": [
     {
       "source": "/api/(.*)",
