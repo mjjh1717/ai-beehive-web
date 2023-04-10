@@ -1,12 +1,12 @@
 {
+  "regions": [
+    "pdx1"
+  ],
   "rewrites": [
     {
       "source": "/api/(.*)",
       "destination": "/api/proxy"
     },
     { "source": "/:path*", "destination": "/index.html" }
-  ],
-  "regions": [
-    "sfo1"
   ]
 }
