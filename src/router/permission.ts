@@ -1,8 +1,8 @@
 /*
  * @Author: mjjh
- * @LastEditTime: 2023-04-08 15:01:04
- * @FilePath: \chatgpt-shuowen\src\router\permission.ts
- * @Description: 路由导航守卫
+ * @LastEditTime: 2023-04-09 19:50:03
+ * @FilePath: \chagpt-shuowen\src\router\permission.ts
+ * @Description: 路由导航守卫(鉴权)
  */
 import type { Router } from 'vue-router'
 import { useAuthStoreWithout } from '@/store/modules/auth'
