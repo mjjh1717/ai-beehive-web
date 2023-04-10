@@ -8,6 +8,7 @@ module.exports = (req, res) => {
     target: apiTarget,
     changeOrigin: true,
     selfHandleResponse: true,
+    pathRewrite: path => path.replace('/api', '/'),
     onProxyRes(proxyRes, req, res) {
       proxyRes.pipe(res)
     },
