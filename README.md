@@ -84,6 +84,8 @@ npm 8.11.0
 pnpm 7.5.0
 node v16.15.1
 
+[相关问题](https://github.com/mjjh1717/chatgpt-shuowen/issues/2)
+
 ## 请求地址
 
 从根目录 .env 文件中的 VITE_APP_API_BASE_URL 修改不同环境中的请求路径
