@@ -41,9 +41,9 @@
 
 ```shell
 # Clone Project
-git clone https://github.com/mjjh1717/chatgpt-web-admin
+git clone https://github.com/mjjh1717/chatgpt-shuowen
 
-cd chatgpt-web-admin
+cd chatgpt-shuowen
 
 # Install dependencies(Recommended use pnpm: https://pnpm.io/zh/installation)
 npm i -g pnpm # Installed and can be ignored
@@ -78,7 +78,11 @@ pnpm preview
 pnpm commit
 ```
 
-# 修改配置
+# 修改配置❗❗❗❗
+## 参考环境
+npm 8.11.0
+pnpm 7.5.0
+node v16.15.1
 
 ## 请求地址
 
