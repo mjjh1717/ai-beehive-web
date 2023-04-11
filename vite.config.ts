@@ -25,6 +25,7 @@ export default defineConfig((env) => {
   const viteEnv = loadEnv(env.mode, process.cwd()) as unknown as ImportMetaEnv
 
   return {
+    base: viteEnv.VITE_PUBLIC_PATH,
     resolve: {
       alias: {
         '@': path.resolve(process.cwd(), 'src'),
