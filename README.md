@@ -90,21 +90,6 @@ node v16.15.1
 
 从根目录 .env 文件中的 VITE_APP_API_BASE_URL 修改不同环境中的请求路径
 
-# 联系
-
-<div style="display: flex; align-items: center; gap: 20px;">
-  <div style="text-align: center">
-    <img style="max-width: 100%" src="pics/wechat_group.png" alt="wechat" />
-    <p>微信群</p>
-  </div>
-</div>
-<div style="display: flex; align-items: center; gap: 20px;">
-  <div style="text-align: center">
-    <img style="max-width: 100%" src="pics/qq_group.png" alt="QQ" />
-    <p>631171246</p>
-  </div>
-</div>
-
 # 赞助
 
 如果觉得项目对你有帮助的，条件允许的话可以点个 Star 或者在赞助一小点。感谢支持~
