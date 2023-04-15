@@ -1,3 +1,9 @@
+/*
+ * @Author: mjjh
+ * @LastEditTime: 2023-04-15 15:14:40
+ * @FilePath: \chatgpt-shuowen\src\utils\request\index.ts
+ * @Description:
+ */
 import type { AxiosProgressEvent, AxiosResponse, GenericAbortSignal } from 'axios'
 import request from './axios'
 import { useAuthStore } from '@/store'
@@ -17,6 +23,7 @@ export interface Response<T = any> {
   data: T
   message: string | null
   status: string
+  code: number
 }
 
 function http<T = any>(
@@ -25,10 +32,10 @@ function http<T = any>(
   const successHandler = (res: AxiosResponse<Response<T>>) => {
     const authStore = useAuthStore()
 
-    if (res.data.status === 'Success' || typeof res.data === 'string')
+    if (res.data.code === 200)
       return res.data
 
-    if (res.data.status === 'Unauthorized') {
+    if (res.data.code === 401) {
       authStore.removeToken()
       window.location.reload()
     }

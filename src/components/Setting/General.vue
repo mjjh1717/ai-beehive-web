@@ -1,7 +1,7 @@
 <!--
  * @Author: mjjh
- * @LastEditTime: 2023-04-09 18:02:27
- * @FilePath: \chagpt-shuowen\src\components\Setting\General.vue
+ * @LastEditTime: 2023-04-15 23:18:43
+ * @FilePath: \chatgpt-shuowen\src\components\Setting\General.vue
  * @Description: 设置/总览
  * 配置聊天记录
  * 配置主题
@@ -13,11 +13,13 @@ import { computed } from 'vue'
 import { NButton, NSelect } from 'naive-ui'
 import type { Language, Theme } from '@/store/modules/app/helper'
 import { SvgIcon } from '@/components/index'
-import { useAppStore } from '@/store'
+import { useAppStore, useAuthStore, useUserStore } from '@/store'
 import { getCurrentDate } from '@/utils/functions'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
 
 const appStore = useAppStore()
+const authStore = useAuthStore()
+const userStore = useUserStore()
 
 const { isMobile } = useBasicLayout()
 
@@ -81,6 +83,14 @@ function exportData(): void {
   link.click()
   document.body.removeChild(link)
 }
+
+function logout() {
+  // 移除token
+  authStore.removeToken()
+  userStore.resetUserInfo()
+  // 重载页面
+  window.location.reload()
+}
 </script>
 
 <template>
@@ -126,6 +136,21 @@ function exportData(): void {
             :options="languageOptions"
             @update-value="value => appStore.setLanguage(value)"
           />
+        </div>
+      </div>
+      <div
+        class="flex items-center space-x-4"
+        :class="isMobile && 'items-start'"
+      >
+        <span class="flex-shrink-0 w-[100px]">{{ $t('setting.operate') }}</span>
+
+        <div class="flex flex-wrap items-center gap-4">
+          <NButton size="small" @click="logout">
+            <template #icon>
+              <SvgIcon icon="ion:arrow-undo" />
+            </template>
+            {{ $t('setting.logout') }}
+          </NButton>
         </div>
       </div>
     </div>

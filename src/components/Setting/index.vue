@@ -1,7 +1,7 @@
 <!--
  * @Author: mjjh
- * @LastEditTime: 2023-04-09 15:26:56
- * @FilePath: \chagpt-shuowen\src\components\Setting\index.vue
+ * @LastEditTime: 2023-04-15 22:33:25
+ * @FilePath: \chatgpt-shuowen\src\components\Setting\index.vue
  * @Description: 弹出设置窗口
 -->
 <script setup lang='ts'>
