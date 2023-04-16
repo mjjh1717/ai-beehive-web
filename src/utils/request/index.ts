@@ -1,6 +1,6 @@
 /*
  * @Author: mjjh
- * @LastEditTime: 2023-04-16 19:55:59
+ * @LastEditTime: 2023-04-16 21:29:59
  * @FilePath: \chagpt-shuowen\src\utils\request\index.ts
  * @Description:
  */
@@ -30,27 +30,27 @@ function http<T = any>(
   { url, data, method, headers, onDownloadProgress, signal, beforeRequest, afterRequest }: HttpOption,
 ) {
   const successHandler = (res: AxiosResponse<Response<T>>) => {
-    const authStore = useAuthStore()
-
     if (res.data.code === 200 || typeof res.data === 'string')
       return res.data
-
-    if (res.data.code === 401) {
-      authStore.removeToken()
-      window.location.reload()
-    }
 
     return Promise.reject(res.data)
   }
 
   const failHandler = (error: Response<Error>) => {
+    const authStore = useAuthStore()
     afterRequest?.()
-    if (error.response.status === 503)
+    if (error.response.status === 503) {
       throw new Error(error.message || 'Error')
-    else if (error.response.status === 400)
+    }
+    else if (error.response.status === 400) {
       throw new Error(error.response.data.message || 'Error')
-    else
-      throw new Error(error.message || 'Error')
+    }
+    else if (error.response.status === 401) {
+      authStore.removeToken()
+      window.location.reload()
+      throw new Error(error.response.data.message || 'Error')
+    }
+    else { throw new Error(error.message || 'Error') }
   }
 
   beforeRequest?.()
