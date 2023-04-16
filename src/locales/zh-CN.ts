@@ -1,7 +1,7 @@
 /*
  * @Author: mjjh
- * @LastEditTime: 2023-04-09 17:22:45
- * @FilePath: \chagpt-shuowen\src\locales\zh-CN.ts
+ * @LastEditTime: 2023-04-15 22:40:18
+ * @FilePath: \chatgpt-shuowen\src\locales\zh-CN.ts
  * @Description: 简体中文配置文件
  */
 export default {
@@ -31,7 +31,14 @@ export default {
     success: '操作成功',
     failed: '操作失败',
     verify: '验证',
-    unauthorizedTips: '未经授权，请先进行验证。',
+    unauthorizedTips: '未经授权，请先登录。',
+    email: '邮箱',
+    passWord: '密码',
+    captcha: '验证码',
+    addEmailTips1: '请输入邮箱',
+    addEmailTips2: '请输出正确邮箱格式',
+    addPassWordTips: '请输入密码',
+    addTips: '请正确填写输入框中的内容',
   },
   chat: {
     defaultName: '说文',
@@ -59,6 +66,8 @@ export default {
   },
   setting: {
     setting: '设置',
+    logout: '登出',
+    operate: '操作',
     general: '总览',
     advanced: '高级',
     config: '配置',

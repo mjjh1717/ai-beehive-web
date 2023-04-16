@@ -1,3 +1,9 @@
+/*
+ * @Author: mjjh
+ * @LastEditTime: 2023-04-16 21:00:02
+ * @FilePath: \chagpt-shuowen\src\utils\request\axios.ts
+ * @Description:
+ */
 import axios, { type AxiosResponse } from 'axios'
 import { useAuthStore } from '@/store'
 
@@ -10,6 +16,7 @@ service.interceptors.request.use(
     const token = useAuthStore().token
     if (token)
       config.headers.Authorization = `Bearer ${token}`
+
     return config
   },
   (error) => {

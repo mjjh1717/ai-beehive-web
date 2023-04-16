@@ -1,7 +1,7 @@
 /*
  * @Author: mjjh
- * @LastEditTime: 2023-04-09 17:23:05
- * @FilePath: \chagpt-shuowen\src\locales\zh-TW.ts
+ * @LastEditTime: 2023-04-15 22:40:37
+ * @FilePath: \chatgpt-shuowen\src\locales\zh-TW.ts
  * @Description: 繁体中文配置文件
  */
 export default {
@@ -31,7 +31,14 @@ export default {
     success: '操作成功',
     failed: '操作失敗',
     verify: '驗證',
-    unauthorizedTips: '未經授權，請先進行驗證。',
+    unauthorizedTips: '未經授權，請先登錄。',
+    email: '郵箱',
+    passWord: '密碼',
+    captcha: '驗證碼',
+    addEmailTips1: '請輸入郵箱',
+    addEmailTips2: '請輸入正確的郵箱格式',
+    addPassWordTips: '請輸入密碼',
+    addTips: '請正確填寫輸入框中内容',
   },
   chat: {
     defaultName: '説文',
@@ -59,6 +66,8 @@ export default {
   },
   setting: {
     setting: '設定',
+    logout: '註銷',
+    operate: '操作',
     general: '總覽',
     advanced: '高級',
     config: '設定',

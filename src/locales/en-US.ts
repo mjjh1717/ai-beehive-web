@@ -1,7 +1,7 @@
 /*
  * @Author: mjjh
- * @LastEditTime: 2023-04-09 17:23:20
- * @FilePath: \chagpt-shuowen\src\locales\en-US.ts
+ * @LastEditTime: 2023-04-15 22:40:03
+ * @FilePath: \chatgpt-shuowen\src\locales\en-US.ts
  * @Description: 英文配置文件夹
  */
 export default {
@@ -31,7 +31,14 @@ export default {
     success: 'Success',
     failed: 'Failed',
     verify: 'Verify',
-    unauthorizedTips: 'Unauthorized, please verify first.',
+    unauthorizedTips: 'Unauthorized, please login.',
+    email: 'Email',
+    passWord: 'PassWord',
+    captcha: 'Captcha',
+    addEmailTips1: 'Please enter your email',
+    addEmailTips2: 'Please enter the correct email format',
+    addPassWordTips: 'Please enter your password',
+    addTips: 'Please fill in the right content in the input box',
   },
   chat: {
     defaultName: 'shouwen',
@@ -59,6 +66,8 @@ export default {
   },
   setting: {
     setting: 'Setting',
+    logout: 'loginOut',
+    operate: 'Operate',
     general: 'General',
     advanced: 'Advanced',
     config: 'Config',

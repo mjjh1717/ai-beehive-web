@@ -1,6 +1,11 @@
+/*
+ * @Author: mjjh
+ * @LastEditTime: 2023-04-16 17:44:19
+ * @FilePath: \chagpt-shuowen\src\api\index.ts
+ * @Description:
+ */
 import type { AxiosProgressEvent, GenericAbortSignal } from 'axios'
 import { post } from '@/utils/request'
-import { useAuthStore } from '@/store'
 
 export function fetchChatAPI<T = any>(
   prompt: string,
@@ -21,37 +26,15 @@ export function fetchChatAPIProcess<T = any>(
     signal?: GenericAbortSignal
     onDownloadProgress?: (progressEvent: AxiosProgressEvent) => void },
 ) {
-  const authStore = useAuthStore()
-
-  let data: Record<string, any> = {
+  const data: Record<string, any> = {
     prompt: params.prompt,
     options: params.options,
   }
 
-  if (authStore.isChatGPTAPI) {
-    data = {
-      ...data,
-      systemMessage: 'You are ChatGPT, a large language model trained by OpenAI. Follow the user\'s instructions carefully. Respond using markdown.',
-    }
-  }
-
   return post<T>({
-    url: '/chat-process',
+    url: '/chat_message/send',
     data,
     signal: params.signal,
     onDownloadProgress: params.onDownloadProgress,
-  })
-}
-
-export function fetchSession<T>() {
-  return post<T>({
-    url: '/session',
-  })
-}
-
-export function fetchVerify<T>(token: string) {
-  return post<T>({
-    url: '/verify',
-    data: { token },
   })
 }
