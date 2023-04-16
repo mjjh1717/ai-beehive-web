@@ -1,7 +1,7 @@
 /*
  * @Author: mjjh
- * @LastEditTime: 2023-04-15 15:14:40
- * @FilePath: \chatgpt-shuowen\src\utils\request\index.ts
+ * @LastEditTime: 2023-04-16 14:04:46
+ * @FilePath: \chagpt-shuowen\src\utils\request\index.ts
  * @Description:
  */
 import type { AxiosProgressEvent, AxiosResponse, GenericAbortSignal } from 'axios'
@@ -45,7 +45,7 @@ function http<T = any>(
 
   const failHandler = (error: Response<Error>) => {
     afterRequest?.()
-    throw new Error(error?.message || 'Error')
+    throw new Error(error?.response.data.message || 'Error')
   }
 
   beforeRequest?.()

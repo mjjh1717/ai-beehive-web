@@ -1,7 +1,7 @@
 <!--
  * @Author: mjjh
- * @LastEditTime: 2023-04-15 21:45:53
- * @FilePath: \chatgpt-shuowen\src\views\chat\layout\login.vue
+ * @LastEditTime: 2023-04-16 14:06:16
+ * @FilePath: \chagpt-shuowen\src\views\chat\layout\login.vue
  * @Description:
 -->
 <script setup lang='ts'>

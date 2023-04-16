@@ -1,18 +1,19 @@
 <!--
  * @Author: mjjh
- * @LastEditTime: 2023-04-15 14:35:08
- * @FilePath: \chatgpt-shuowen\src\views\chat\layout\register.vue
+ * @LastEditTime: 2023-04-16 14:29:13
+ * @FilePath: \chagpt-shuowen\src\views\chat\layout\register.vue
  * @Description:
 -->
 <script setup lang='ts'>
 import { ref } from 'vue'
 import type { FormInst, FormItemRule, FormRules } from 'naive-ui'
-import { NButton, NForm, NFormItem, NImage, NInput, useMessage } from 'naive-ui'
+import { NButton, NForm, NFormItem, NImage, NInput, useDialog, useMessage } from 'naive-ui'
 import { SvgIcon } from '@/components/index'
 import { RegisterType, getPicCode, registerEmail } from '@/api/register'
 import type { getPicCodeType, registerModel } from '@/api/register'
 
 const ms = useMessage()
+const dialog = useDialog()
 const loading = ref(false)
 
 // 验证码数据
@@ -155,9 +156,17 @@ async function pushClick() {
     await registerEmail(pushData)
 
     // 成功弹框
-    ms.success('success')
-    // 重载页面
-    window.location.reload()
+    dialog.success({
+      title: '注册成功!!!',
+      content: `请到${userInfo.value.email}查看邮件确认`,
+      maskClosable: false,
+      closable: false,
+      positiveText: '确定',
+      onPositiveClick: () => {
+        // 重载页面
+        window.location.reload()
+      },
+    })
   }
   catch (error: any) {
     // 错误弹框
