@@ -1,7 +1,7 @@
 /*
  * @Author: mjjh
- * @LastEditTime: 2023-04-15 22:21:00
- * @FilePath: \chatgpt-shuowen\src\store\modules\user\index.ts
+ * @LastEditTime: 2023-04-16 19:16:18
+ * @FilePath: \chagpt-shuowen\src\store\modules\user\index.ts
  * @Description: 存储用户相关数据 用户名 github地址等
  */
 import { defineStore } from 'pinia'
@@ -20,6 +20,7 @@ export const useUserStore = defineStore('user-store', {
         name: data.nickname,
         description: data.description,
         id: data.baseUserId,
+        email: data.email,
       }
       this.updateUserInfo(newData)
     },

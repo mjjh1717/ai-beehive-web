@@ -1,6 +1,6 @@
 <!--
  * @Author: mjjh
- * @LastEditTime: 2023-04-16 18:29:32
+ * @LastEditTime: 2023-04-16 19:55:29
  * @FilePath: \chagpt-shuowen\src\views\chat\index.vue
  * @Description: chat页面index.vue
 -->
@@ -70,7 +70,7 @@ function handleSubmit() {
  * @return {*}
  */
 async function onConversation() {
-  let message = prompt.value
+  const message = prompt.value
 
   if (loading.value)
     return
@@ -117,7 +117,7 @@ async function onConversation() {
   scrollToBottom()
 
   try {
-    let lastText = ''
+    const lastText = ''
     const fetchChatAPIOnce = async () => {
       await fetchChatAPIProcess<Chat.ConversationResponse>({
         prompt: message,
@@ -146,13 +146,6 @@ async function onConversation() {
                 requestOptions: { prompt: message, options: { ...options } },
               },
             )
-
-            if (data.detail.choices[0].finish_reason === 'length') {
-              options.parentMessageId = data.id
-              lastText = data.text
-              message = ''
-              return fetchChatAPIOnce()
-            }
 
             scrollToBottomIfAtBottom()
           }
@@ -228,7 +221,7 @@ async function onRegenerate(index: number) {
 
   const { requestOptions } = dataSources.value[index]
 
-  let message = requestOptions?.prompt ?? ''
+  const message = requestOptions?.prompt ?? ''
 
   let options: Chat.ConversationRequest = {}
 
@@ -252,7 +245,7 @@ async function onRegenerate(index: number) {
   )
 
   try {
-    let lastText = ''
+    const lastText = ''
     const fetchChatAPIOnce = async () => {
       await fetchChatAPIProcess<Chat.ConversationResponse>({
         prompt: message,
@@ -281,13 +274,6 @@ async function onRegenerate(index: number) {
                 requestOptions: { prompt: message, options: { ...options } },
               },
             )
-
-            if (data.detail.choices[0].finish_reason === 'length') {
-              options.parentMessageId = data.id
-              lastText = data.text
-              message = ''
-              return fetchChatAPIOnce()
-            }
           }
           catch (error) {
             //

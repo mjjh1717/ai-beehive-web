@@ -1,6 +1,6 @@
 /*
  * @Author: mjjh
- * @LastEditTime: 2023-04-16 18:07:16
+ * @LastEditTime: 2023-04-16 19:55:59
  * @FilePath: \chagpt-shuowen\src\utils\request\index.ts
  * @Description:
  */
@@ -32,7 +32,7 @@ function http<T = any>(
   const successHandler = (res: AxiosResponse<Response<T>>) => {
     const authStore = useAuthStore()
 
-    if (res.data.code === 200)
+    if (res.data.code === 200 || typeof res.data === 'string')
       return res.data
 
     if (res.data.code === 401) {

@@ -1,13 +1,14 @@
 <!--
  * @Author: mjjh
- * @LastEditTime: 2023-04-15 22:33:25
- * @FilePath: \chatgpt-shuowen\src\components\Setting\index.vue
+ * @LastEditTime: 2023-04-16 19:58:20
+ * @FilePath: \chagpt-shuowen\src\components\Setting\index.vue
  * @Description: 弹出设置窗口
 -->
 <script setup lang='ts'>
 import { computed, ref } from 'vue'
 import { NModal, NTabPane, NTabs } from 'naive-ui'
 import General from './General.vue'
+import About from './About.vue'
 import { SvgIcon } from '@/components/index'
 
 interface Props {
@@ -44,8 +45,15 @@ const show = computed({
             <span class="ml-2">{{ $t('setting.general') }}</span>
           </template>
           <div class="min-h-[100px]">
-            <General />
+            <About />
           </div>
+        </NTabPane>
+        <NTabPane name="Config" tab="Config">
+          <template #tab>
+            <SvgIcon class="text-lg" icon="ri:list-settings-line" />
+            <span class="ml-2">{{ $t('setting.config') }}</span>
+          </template>
+          <General />
         </NTabPane>
       </NTabs>
     </div>

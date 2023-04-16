@@ -1,6 +1,6 @@
 /*
  * @Author: mjjh
- * @LastEditTime: 2023-04-09 17:26:17
+ * @LastEditTime: 2023-04-16 19:18:06
  * @FilePath: \chagpt-shuowen\src\store\modules\user\helper.ts
  * @Description:
  */
@@ -12,6 +12,8 @@ export interface UserInfo {
   avatar: string
   name: string
   description: string
+  id: string
+  email: string
 }
 
 export interface UserState {
@@ -24,6 +26,8 @@ export function defaultSetting(): UserState {
       avatar: 'https://raw.githubusercontent.com/Chanzhaoyu/chatgpt-shuowen/main/src/assets/avatar.jpg',
       name: '说文',
       description: 'Star on <a href="https://github.com/mjjh1717/chatgpt-shuowen" class="text-blue-500" target="_blank" >Github</a>',
+      id: '',
+      email: '',
     },
   }
 }
