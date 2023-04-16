@@ -1,7 +1,7 @@
 /*
  * @Author: mjjh
- * @LastEditTime: 2023-04-15 23:26:51
- * @FilePath: \chatgpt-shuowen\src\api\index.ts
+ * @LastEditTime: 2023-04-16 17:44:19
+ * @FilePath: \chagpt-shuowen\src\api\index.ts
  * @Description:
  */
 import type { AxiosProgressEvent, GenericAbortSignal } from 'axios'
@@ -26,18 +26,13 @@ export function fetchChatAPIProcess<T = any>(
     signal?: GenericAbortSignal
     onDownloadProgress?: (progressEvent: AxiosProgressEvent) => void },
 ) {
-  let data: Record<string, any> = {
+  const data: Record<string, any> = {
     prompt: params.prompt,
     options: params.options,
   }
 
-  data = {
-    ...data,
-    systemMessage: 'You are ChatGPT, a large language model trained by OpenAI. Follow the user\'s instructions carefully. Respond using markdown.',
-  }
-
   return post<T>({
-    url: '/chat_process',
+    url: '/chat_message/send',
     data,
     signal: params.signal,
     onDownloadProgress: params.onDownloadProgress,

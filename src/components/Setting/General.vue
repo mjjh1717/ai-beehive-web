@@ -1,7 +1,7 @@
 <!--
  * @Author: mjjh
- * @LastEditTime: 2023-04-15 23:18:43
- * @FilePath: \chatgpt-shuowen\src\components\Setting\General.vue
+ * @LastEditTime: 2023-04-16 17:58:49
+ * @FilePath: \chagpt-shuowen\src\components\Setting\General.vue
  * @Description: 设置/总览
  * 配置聊天记录
  * 配置主题
@@ -88,6 +88,8 @@ function logout() {
   // 移除token
   authStore.removeToken()
   userStore.resetUserInfo()
+  localStorage.removeItem('chatStorage')
+  location.reload()
   // 重载页面
   window.location.reload()
 }

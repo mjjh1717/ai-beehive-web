@@ -1,6 +1,6 @@
 /*
  * @Author: mjjh
- * @LastEditTime: 2023-04-16 17:22:10
+ * @LastEditTime: 2023-04-16 18:07:16
  * @FilePath: \chagpt-shuowen\src\utils\request\index.ts
  * @Description:
  */
@@ -43,9 +43,8 @@ function http<T = any>(
     return Promise.reject(res.data)
   }
 
-  const failHandler = (error: AxiosResponse<Response<T>>) => {
+  const failHandler = (error: Response<Error>) => {
     afterRequest?.()
-
     if (error.response.status === 503)
       throw new Error(error.message || 'Error')
     else if (error.response.status === 400)
