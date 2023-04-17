@@ -184,7 +184,7 @@ pnpm commit
 
   3. 配置 vercel env 变量
 
-     ![vercel](img/vercel.png)
+     ![vercel](pics/vercel.png)
 
   4. git上传代码,重新自动部署
 
