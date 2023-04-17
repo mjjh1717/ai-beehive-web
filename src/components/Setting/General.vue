@@ -1,6 +1,6 @@
 <!--
  * @Author: mjjh
- * @LastEditTime: 2023-04-16 17:58:49
+ * @LastEditTime: 2023-04-17 09:26:27
  * @FilePath: \chagpt-shuowen\src\components\Setting\General.vue
  * @Description: 设置/总览
  * 配置聊天记录
@@ -88,8 +88,9 @@ function logout() {
   // 移除token
   authStore.removeToken()
   userStore.resetUserInfo()
-  localStorage.removeItem('chatStorage')
-  location.reload()
+  // 清除聊天记录
+  // localStorage.removeItem('chatStorage')
+  // location.reload()
   // 重载页面
   window.location.reload()
 }
