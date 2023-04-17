@@ -1,6 +1,6 @@
 <!--
  * @Author: mjjh
- * @LastEditTime: 2023-04-16 17:30:58
+ * @LastEditTime: 2023-04-17 09:48:04
  * @FilePath: \chagpt-shuowen\src\views\exception\emailValidation\index.vue
  * @Description: 邮箱验证页面
 -->
@@ -9,7 +9,7 @@
 import { ref } from 'vue'
 import { NButton, useDialog } from 'naive-ui'
 import { useRoute, useRouter } from 'vue-router'
-import Icon403 from '@/icons/403.vue'
+import { isString } from '@/utils/is/index'
 import { verifyEmailCode } from '@/api/register'
 
 const loading = ref(false)
@@ -21,11 +21,16 @@ async function confirmation() {
   try {
     // 开启加载状态
     loading.value = true
-    const { message } = await verifyEmailCode(route.query.verifyCode)
+    let messageData = ''
+    if (isString(route.query.verifyCode)) {
+      const { message } = await verifyEmailCode(route.query.verifyCode)
+      messageData = message ?? ''
+    }
+
     // 成功弹框
     dialog.success({
       title: '校验成功!!!',
-      content: message,
+      content: messageData,
       maskClosable: false,
       closable: false,
       positiveText: '确定',

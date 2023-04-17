@@ -1,6 +1,6 @@
 <!--
  * @Author: mjjh
- * @LastEditTime: 2023-04-16 19:58:20
+ * @LastEditTime: 2023-04-17 21:32:06
  * @FilePath: \chagpt-shuowen\src\components\Setting\index.vue
  * @Description: 弹出设置窗口
 -->
@@ -23,7 +23,7 @@ const props = defineProps<Props>()
 
 const emit = defineEmits<Emit>()
 
-const active = ref('General')
+const active = ref('Config')
 
 const show = computed({
   get() {
@@ -39,6 +39,13 @@ const show = computed({
   <NModal v-model:show="show" :auto-focus="false" preset="card" style="width: 95%; max-width: 640px">
     <div>
       <NTabs v-model:value="active" type="line" animated>
+        <NTabPane name="Config" tab="Config">
+          <template #tab>
+            <SvgIcon class="text-lg" icon="ri:list-settings-line" />
+            <span class="ml-2">{{ $t('setting.config') }}</span>
+          </template>
+          <General />
+        </NTabPane>
         <NTabPane name="General" tab="General">
           <template #tab>
             <SvgIcon class="text-lg" icon="ri:file-user-line" />
@@ -47,13 +54,6 @@ const show = computed({
           <div class="min-h-[100px]">
             <About />
           </div>
-        </NTabPane>
-        <NTabPane name="Config" tab="Config">
-          <template #tab>
-            <SvgIcon class="text-lg" icon="ri:list-settings-line" />
-            <span class="ml-2">{{ $t('setting.config') }}</span>
-          </template>
-          <General />
         </NTabPane>
       </NTabs>
     </div>

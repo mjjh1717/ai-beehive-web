@@ -1,6 +1,6 @@
 <!--
  * @Author: mjjh
- * @LastEditTime: 2023-04-16 17:31:46
+ * @LastEditTime: 2023-04-17 21:34:02
  * @FilePath: \chagpt-shuowen\src\views\chat\layout\login.vue
  * @Description:
 -->
@@ -31,7 +31,7 @@ const rules: FormRules = {
     trigger: ['blur', 'input'],
     validator(rule, value) {
       // 自定义验证  规则
-      const regMobile = /^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/
+      const regMobile = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/
       if (!value)
         return new Error('请输入邮箱')
 
