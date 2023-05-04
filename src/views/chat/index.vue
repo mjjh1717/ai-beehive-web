@@ -9,7 +9,7 @@ import type { Ref } from 'vue'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import { NAutoComplete, NButton, NInput, useDialog, useMessage } from 'naive-ui'
+import { NAutoComplete, NButton, NCard, NInput, NModal, useDialog, useMessage } from 'naive-ui'
 import html2canvas from 'html2canvas'
 import { Message } from './components'
 import { useScroll } from './hooks/useScroll'
@@ -41,10 +41,13 @@ const { usingContext, toggleUsingContext } = useUsingContext()
 const { uuid } = route.params as { uuid: string }
 
 const dataSources = computed(() => chatStore.getChatByUuid(+uuid))
+
 const conversationList = computed(() => dataSources.value.filter(item => (!item.inversion && !item.error)))
 
 const prompt = ref<string>('')
 const loading = ref<boolean>(false)
+const SystemRoleLoading = ref<boolean>(false)
+const SystemRoleValue = computed(() => chatStore.getChatSystemRole(+uuid))
 const inputRef = ref<Ref | null>(null)
 
 // 添加PromptStore
@@ -71,7 +74,6 @@ function handleSubmit() {
  */
 async function onConversation() {
   const message = prompt.value
-
   if (loading.value)
     return
 
@@ -90,6 +92,7 @@ async function onConversation() {
       conversationOptions: null,
       requestOptions: { prompt: message, options: null },
     },
+    SystemRoleValue.value,
   )
   scrollToBottom()
 
@@ -113,6 +116,7 @@ async function onConversation() {
       conversationOptions: null,
       requestOptions: { prompt: message, options: { ...options } },
     },
+    SystemRoleValue.value,
   )
   scrollToBottom()
 
@@ -121,6 +125,7 @@ async function onConversation() {
     const fetchChatAPIOnce = async () => {
       await fetchChatAPIProcess<Chat.ConversationResponse>({
         prompt: message,
+        systemMessage: SystemRoleValue.value,
         options,
         signal: controller.signal,
         onDownloadProgress: ({ event }) => {
@@ -145,6 +150,7 @@ async function onConversation() {
                 conversationOptions: { conversationId: data.conversationId, parentMessageId: data.id },
                 requestOptions: { prompt: message, options: { ...options } },
               },
+              SystemRoleValue.value,
             )
 
             scrollToBottomIfAtBottom()
@@ -174,9 +180,10 @@ async function onConversation() {
       return
     }
 
-    const currentChat = getChatByUuidAndIndex(+uuid, dataSources.value.length - 1)
+    const currentChat = getChatByUuidAndIndex(+uuid)?.data[dataSources.value.length - 1]
 
     if (currentChat?.text && currentChat.text !== '') {
+      SystemRoleValue.value = currentChat.systemRole
       updateChatSome(
         +uuid,
         dataSources.value.length - 1,
@@ -201,6 +208,7 @@ async function onConversation() {
         conversationOptions: null,
         requestOptions: { prompt: message, options: { ...options } },
       },
+      SystemRoleValue.value,
     )
     scrollToBottomIfAtBottom()
   }
@@ -242,6 +250,7 @@ async function onRegenerate(index: number) {
       conversationOptions: null,
       requestOptions: { prompt: message, options: { ...options } },
     },
+    SystemRoleValue.value,
   )
 
   try {
@@ -249,6 +258,7 @@ async function onRegenerate(index: number) {
     const fetchChatAPIOnce = async () => {
       await fetchChatAPIProcess<Chat.ConversationResponse>({
         prompt: message,
+        systemMessage: SystemRoleValue.value,
         options,
         signal: controller.signal,
         onDownloadProgress: ({ event }) => {
@@ -273,6 +283,7 @@ async function onRegenerate(index: number) {
                 conversationOptions: { conversationId: data.conversationId, parentMessageId: data.id },
                 requestOptions: { prompt: message, options: { ...options } },
               },
+              SystemRoleValue.value,
             )
           }
           catch (error) {
@@ -310,6 +321,7 @@ async function onRegenerate(index: number) {
         conversationOptions: null,
         requestOptions: { prompt: message, options: { ...options } },
       },
+      SystemRoleValue.value,
     )
   }
   finally {
@@ -493,16 +505,13 @@ onUnmounted(() => {
 <template>
   <div class="flex flex-col w-full h-full">
     <HeaderComponent
-      v-if="isMobile"
-      :using-context="usingContext"
-      @export="handleExport"
+      v-if="isMobile" :using-context="usingContext" @export="handleExport"
       @toggle-using-context="toggleUsingContext"
     />
     <main class="flex-1 overflow-hidden">
       <div id="scrollRef" ref="scrollRef" class="h-full overflow-hidden overflow-y-auto">
         <div
-          id="image-wrapper"
-          class="w-full max-w-screen-xl m-auto dark:bg-[#101014]"
+          id="image-wrapper" class="w-full max-w-screen-xl m-auto dark:bg-[#101014]"
           :class="[isMobile ? 'p-2' : 'p-4']"
         >
           <!-- 背景提示框 -->
@@ -516,14 +525,8 @@ onUnmounted(() => {
           <template v-else>
             <div>
               <Message
-                v-for="(item, index) of dataSources"
-                :key="index"
-                :date-time="item.dateTime"
-                :text="item.text"
-                :inversion="item.inversion"
-                :error="item.error"
-                :loading="item.loading"
-                @regenerate="onRegenerate(index)"
+                v-for="(item, index) of dataSources" :key="index" :date-time="item.dateTime" :text="item.text"
+                :inversion="item.inversion" :error="item.error" :loading="item.loading" @regenerate="onRegenerate(index)"
                 @delete="handleDelete(index)"
               />
               <!-- 停止生成 -->
@@ -537,6 +540,28 @@ onUnmounted(() => {
               </div>
             </div>
           </template>
+          <NModal v-model:show="SystemRoleLoading">
+            <NCard style="width: 600px" title="系统角色" :bordered="false" size="huge" role="dialog" aria-modal="true">
+              <div style="margin-bottom: 4px;">
+                温柔地指挥助手，设定助手的行为。
+              </div>
+              <NInput v-model:value="SystemRoleValue" type="textarea" placeholder="你是一个乐于助人的助手，尽量简明扼要的回答...." />
+              <template #footer>
+                <div style="justify-content: flex-end;display: flex;">
+                  <div style="margin-left: 4px;">
+                    <NButton type="warning" @click="SystemRoleLoading = !SystemRoleLoading">
+                      取消
+                    </NButton>
+                  </div>
+                  <div style="margin-left: 4px;">
+                    <NButton type="success" @click="SystemRoleLoading = !SystemRoleLoading">
+                      确定
+                    </NButton>
+                  </div>
+                </div>
+              </template>
+            </NCard>
+          </NModal>
         </div>
       </div>
     </main>
@@ -558,18 +583,17 @@ onUnmounted(() => {
               <SvgIcon icon="ri:chat-history-line" />
             </span>
           </HoverButton>
+          <HoverButton v-if="!isMobile" tooltip="设置系统角色" @click="SystemRoleLoading = !SystemRoleLoading">
+            <span class="text-xl" :class="{ 'text-[#4b9e5f]': usingContext, 'text-[#a8071a]': !usingContext }">
+              <SvgIcon icon="material-symbols:settings-account-box-sharp" />
+            </span>
+          </HoverButton>
           <NAutoComplete v-model:value="prompt" :options="searchOptions" :render-label="renderOption">
             <template #default="{ handleInput, handleBlur, handleFocus }">
               <NInput
-                ref="inputRef"
-                v-model:value="prompt"
-                type="textarea"
-                :placeholder="placeholder"
-                :autosize="{ minRows: 1, maxRows: isMobile ? 4 : 8 }"
-                @input="handleInput"
-                @focus="handleFocus"
-                @blur="handleBlur"
-                @keypress="handleEnter"
+                ref="inputRef" v-model:value="prompt" type="textarea" :placeholder="placeholder"
+                :autosize="{ minRows: 1, maxRows: isMobile ? 4 : 8 }" @input="handleInput" @focus="handleFocus"
+                @blur="handleBlur" @keypress="handleEnter"
               />
             </template>
           </NAutoComplete>
