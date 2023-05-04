@@ -20,7 +20,7 @@ declare namespace Chat {
 		active: number | null
 		usingContext: boolean;
 		history: History[]
-		chat: { uuid: number; data: Chat[] }[]
+		chat: { uuid: number; data: Chat[], SystemRoleValue: String }[]
 	}
 
 	interface ConversationRequest {

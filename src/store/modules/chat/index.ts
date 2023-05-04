@@ -26,6 +26,14 @@ export const useChatStore = defineStore('chat-store', {
         return state.chat.find(item => item.uuid === state.active)?.data ?? []
       }
     },
+
+    getChatSystemRole(state: Chat.ChatState) {
+      return (uuid?: number) => {
+        if (uuid)
+          return state.chat.find(item => item.uuid === uuid)?.SystemRoleValue ?? ''
+        return state.chat.find(item => item.uuid === state.active)?.SystemRoleValue ?? ''
+      }
+    },
   },
 
   actions: {
@@ -36,7 +44,7 @@ export const useChatStore = defineStore('chat-store', {
 
     addHistory(history: Chat.History, chatData: Chat.Chat[] = []) {
       this.history.unshift(history)
-      this.chat.unshift({ uuid: history.uuid, data: chatData })
+      this.chat.unshift({ uuid: history.uuid, data: chatData, SystemRoleValue: '' })
       this.active = history.uuid
       this.reloadRoute(history.uuid)
     },
@@ -86,24 +94,24 @@ export const useChatStore = defineStore('chat-store', {
       return await this.reloadRoute(uuid)
     },
 
-    getChatByUuidAndIndex(uuid: number, index: number) {
+    getChatByUuidAndIndex(uuid: number) {
       if (!uuid || uuid === 0) {
         if (this.chat.length)
-          return this.chat[0].data[index]
+          return this.chat[0]
         return null
       }
       const chatIndex = this.chat.findIndex(item => item.uuid === uuid)
       if (chatIndex !== -1)
-        return this.chat[chatIndex].data[index]
+        return this.chat[chatIndex]
       return null
     },
 
-    addChatByUuid(uuid: number, chat: Chat.Chat) {
+    addChatByUuid(uuid: number, chat: Chat.Chat, SystemRoleValue: String) {
       if (!uuid || uuid === 0) {
         if (this.history.length === 0) {
           const uuid = Date.now()
           this.history.push({ uuid, title: chat.text, isEdit: false })
-          this.chat.push({ uuid, data: [chat] })
+          this.chat.push({ uuid, data: [chat], SystemRoleValue })
           this.active = uuid
           this.recordState()
         }
@@ -124,7 +132,7 @@ export const useChatStore = defineStore('chat-store', {
       }
     },
 
-    updateChatByUuid(uuid: number, index: number, chat: Chat.Chat) {
+    updateChatByUuid(uuid: number, index: number, chat: Chat.Chat, SystemRoleValue: String) {
       if (!uuid || uuid === 0) {
         if (this.chat.length) {
           this.chat[0].data[index] = chat
@@ -136,6 +144,7 @@ export const useChatStore = defineStore('chat-store', {
       const chatIndex = this.chat.findIndex(item => item.uuid === uuid)
       if (chatIndex !== -1) {
         this.chat[chatIndex].data[index] = chat
+        this.chat[chatIndex].SystemRoleValue = SystemRoleValue
         this.recordState()
       }
     },

@@ -9,16 +9,16 @@ import { useChatStore } from '@/store'
 export function useChat() {
   const chatStore = useChatStore()
 
-  const getChatByUuidAndIndex = (uuid: number, index: number) => {
-    return chatStore.getChatByUuidAndIndex(uuid, index)
+  const getChatByUuidAndIndex = (uuid: number) => {
+    return chatStore.getChatByUuidAndIndex(uuid)
   }
 
-  const addChat = (uuid: number, chat: Chat.Chat) => {
-    chatStore.addChatByUuid(uuid, chat)
+  const addChat = (uuid: number, chat: Chat.Chat, SystemRoleValue: String) => {
+    chatStore.addChatByUuid(uuid, chat, SystemRoleValue)
   }
 
-  const updateChat = (uuid: number, index: number, chat: Chat.Chat) => {
-    chatStore.updateChatByUuid(uuid, index, chat)
+  const updateChat = (uuid: number, index: number, chat: Chat.Chat, SystemRoleValue: String) => {
+    chatStore.updateChatByUuid(uuid, index, chat, SystemRoleValue)
   }
 
   const updateChatSome = (uuid: number, index: number, chat: Partial<Chat.Chat>) => {
