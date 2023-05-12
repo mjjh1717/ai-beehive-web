@@ -1,9 +1,9 @@
 {
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/proxy"
-    },
-    { "source": "/:path*", "destination": "/index.html" }
-  ]
+	"rewrites": [
+		{
+			"source": "/api/(.*)",
+			"destination": "https://chatgpt-web-java-production-dd09.up.railway.app/$1"
+		},
+		{ "source": "/:path*", "destination": "/index.html" }
+	]
 }
