@@ -5,8 +5,7 @@
  * @Description:
  */
 import type { AxiosProgressEvent, GenericAbortSignal } from 'axios'
-import { post } from '@/utils/request'
-
+import {  post } from '@/utils/request'
 export function fetchChatAPI<T = any>(
   prompt: string,
   options?: { conversationId?: string; parentMessageId?: string },
@@ -22,12 +21,14 @@ export function fetchChatAPI<T = any>(
 export function fetchChatAPIProcess<T = any>(
   params: {
     prompt: string
+    systemMessage: string
     options?: { conversationId?: string; parentMessageId?: string }
     signal?: GenericAbortSignal
     onDownloadProgress?: (progressEvent: AxiosProgressEvent) => void },
 ) {
   const data: Record<string, any> = {
     prompt: params.prompt,
+    systemMessage: params.systemMessage,
     options: params.options,
   }
 
