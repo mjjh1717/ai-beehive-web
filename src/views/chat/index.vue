@@ -626,22 +626,22 @@ onUnmounted(() => {
               <SvgIcon icon="ri:delete-bin-line" />
             </span>
           </HoverButton>
-          <HoverButton v-if="!isMobile" id="saveSession" tooltip="保存会话到图片" @click="handleExport">
+          <HoverButton v-if="!isMobile"  tooltip="保存会话到图片" @click="handleExport">
             <span class="text-xl text-[#4f555e] dark:text-white">
               <SvgIcon icon="ri:download-2-line" />
             </span>
           </HoverButton>
-          <HoverButton v-if="!isMobile" id="chatMode" tooltip="切换聊天模式" @click="toggleUsingContext">
+          <HoverButton v-if="!isMobile"  tooltip="切换聊天模式" @click="toggleUsingContext">
             <span class="text-xl" :class="{ 'text-[#4b9e5f]': usingContext, 'text-[#a8071a]': !usingContext }">
               <SvgIcon icon="ri:chat-history-line" />
             </span>
           </HoverButton>
-          <HoverButton v-if="!isMobile" id="systemRole" tooltip="设置系统角色" @click="RoleLoading">
+          <HoverButton v-if="!isMobile"  tooltip="设置系统角色" @click="RoleLoading">
             <span class="text-xl" :class="{ 'text-[#4b9e5f]': !SystemRoleValue, 'text-[#a8071a]': SystemRoleValue }">
               <SvgIcon icon="material-symbols:settings-account-box-sharp" />
             </span>
           </HoverButton>
-          <NAutoComplete id="NInput" v-model:value="prompt" :options="searchOptions" :render-label="renderOption">
+          <NAutoComplete  v-model:value="prompt" :options="searchOptions" :render-label="renderOption">
             <template #default="{ handleInput, handleBlur, handleFocus }">
               <NInput
                 ref="inputRef" v-model:value="prompt" type="textarea" :placeholder="placeholder"
