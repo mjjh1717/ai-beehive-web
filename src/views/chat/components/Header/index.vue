@@ -117,17 +117,17 @@ function RoleLoading() {
         {{ currentChatHistory?.title ?? '' }}
       </h1>
       <div class="flex items-center space-x-2">
-        <HoverButton id="chatModeMobile" @click="toggleUsingContext">
+        <HoverButton  @click="toggleUsingContext">
           <span class="text-xl" :class="{ 'text-[#4b9e5f]': usingContext, 'text-[#a8071a]': !usingContext }">
             <SvgIcon icon="ri:chat-history-line" />
           </span>
         </HoverButton>
-        <HoverButton id="saveSessionMobile" @click="handleExport">
+        <HoverButton  @click="handleExport">
           <span class="text-xl text-[#4f555e] dark:text-white">
             <SvgIcon icon="ri:download-2-line" />
           </span>
         </HoverButton>
-        <HoverButton id="systemRoleMobile" tooltip="设置系统角色" @click="RoleLoading">
+        <HoverButton  tooltip="设置系统角色" @click="RoleLoading">
           <span class="text-xl" :class="{ 'text-[#4b9e5f]': !SystemRoleValue, 'text-[#a8071a]': SystemRoleValue }">
             <SvgIcon icon="material-symbols:settings-account-box-sharp" />
           </span>
