@@ -9,16 +9,23 @@ import { useChatStore } from '@/store'
 export function useChat() {
   const chatStore = useChatStore()
 
-  const getChatByUuidAndIndex = (uuid: number, index: number) => {
-    return chatStore.getChatByUuidAndIndex(uuid, index)
+  const getChatByUuidAndIndex = (uuid: number) => {
+    return chatStore.getChatByUuidAndIndex(uuid)
   }
 
-  const addChat = (uuid: number, chat: Chat.Chat) => {
-    chatStore.addChatByUuid(uuid, chat)
+  /**
+   * @description: 存入聊天记录到本地缓存
+   * @param {number} uuid
+   * @param {Chat} chat
+   * @param {String} SystemRoleValue
+   * @return {*}
+   */
+  const addChat = (uuid: number, chat: Chat.Chat, SystemRoleValue: String) => {
+    chatStore.addChatByUuid(uuid, chat, SystemRoleValue)
   }
 
-  const updateChat = (uuid: number, index: number, chat: Chat.Chat) => {
-    chatStore.updateChatByUuid(uuid, index, chat)
+  const updateChat = (uuid: number, index: number, chat: Chat.Chat, SystemRoleValue: String) => {
+    chatStore.updateChatByUuid(uuid, index, chat, SystemRoleValue)
   }
 
   const updateChatSome = (uuid: number, index: number, chat: Partial<Chat.Chat>) => {
