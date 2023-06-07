@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    <link rel="icon" href="/favicon.svg" />
+    <link rel="stylesheet" href="/loading/index.css" />
+    <title><%= title %></title>
+  </head>
+  <body dark:text-white dark:bg-hex-121212>
+    <div id="app">
+      <!-- 白屏时的loading效果 -->
+      <div class="loading-container">
+        <div id="loadingLogo" class="loading-svg"></div>
+        <div class="loading-spin__container">
+          <div class="loading-spin">
+            <div class="left-0 top-0 loading-spin-item"></div>
+            <div class="left-0 bottom-0 loading-spin-item loading-delay-500"></div>
+            <div class="right-0 top-0 loading-spin-item loading-delay-1000"></div>
+            <div class="right-0 bottom-0 loading-spin-item loading-delay-1500"></div>
+          </div>
+        </div>
+        <div class="loading-title"><%= title %></div>
+      </div>
+      <script src="/loading/index.js"></script>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

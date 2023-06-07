@@ -1,0 +1,12 @@
+{
+  "recommendations": [
+    "vue.volar",
+    "sdras.vue-vscode-snippets",
+    "antfu.unocss",
+    "esbenp.prettier-vscode",
+    "christian-kohler.path-intellisense",
+    "dbaeumer.vscode-eslint",
+    "mikestead.dotenv",
+    "antfu.iconify"
+  ]
+}
