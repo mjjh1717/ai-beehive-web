@@ -264,7 +264,7 @@ function resetAddData() {
           </n-layout-content>
         </n-layout-sider>
         <n-layout>
-          <n-layout-content content-style="padding: 15px;">
+          <n-layout-content h-screen>
             <slot />
           </n-layout-content>
         </n-layout>

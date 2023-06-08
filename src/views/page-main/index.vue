@@ -1,16 +1,14 @@
-<!--
- * @Author: mjjh
- * @LastEditTime: 2023-06-07 00:29:34
- * @FilePath: \ai-beehive-web\src\views\page-main\index.vue
- * @Description:
--->
 <script setup lang="ts">
+import openaiChat from '../cellRoom/openaiChat/index.vue'
 import { useRoomStore } from '@/store'
 const roomStore = useRoomStore()
+
+// 判断需要加载的房间类型
 </script>
 
 <template>
-  <MainPage min-w-375>
-    我是聊天室内容{{ roomStore.roomData }}
+  <MainPage h-screen>
+    <!--  v-if="roomStore.roomData.cellCode === 'openai_chat_api_3_5'" -->
+    <openaiChat :room-data="roomStore.roomData" />
   </MainPage>
 </template>
