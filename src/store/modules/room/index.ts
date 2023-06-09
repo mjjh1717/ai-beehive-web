@@ -39,23 +39,11 @@ export const useRoomStore = defineStore('room', {
     roomData(): RoomInfo {
       return this.roomInfo || {}
     },
-    cellCode(): string {
-      return this.roomInfo.cellCode || ''
-    },
-    color(): string {
-      return this.roomInfo.color || ''
-    },
-    createTime(): string {
-      return this.roomInfo.createTime || ''
-    },
-    roomId(): number {
-      return this.roomInfo.roomId || -1
-    },
-    name(): string {
-      return this.roomInfo.name || ''
-    },
   },
   actions: {
+    resetRoomInfo() {
+      this.roomInfo = {}
+    },
     setRoomInfo(roomInfo: RoomInfo = {}) {
       this.roomInfo = { ...this.roomInfo, ...roomInfo }
     },

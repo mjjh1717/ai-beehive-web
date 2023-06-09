@@ -1,6 +1,6 @@
 /*
  * @Author: mjjh
- * @LastEditTime: 2023-06-03 23:24:40
+ * @LastEditTime: 2023-06-08 23:34:43
  * @FilePath: \ai-beehive-web\mock\api\auth.js
  * @Description:
  */
@@ -8,7 +8,7 @@ import { resolveToken } from '../utils'
 
 export default [
   {
-    url: '/api/user/login/email',
+    url: '/api/user/login/email_',
     method: 'post',
     response: (options) => {
       const { username } = options.body

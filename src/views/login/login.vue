@@ -1,6 +1,6 @@
 <!--
  * @Author: mjjh
- * @LastEditTime: 2023-06-03 23:17:28
+ * @LastEditTime: 2023-06-08 23:33:06
  * @FilePath: \ai-beehive-web\src\views\login\login.vue
  * @Description:
 -->
@@ -17,7 +17,7 @@ const route = useRoute()
 const query = route.query
 
 const rules: FormRules = {
-  email: {
+  username: {
     required: true,
     trigger: ['blur', 'input'],
     validator(rule, value) {
@@ -32,7 +32,7 @@ const rules: FormRules = {
       return true
     },
   },
-  passWord: [
+  password: [
     {
       required: true,
       message: '请输入密码',
@@ -64,7 +64,6 @@ async function handleLogin() {
     loging.value = true
     const res: any = await api.login({ username, password: password.toString() })
     // todo 还没做权限判断 暂时写死
-    console.log(res.data.token)
 
     // 存token
     setToken(res.data.token)
@@ -94,11 +93,11 @@ async function handleLogin() {
 
 <template>
   <n-form ref="formRef" :model="loginInfo" label-placement="top" :rules="rules">
-    <n-formItem path="email" label="邮箱" placeholder="请输入邮箱">
-      <n-input v-model:value="loginInfo.username" />
+    <n-formItem path="username" label="邮箱">
+      <n-input v-model:value="loginInfo.username" placeholder="请输入邮箱" />
     </n-formItem>
-    <n-formItem path="passWord" label="密码" placeholder="请输入密码">
-      <n-input v-model:value="loginInfo.password" type="password" show-password-on="mousedown" @keypress="handleLogin" />
+    <n-formItem path="password" label="密码">
+      <n-input v-model:value="loginInfo.password" type="password" show-password-on="mousedown" placeholder="请输入密码" />
     </n-formItem>
   </n-form>
   <n-button

@@ -1,0 +1,42 @@
+<script setup lang="ts">
+interface Props {
+  /** 图标名称(图片的文件名) */
+  color: string
+  name: string
+  cellCode: string
+  createTime: string
+}
+const props = withDefaults(defineProps<Props>(), {})
+
+// todo 编辑按钮未绑定
+</script>
+
+<template>
+  <div ml-10 mr-10 h-64 flex items-center :style="{ borderBottom: `1px solid ${props.color}` }">
+    <div
+      text-6xl font-600 p-10 b-rd-5 mr-10
+      :style="{ backgroundColor: `${props.color}`, borderColor: `${props.color}` }"
+    >
+      {{ props.name }}
+    </div>
+    <div
+      text-6xl font-400 p-10 b-rd-5 mr-10
+      :style="{ backgroundColor: `${props.color}`, borderColor: `${props.color}` }"
+    >
+      {{ props.cellCode }}
+    </div>
+    <div
+      text-6xl font-400 p-10 b-rd-5
+      :style="{ backgroundColor: `${props.color}`, borderColor: `${props.color}` }"
+    >
+      {{ props.createTime }}
+    </div>
+    <div flex-1 />
+    <n-button :color="`${props.color}`">
+      <n-icon size="16">
+        <icon-ri:edit-line />
+      </n-icon>
+      编辑
+    </n-button>
+  </div>
+</template>

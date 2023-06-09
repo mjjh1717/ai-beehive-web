@@ -109,7 +109,7 @@ const AddModalFormRef = ref()
 const AddModalForm = ref<addRoomVo>({
   roomInfo: {
     name: undefined,
-    color: '#FFAD0A',
+    color: 'rgb(254, 172, 10)',
   },
   cellCode: undefined,
   roomConfigParams: undefined,
@@ -122,7 +122,21 @@ const AddRules = {
       trigger: 'blur',
     },
     color: {
+      required: true,
       message: '请选择颜色',
+      trigger: ['blur', 'input'],
+      // todo需要限制可选色域范围
+      // validator(rule: any, value: string) {
+      // // 自定义验证  规则
+      //   const regMobile = /^[rR][gG][Bb][Aa]?[\(]([\s]*(1[0-4][0-9]|19[0-5]|[01]?[0-9][0-9]?),){2}[\s]*(1[0-4][0-9]|19[0-5]|[01]?[0-9][0-9]?),?[\s]*(0\.\d{1,2}|1|0)?[\)]{1}$/g
+      //   if (!value)
+      //     return new Error('请选择颜色')
+
+      //   else if (!regMobile.test(value))
+      //     return new Error('请选择在范围内的颜色')
+
+      //   return true
+      // },
     },
   },
   cellCode: {
@@ -168,6 +182,7 @@ function addItem() {
       cellMenuList.value = []
       searchValue.value = undefined
       getRoomList()
+      showAddModal.value = false
     })
   })
 }
@@ -176,7 +191,7 @@ function resetAddData() {
   AddModalForm.value = {
     roomInfo: {
       name: undefined,
-      color: '#FFAD0A',
+      color: 'rgb(254, 172, 10)',
     },
     cellCode: undefined,
     roomConfigParams: undefined,
@@ -229,7 +244,7 @@ function resetAddData() {
                     </n-icon>
                     <!-- 内容区域 -->
                     <div ml-5 mr-5 flex-1>
-                      <n-ellipsis style="max-width: 130px">
+                      <n-ellipsis max-w-130px cursor-pointer>
                         {{ item.name }}
                       </n-ellipsis>
                     </div>
@@ -301,7 +316,7 @@ function resetAddData() {
             label="房间颜色"
             path="color"
           >
-            <n-color-picker v-model:value="modalForm.color" :show-alpha="false" :modes="['hex']" />
+            <n-color-picker v-model:value="modalForm.color" :show-alpha="false" :modes="['rgb']" />
           </n-form-item>
         </n-form>
       </CrudModal>
@@ -322,7 +337,7 @@ function resetAddData() {
             <n-input v-model:value="AddModalForm.roomInfo.name" placeholder="请输入房间名称" />
           </n-form-item>
           <n-form-item path="roomInfo.color" label="房间颜色">
-            <n-color-picker v-model:value="AddModalForm.roomInfo.color" :show-alpha="false" :modes="['hex']" />
+            <n-color-picker v-model:value="AddModalForm.roomInfo.color" :show-alpha="false" :modes="['rgb']" />
           </n-form-item>
           <n-form-item path="cellCode" label="图纸类型">
             <n-select
