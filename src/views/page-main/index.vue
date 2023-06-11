@@ -1,3 +1,9 @@
+<!--
+ * @Author: mjjh
+ * @LastEditTime: 2023-06-11 23:50:27
+ * @FilePath: \ai-beehive-web\src\views\page-main\index.vue
+ * @Description:
+-->
 <script setup lang="ts">
 import { toRefs } from 'vue'
 import openaiChat from '../cellRoom/openaiChat/index.vue'
@@ -16,7 +22,7 @@ const { roomData } = toRefs(roomStore)
     </div>
     <!--  v-if="roomStore.roomData.cellCode === 'openai_chat_api_3_5'" -->
     <div v-else>
-      <openaiChat v-if="roomStore.roomData.cellCode === 'openai_chat_api_3_5'" :room-data="roomStore.roomData" />
+      <openaiChat v-if="roomStore.roomData.cellCode === 'openai_chat_api_3_5'" :key="roomStore.roomData.roomId" :room-data="roomStore.roomData" />
     </div>
   </MainPage>
 </template>

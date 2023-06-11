@@ -53,3 +53,14 @@ export enum MessageType {
   Answer = 'answer',
   Question = 'question',
 }
+
+export interface sendRequest {
+  /**
+   * 消息内容
+   */
+  content: string
+  /**
+   * 房间 id
+   */
+  roomId: number
+}
