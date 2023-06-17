@@ -39,6 +39,9 @@ function http<T = any>(
   const failHandler = (error: Response<Error>) => {
     const authStore = useAuthStore()
     afterRequest?.()
+		if (!error.response || !error.response?.status) {
+			return
+		}
     if (error.response.status === 503) {
       throw new Error(error.message || 'Error')
     }
