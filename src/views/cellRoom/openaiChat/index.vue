@@ -59,7 +59,7 @@ async function getRoomMessageList(params: RoomOpenaiChatListRequest) {
   if (data.length === 10)
     getMore.value = true
 
-  if (data.length < 10 && getMore.value === true) {
+  if (data.length < 10 && getMore.value) {
     ms.warning('没有更多数据哩!!!')
     getMore.value = false
   }
@@ -193,7 +193,7 @@ async function changData(talkdata: any, done = false) {
                 {{ item.createTime }}
               </n-ellipsis>
               <div flex justify-start>
-                <div p-10 rd-10 inline-block style="background-color: #f4f6f8; word-break:break-all; ">
+                <div p-10 rd-10 inline-block break-all class="bg-[#f4f6f8]" dark:bg-hex-24272e>
                   {{ item.content }}
                 </div>
               </div>
@@ -206,7 +206,7 @@ async function changData(talkdata: any, done = false) {
                 {{ item.createTime }}
               </n-ellipsis>
               <div flex justify-end>
-                <div p-10 rd-10 inline-block style="background-color: #fed784; word-break:break-all; ">
+                <div p-10 rd-10 inline-block break-all style="background-color: #fed784;  color: #3a3a3a;">
                   {{ item.content }}
                 </div>
               </div>
@@ -220,7 +220,7 @@ async function changData(talkdata: any, done = false) {
         </div>
         <!-- 用户的提问 -->
         <div v-if="isSend" flex justify-end items-start mb-20>
-          <div p-10 rd-10 style="background-color: #fed784; word-break:break-all; ">
+          <div p-10 rd-10 break-all style="background-color: #fed784; color: #3a3a3a; ">
             {{ sendData }}
           </div>
           <div min-w-50 flex justify-end>
@@ -236,7 +236,7 @@ async function changData(talkdata: any, done = false) {
               ai
             </n-avatar>
           </div>
-          <div p-10 rd-10 style="background-color: #f4f6f8; word-break:break-all; ">
+          <div p-10 rd-10 break-all class="bg-[#f4f6f8]" dark:bg-hex-24272e>
             {{ sendReturnData }}
           </div>
         </div>

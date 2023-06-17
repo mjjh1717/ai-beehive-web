@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import type { SelectOption } from 'naive-ui'
+import { useMessage } from 'naive-ui'
 import api from './api'
 import type { CellConfigResponse, CellConfigVO, CellResponse, CellVO, RoomListVO, RoomResponse, addRoomVo } from './types/types'
-import { ConfigList, useCRUD } from '@/components/index.js'
+import { useCRUD } from '@/components/index.js'
 import { useRoomStore } from '@/store'
+import colorList from '@/assets/color'
 withDefaults(defineProps<Props>(), {
   cellType: 'allCell',
 })
+
+const ms = useMessage()
 
 const roomStore = useRoomStore()
 
@@ -101,14 +104,15 @@ const {
   },
 })
 
+// 新增
+const current = ref<number>(1)
 const showAddModal = ref(false)
 const addloading = ref(false)
-const selectloading = ref(false)
 const AddModalFormRef = ref()
 const AddModalForm = ref<addRoomVo>({
   roomInfo: {
     name: undefined,
-    color: 'rgb(254, 172, 10)',
+    color: '#fead0b',
   },
   cellCode: undefined,
   roomConfigParams: undefined,
@@ -124,55 +128,56 @@ const AddRules = {
       required: true,
       message: '请选择颜色',
       trigger: ['blur', 'input'],
-      // todo需要限制可选色域范围
-      // validator(rule: any, value: string) {
-      // // 自定义验证  规则
-      //   const regMobile = /^[rR][gG][Bb][Aa]?[\(]([\s]*(1[0-4][0-9]|19[0-5]|[01]?[0-9][0-9]?),){2}[\s]*(1[0-4][0-9]|19[0-5]|[01]?[0-9][0-9]?),?[\s]*(0\.\d{1,2}|1|0)?[\)]{1}$/g
-      //   if (!value)
-      //     return new Error('请选择颜色')
-
-      //   else if (!regMobile.test(value))
-      //     return new Error('请选择在范围内的颜色')
-
-      //   return true
-      // },
     },
   },
   cellCode: {
     required: true,
-    message: '请选择图纸类型',
+    message: '请选择图纸',
     trigger: 'blur',
   },
 }
 
 const cellList = ref<CellVO[]> ()
 const cellConfigList = ref<CellConfigVO[]> ()
-async function getCellList() {
-  selectloading.value = true
-  const res: CellResponse = await api.getCellList()
-  cellList.value = res.data
-  if (cellList.value)
-    cellList.value.map(item => item.disabled = !item.isCanUse)
-  selectloading.value = false
+
+async function next() {
+  if (current.value === 1) {
+    if (AddModalForm.value.cellCode) {
+      const { data }: CellConfigResponse = await api.getCellConfigList(AddModalForm.value.cellCode)
+      cellConfigList.value = data
+    }
+    else {
+      cellConfigList.value = []
+      ms.warning('请先选择房间图纸')
+      return
+    }
+  }
+
+  if (current.value < 3)
+    current.value++
+  else
+    ms.warning('到底啦')
+}
+function prev() {
+  if (current.value > 1)
+    current.value--
+  else
+    ms.warning('到顶了')
 }
 
-async function handleUpdateValue(value: string, option: SelectOption) {
-  if (value) {
-    const res: CellConfigResponse = await api.getCellConfigList(value)
-    cellConfigList.value = res.data
-  }
-  else {
-    cellConfigList.value = []
-  }
+async function getCellList() {
+  const res: CellResponse = await api.getCellList()
+  cellList.value = toRaw(res.data)
 }
 
 function addItem() {
   AddModalFormRef.value?.validate(async (err: any) => {
-    if (err)
+    if (err) {
+      ms.error('请填写完整数据')
       return
+    }
 
     addloading.value = true
-
     api.addRoom(AddModalForm.value).finally(() => {
       addloading.value = false
       resetAddData()
@@ -190,11 +195,12 @@ function resetAddData() {
   AddModalForm.value = {
     roomInfo: {
       name: undefined,
-      color: 'rgb(254, 172, 10)',
+      color: '#fead0b',
     },
     cellCode: undefined,
     roomConfigParams: undefined,
   }
+  current.value = 1
   cellList.value = undefined
   cellConfigList.value = undefined
 }
@@ -323,37 +329,83 @@ function resetAddData() {
       <!-- 新增 -->
       <n-modal
         v-model:show="showAddModal"
-        style="width: 400px"
+        style="width: 960px"
         title="新增房间"
         :bordered="false"
         size="huge"
-        role="dialog"
         aria-modal="true"
         preset="card"
+        :on-after-leave=" resetAddData()"
       >
-        <n-form ref="AddModalFormRef" :model="AddModalForm" :rules="AddRules">
-          <n-form-item path="roomInfo.name" label="房间名称">
+        <div flex>
+          <n-steps v-model:current="current">
+            <n-step disabled title="图纸选择" />
+            <n-step disabled title="属性配置" />
+            <n-step disabled title="基本信息" />
+          </n-steps>
+          <n-button-group>
+            <n-button @click="prev">
+              上一步
+            </n-button>
+            <n-button @click="next">
+              下一步
+            </n-button>
+          </n-button-group>
+        </div>
+        <!-- 1 图纸选择 -->
+        <n-form ref="AddModalFormRef" :model="AddModalForm" :rules="AddRules" mt-30>
+          <n-form-item v-show="current === 1" path="cellCode" label="图纸类型">
+            <n-radio-group v-model:value="AddModalForm.cellCode" flex-wrap>
+              <n-space item-style="display: flex;">
+                <n-radio-button
+                  v-for="(item, index) in cellList"
+                  :key="index"
+                  :value="item.code"
+                  :disabled="!item.isCanUse || item.status !== 'published' "
+                >
+                  <div mt-10 f-c-c w-250>
+                    <n-avatar
+                      :size="40"
+                      :src="item.imageUrl"
+                      fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+                    />
+                    <div flex-1 ml-10>
+                      <n-ellipsis style="max-width: 210px">
+                        {{ item.name }}
+                      </n-ellipsis>
+                      <div>
+                        {{ item.status === 'closed' ? '已关闭' : item.status === 'coding' ? '开发中' : item.status === 'fixing' ? '修改中' : '使用中' }}
+                      </div>
+                    </div>
+                  </div>
+                  <div mt-5 mb-10 p-10 w-250 break-all overflow-hidden class="bg-[#f2f2f2]" style="white-space:normal; ">
+                    {{ item.introduce }}
+                  </div>
+                </n-radio-button>
+              </n-space>
+            </n-radio-group>
+          </n-form-item>
+
+          <n-form-item v-show="current === 2" path="roomConfigParams" label="房间配置参数">
+            <ConfigList v-model:newCellConfigList="AddModalForm.roomConfigParams" :cell-config-list="cellConfigList ?? []" />
+          </n-form-item>
+
+          <n-form-item v-show="current === 3" path="roomInfo.name" label="房间名称">
             <n-input v-model:value="AddModalForm.roomInfo.name" placeholder="请输入房间名称" />
           </n-form-item>
-          <!-- <n-form-item path="roomInfo.color" label="房间颜色">
-            <n-color-picker v-model:value="AddModalForm.roomInfo.color" :show-alpha="false" :modes="['rgb']" />
-          </n-form-item> -->
-          <n-form-item path="cellCode" label="图纸类型">
-            <n-select
-              v-model:value="AddModalForm.cellCode"
-              filterable
-              placeholder="请选择图纸类型"
-              label-field="name"
-              value-field="code"
-              :options="cellList"
-              :loading="selectloading"
-              clearable
-              remote
-              @update:value="handleUpdateValue"
-            />
-          </n-form-item>
-          <n-form-item path="roomConfigParams" label="房间配置参数">
-            <ConfigList v-model:newCellConfigList="AddModalForm.roomConfigParams" :cell-config-list="cellConfigList ?? []" />
+          <n-form-item v-show="current === 3" path="roomInfo.color" label="房间颜色">
+            <div flex flex-wrap>
+              <n-color-picker v-model:value="AddModalForm.roomInfo.color" mb-10 :show-alpha="false" :modes="['hsv']" />
+              <n-radio-group v-model:value="AddModalForm.roomInfo.color">
+                <n-space item-style="display: flex;">
+                  <n-radio v-for="(item, index) of colorList" :key="index" type="primary" :value="item.value">
+                    <div w-85 f-c-c b-rd-20 :style="{ backgroundColor: `${item.value}`, color: '#fff' }">
+                      {{ item.label }}
+                    </div>
+                  </n-radio>
+                </n-space>
+              </n-radio-group>
+            </div>
           </n-form-item>
         </n-form>
         <template #footer>
@@ -363,7 +415,7 @@ function resetAddData() {
                 取消
               </NButton>
               <NButton :loading="addloading" ml-20 type="primary" @click="addItem()">
-                保存
+                提交
               </NButton>
             </slot>
           </footer>

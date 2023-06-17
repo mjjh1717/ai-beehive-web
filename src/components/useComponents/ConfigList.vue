@@ -1,6 +1,6 @@
 <!--
  * @Author: mjjh
- * @LastEditTime: 2023-06-13 23:52:57
+ * @LastEditTime: 2023-06-18 01:21:19
  * @FilePath: \ai-beehive-web\src\components\useComponents\ConfigList.vue
  * @Description:
 -->
@@ -80,61 +80,66 @@ const props = defineProps({
 })
 const emit = defineEmits(['update:newCellConfigList'])
 const cellConfigModalForm = ref<RoomConfigVO[]>([])
-
-watch(props, (value, oldValue) => {
-  if (value.cellConfigList.length === 0) {
-    resetData()
-  }
-  else {
-    for (const item of value.cellConfigList) {
-      cellConfigModalForm.value.push({
-        value: item.isUserValueVisible && item.isHaveDefaultValue && item.isUserCanUseDefaultValue ? item.defaultValue : '',
-        isUseDefaultValue: (item.isHaveDefaultValue && item.isUserModifiable) ?? false,
-        cellConfigCode: item.cellConfigCode ?? '',
-      })
+watch(
+  () => props.cellConfigList,
+  (value, oldValue) => {
+    if (value.length !== 0) {
+      const newList: RoomConfigVO[] = []
+      for (const item of toRaw(value)) {
+        newList.push({
+          value: item.isUserValueVisible && item.isHaveDefaultValue && item.isUserCanUseDefaultValue ? item.defaultValue : '',
+          isUseDefaultValue: (item.isHaveDefaultValue && item.isUserModifiable) ?? false,
+          cellConfigCode: item.cellConfigCode ?? '',
+        })
+      }
+      cellConfigModalForm.value = newList
     }
-  }
-})
+  },
+)
 
 watch(cellConfigModalForm, (value, oldValue) => {
   const newValue = value.filter(item => item.value === '')
   emit('update:newCellConfigList', newValue)
-}, { deep: true })
+})
 
-function resetData() {
-  cellConfigModalForm.value = []
-}
+// function resetData() {
+//   cellConfigModalForm.value = []
+// }
 </script>
 
 <template>
-  <div v-if="props?.cellConfigList.length === 0" c-error>
-    请先选择图纸类型
+  <div v-if="props?.cellConfigList.length === 0">
+    此图纸 无需配置
   </div>
   <div v-else>
     <n-form ref="AddModalFormRef" :model="cellConfigModalForm">
-      <n-form-item v-for="(item, index) of props?.cellConfigList" :key="index">
-        <!-- <n-switch v-model:value="cellConfigModalForm[index].isUseDefaultValue" :disabled="item.defaultValue && item.isUserCanUseDefaultValue" mr-10 /> -->
-        <template #label>
-          <n-popover trigger="hover">
-            <template #trigger>
-              {{ item.name }}
-            </template>
-            <div>{{ item.introduce }}</div>
-          </n-popover>
-        </template>
-        <n-input v-if="cellConfigModalForm[index].isUseDefaultValue" v-model:value="cellConfigModalForm[index].value" :placeholder="item.exampleValue" />
-        <div v-else>
-          {{ cellConfigModalForm[index].value }}
-        </div>
-        <n-button :disabled="!item.isHaveDefaultValue || !item.isUserModifiable" ml-10 @click="cellConfigModalForm[index].isUseDefaultValue = !cellConfigModalForm[index].isUseDefaultValue">
-          <div v-if="cellConfigModalForm[index].isUseDefaultValue">
-            自定义
+      <n-space v-if="cellConfigModalForm.length > 0" item-style="display: flex;">
+        <n-form-item v-for="(item, index) of props?.cellConfigList" :key="index">
+          <!-- <n-switch v-model:value="cellConfigModalForm[index].isUseDefaultValue" :disabled="item.defaultValue && item.isUserCanUseDefaultValue" mr-10 /> -->
+          <template #label>
+            <n-popover trigger="hover">
+              <template #trigger>
+                {{ item.name }}
+              </template>
+              <div>{{ item.introduce }}</div>
+            </n-popover>
+          </template>
+          <div w-280 flex>
+            <div v-if="cellConfigModalForm[index].isUseDefaultValue" flex-1 flex items-center p-5>
+              {{ cellConfigModalForm[index].value !== '' ? cellConfigModalForm[index].value : '参数默认为空' }}
+            </div>
+            <n-input v-else v-model:value="cellConfigModalForm[index].value" :placeholder="item.exampleValue" />
+            <n-button w-70 :disabled="!item.isHaveDefaultValue || !item.isUserModifiable" ml-10 @click="cellConfigModalForm[index].isUseDefaultValue = !cellConfigModalForm[index].isUseDefaultValue">
+              <div v-if="cellConfigModalForm[index].isUseDefaultValue">
+                编辑
+              </div>
+              <div v-else>
+                取消
+              </div>
+            </n-button>
           </div>
-          <div v-else>
-            默认
-          </div>
-        </n-button>
-      </n-form-item>
+        </n-form-item>
+      </n-space>
     </n-form>
   </div>
 </template>

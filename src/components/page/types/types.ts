@@ -1,6 +1,6 @@
 /*
  * @Author: mjjh
- * @LastEditTime: 2023-06-06 00:47:11
+ * @LastEditTime: 2023-06-17 22:56:56
  * @FilePath: \ai-beehive-web\src\components\page\types\types.ts
  * @Description:
  */
@@ -190,7 +190,10 @@ export interface CellVO {
    * 是否能使用，false 否 true 是
    */
   isCanUse?: boolean
-  disabled?: boolean
+  /**
+   * 介绍
+   */
+  introduce?: string
   /**
    * 名称
    */
@@ -222,11 +225,11 @@ export enum Code {
 * 状态
 */
 export enum Status {
-  The0 = '0',
-  The1 = '1',
-  The2 = '2',
-  The3 = '3',
-  The4 = '4',
+  Closed = 'closed',
+  Coding = 'coding',
+  Fixing = 'fixing',
+  Hidden = 'hidden',
+  Published = 'published',
 }
 
 /**
