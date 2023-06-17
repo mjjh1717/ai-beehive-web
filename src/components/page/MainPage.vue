@@ -85,7 +85,6 @@ const {
   modalLoading,
   handleDelete,
   handleEdit,
-  handleView,
   handleSave,
   modalForm,
   modalFormRef,
@@ -226,6 +225,7 @@ function resetAddData() {
             </n-input-group>
           </n-layout-header>
           <n-layout-content pt-15>
+            <!-- 房间固定isPinned -->
             <n-scrollbar style="max-height: calc(100vh - 95px)" pr-14 :on-scroll="getScrollData">
               <div v-if="cellMenuList?.length === 0" mt-6 f-c-c>
                 暂无数据
@@ -239,31 +239,30 @@ function resetAddData() {
                 >
                   <div flex>
                     <!-- 顶部icon -->
-                    <n-icon size="20" @click="handleView(item)">
+                    <n-icon size="20">
                       <icon-ri:message-3-line />
                     </n-icon>
                     <!-- 内容区域 -->
-                    <div ml-5 mr-5 flex-1>
-                      <n-ellipsis max-w-130px cursor-pointer>
-                        {{ item.name }}
-                      </n-ellipsis>
+                    <n-ellipsis ml-5 mr-5 flex-1 cursor-pointer>
+                      {{ item.name }}
+                    </n-ellipsis>
+                    <div v-if="isActive(item.roomId)" flex w-35>
+                      <n-button size="tiny" circle>
+                        <n-icon size="16" @click="handleEdit(item)">
+                          <icon-ri:edit-line />
+                        </n-icon>
+                      </n-button>
+                      <n-popconfirm placement="bottom" @positive-click="handleDelete(item.roomId)">
+                        <template #trigger>
+                          <n-button size="tiny" circle>
+                            <n-icon size="16">
+                              <icon-ri:delete-bin-line />
+                            </n-icon>
+                          </n-button>
+                        </template>
+                        确定删除此聊天室吗?
+                      </n-popconfirm>
                     </div>
-
-                    <n-button size="tiny" circle>
-                      <n-icon size="16" @click="handleEdit(item)">
-                        <icon-ri:edit-line />
-                      </n-icon>
-                    </n-button>
-                    <n-popconfirm placement="bottom" @positive-click="handleDelete(item.roomId)">
-                      <template #trigger>
-                        <n-button size="tiny" circle>
-                          <n-icon size="16">
-                            <icon-ri:delete-bin-line />
-                          </n-icon>
-                        </n-button>
-                      </template>
-                      确定删除此聊天室吗?
-                    </n-popconfirm>
                   </div>
                 </n-card>
               </div>
@@ -312,12 +311,12 @@ function resetAddData() {
           >
             <n-input v-model:value="modalForm.name" placeholder="请输入房间名称" />
           </n-form-item>
-          <n-form-item
+          <!-- <n-form-item
             label="房间颜色"
             path="color"
           >
             <n-color-picker v-model:value="modalForm.color" :show-alpha="false" :modes="['rgb']" />
-          </n-form-item>
+          </n-form-item> -->
         </n-form>
       </CrudModal>
 
@@ -336,9 +335,9 @@ function resetAddData() {
           <n-form-item path="roomInfo.name" label="房间名称">
             <n-input v-model:value="AddModalForm.roomInfo.name" placeholder="请输入房间名称" />
           </n-form-item>
-          <n-form-item path="roomInfo.color" label="房间颜色">
+          <!-- <n-form-item path="roomInfo.color" label="房间颜色">
             <n-color-picker v-model:value="AddModalForm.roomInfo.color" :show-alpha="false" :modes="['rgb']" />
-          </n-form-item>
+          </n-form-item> -->
           <n-form-item path="cellCode" label="图纸类型">
             <n-select
               v-model:value="AddModalForm.cellCode"

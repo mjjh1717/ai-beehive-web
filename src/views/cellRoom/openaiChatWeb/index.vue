@@ -59,7 +59,7 @@ async function getRoomMessageList(params: RoomOpenaiChatListRequest) {
   if (data.length === 10)
     getMore.value = true
 
-  if (data.length < 10 && getMore.value === true) {
+  if (data.length < 10) {
     ms.warning('没有更多数据哩!!!')
     getMore.value = false
   }
@@ -108,7 +108,6 @@ async function sendClick() {
       content: sendData.value,
     }
     const data = await api.RoomOpenaiChatSend(pushData, changData)
-    // 此处的data只有错误的时候才会返回
     if (data && data.code !== 200) {
       ms.error(`请求失败!  ${data.message}`)
       // 重置数据
@@ -177,6 +176,7 @@ async function changData(talkdata: any, done = false) {
             加载更多...
           </n-button>
         </div>
+
         <div v-if="messageList.length === 0" flex justify-center>
           暂无数据
         </div>

@@ -1,6 +1,6 @@
 <!--
  * @Author: mjjh
- * @LastEditTime: 2023-06-06 21:46:54
+ * @LastEditTime: 2023-06-13 23:52:57
  * @FilePath: \ai-beehive-web\src\components\useComponents\ConfigList.vue
  * @Description:
 -->
@@ -112,8 +112,16 @@ function resetData() {
   </div>
   <div v-else>
     <n-form ref="AddModalFormRef" :model="cellConfigModalForm">
-      <n-form-item v-for="(item, index) of props?.cellConfigList" :key="index" :label="item.introduce">
+      <n-form-item v-for="(item, index) of props?.cellConfigList" :key="index">
         <!-- <n-switch v-model:value="cellConfigModalForm[index].isUseDefaultValue" :disabled="item.defaultValue && item.isUserCanUseDefaultValue" mr-10 /> -->
+        <template #label>
+          <n-popover trigger="hover">
+            <template #trigger>
+              {{ item.name }}
+            </template>
+            <div>{{ item.introduce }}</div>
+          </n-popover>
+        </template>
         <n-input v-if="cellConfigModalForm[index].isUseDefaultValue" v-model:value="cellConfigModalForm[index].value" :placeholder="item.exampleValue" />
         <div v-else>
           {{ cellConfigModalForm[index].value }}

@@ -1,11 +1,13 @@
 /*
  * @Author: mjjh
- * @LastEditTime: 2023-06-17 14:12:44
- * @FilePath: \ai-beehive-web\src\views\cellRoom\openaiChat\api.ts
+ * @LastEditTime: 2023-06-17 16:36:36
+ * @FilePath: \ai-beehive-web\src\views\cellRoom\openaiChatWeb\api.ts
  * @Description: 登录注册逻辑
  */
+import { useMessage } from 'naive-ui'
 import type { RoomOpenaiChatListRequest, sendRequest } from './types/apiTypes'
 import { request } from '@/utils'
+const ms = useMessage()
 const controller = new AbortController()
 
 async function loadData(postData: sendRequest, returnData: Function) {
@@ -42,13 +44,13 @@ async function loadData(postData: sendRequest, returnData: Function) {
     }
   }
   catch {
-    console.error('请求失败')
+    ms.error('请求失败')
   }
 }
 
 export default {
   // 获取消息列表
-  getRoomOpenaiChatList: (params: RoomOpenaiChatListRequest) => request.get('/room/openai_chat/list', { params }),
+  getRoomOpenaiChatList: (params: RoomOpenaiChatListRequest) => request.get('/room/openai_chat_web/list', { params }),
   // RoomOpenaiChatSend: (data: sendRequest) => request.post('/room/openai_chat/send', data),
   RoomOpenaiChatSend: (data: sendRequest, returnData: Function) => loadData(data, returnData),
 }
