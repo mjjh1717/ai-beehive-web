@@ -8,6 +8,7 @@
 import { toRefs } from 'vue'
 import openaiChat from '../cellRoom/openaiChat/index.vue'
 import openaiChatWeb from '../cellRoom/openaiChatWeb/index.vue'
+import newBing from '../cellRoom/newBing/index.vue'
 import { useRoomStore } from '@/store'
 import { isEmpty } from '@/utils/common/index'
 
@@ -25,6 +26,7 @@ const { roomData } = toRefs(roomStore)
     <div v-else>
       <openaiChat v-if="roomStore.roomData.cellCode === 'openai_chat_api_3_5'" :key="roomStore.roomData.roomId" :room-data="roomStore.roomData" />
       <openaiChatWeb v-if="roomStore.roomData.cellCode === 'openai_chat_web_3_5'" :key="roomStore.roomData.roomId" :room-data="roomStore.roomData" />
+      <newBing v-if="roomStore.roomData.cellCode === 'new_bing'" :key="roomStore.roomData.roomId" :room-data="roomStore.roomData" />
     </div>
   </MainPage>
 </template>

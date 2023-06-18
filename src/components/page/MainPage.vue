@@ -37,6 +37,7 @@ async function getRoomList(name: undefined | string = undefined) {
   if (res.data?.records)
     cellMenuList.value?.push(...res.data?.records)
 }
+getCellList()
 getRoomList()
 
 // 获取更多数据
@@ -170,6 +171,16 @@ async function getCellList() {
   cellList.value = toRaw(res.data)
 }
 
+function getCellImg(type: string) {
+  if (cellList.value) {
+    for (const item of cellList.value) {
+      if (type === item.code)
+        return item.imageUrl
+    }
+  }
+  return ''
+}
+
 function addItem() {
   AddModalFormRef.value?.validate(async (err: any) => {
     if (err) {
@@ -178,6 +189,9 @@ function addItem() {
     }
 
     addloading.value = true
+    if (!AddModalForm.value.roomConfigParams)
+      AddModalForm.value.roomConfigParams = []
+
     api.addRoom(AddModalForm.value).finally(() => {
       addloading.value = false
       resetAddData()
@@ -201,7 +215,6 @@ function resetAddData() {
     roomConfigParams: undefined,
   }
   current.value = 1
-  cellList.value = undefined
   cellConfigList.value = undefined
 }
 </script>
@@ -223,7 +236,7 @@ function resetAddData() {
                   </n-icon>
                 </template>
               </n-input>
-              <n-button round type="primary" @click="showAddModal = true, getCellList()">
+              <n-button round type="primary" @click="showAddModal = true">
                 <n-icon size="20">
                   <icon-ion:add-circle />
                 </n-icon>
@@ -243,16 +256,26 @@ function resetAddData() {
                   :style="{ borderBottom: `2px solid ${item.color}` }"
                   @click="handleSelect(item)"
                 >
-                  <div flex>
+                  <div flex items-center>
                     <!-- 顶部icon -->
-                    <n-icon size="20">
-                      <icon-ri:message-3-line />
-                    </n-icon>
-                    <!-- 内容区域 -->
-                    <n-ellipsis ml-5 mr-5 flex-1 cursor-pointer>
-                      {{ item.name }}
-                    </n-ellipsis>
-                    <div v-if="isActive(item.roomId)" flex w-35>
+                    <div min-w-30 f-c-c>
+                      <n-avatar
+                        round
+                        size="small"
+                        :src="getCellImg(item.cellCode ?? '')"
+                        fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+                      />
+                    </div>
+                    <div flex-1 ml-5 mr-5 style="overflow-x: hidden;">
+                      <!-- 内容区域 -->
+                      <n-ellipsis style="overflow-x: hidden; white-space: nowrap; text-overflow: ellipsis;" cursor-pointer>
+                        {{ item.name }}
+                      </n-ellipsis>
+                      <n-ellipsis cursor-pointer style="overflow-x: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 8px; color: #929292; ">
+                        {{ item.createTime }}
+                      </n-ellipsis>
+                    </div>
+                    <div v-if="isActive(item.roomId)" flex min-w-35>
                       <n-button size="tiny" circle>
                         <n-icon size="16" @click="handleEdit(item)">
                           <icon-ri:edit-line />
@@ -296,7 +319,7 @@ function resetAddData() {
         :title="modalTitle"
         :loading="modalLoading"
         :show-footer="modalAction !== 'view'"
-        width="400px"
+        width="960px"
         @on-save="handleSave"
       >
         <n-form
@@ -317,12 +340,20 @@ function resetAddData() {
           >
             <n-input v-model:value="modalForm.name" placeholder="请输入房间名称" />
           </n-form-item>
-          <!-- <n-form-item
-            label="房间颜色"
-            path="color"
-          >
-            <n-color-picker v-model:value="modalForm.color" :show-alpha="false" :modes="['rgb']" />
-          </n-form-item> -->
+          <n-form-item path="roomInfo.color" label="房间颜色">
+            <div flex flex-wrap>
+              <n-color-picker v-model:value="modalForm.color" mb-10 :show-alpha="false" :modes="['hsv']" />
+              <n-radio-group v-model:value="modalForm.color">
+                <n-space item-style="display: flex;">
+                  <n-radio v-for="(item, index) of colorList" :key="index" type="primary" :value="item.value">
+                    <div w-85 f-c-c b-rd-20 :style="{ backgroundColor: `${item.value}`, color: '#fff' }">
+                      {{ item.label }}
+                    </div>
+                  </n-radio>
+                </n-space>
+              </n-radio-group>
+            </div>
+          </n-form-item>
         </n-form>
       </CrudModal>
 

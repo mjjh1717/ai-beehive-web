@@ -1,3 +1,9 @@
+<!--
+ * @Author: mjjh
+ * @LastEditTime: 2023-06-19 01:05:51
+ * @FilePath: \ai-beehive-web\src\components\common\roomHeader.vue
+ * @Description:
+-->
 <script setup lang="ts">
 interface Props {
   /** 图标名称(图片的文件名) */
@@ -32,11 +38,11 @@ const props = withDefaults(defineProps<Props>(), {})
       {{ props.createTime }}
     </div>
     <div flex-1 />
-    <n-button :color="`${props.color}`">
+    <!-- <n-button :color="`${props.color}`">
       <n-icon size="16">
         <icon-ri:edit-line />
       </n-icon>
       编辑
-    </n-button>
+    </n-button> -->
   </div>
 </template>
