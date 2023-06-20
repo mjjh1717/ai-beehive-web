@@ -1,13 +1,16 @@
 /*
  * @Author: mjjh
- * @LastEditTime: 2023-06-17 14:12:44
+ * @LastEditTime: 2023-06-21 01:54:50
  * @FilePath: \ai-beehive-web\src\views\cellRoom\openaiChat\api.ts
  * @Description: 登录注册逻辑
  */
 import type { RoomOpenaiChatListRequest, sendRequest } from './types/apiTypes'
 import { request } from '@/utils'
-const controller = new AbortController()
-
+let controller = new AbortController()
+function handleStop() {
+  controller.abort()
+  controller = new AbortController()
+}
 async function loadData(postData: sendRequest, returnData: Function) {
   try {
     const response = await fetch('/api/room/openai_chat/send', {
@@ -51,4 +54,5 @@ export default {
   getRoomOpenaiChatList: (params: RoomOpenaiChatListRequest) => request.get('/room/openai_chat/list', { params }),
   // RoomOpenaiChatSend: (data: sendRequest) => request.post('/room/openai_chat/send', data),
   RoomOpenaiChatSend: (data: sendRequest, returnData: Function) => loadData(data, returnData),
+  handleStop: () => handleStop(),
 }

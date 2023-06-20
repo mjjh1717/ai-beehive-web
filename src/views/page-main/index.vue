@@ -1,6 +1,6 @@
 <!--
  * @Author: mjjh
- * @LastEditTime: 2023-06-15 21:07:44
+ * @LastEditTime: 2023-06-21 00:32:10
  * @FilePath: \ai-beehive-web\src\views\page-main\index.vue
  * @Description:
 -->
@@ -8,6 +8,7 @@
 import { toRefs } from 'vue'
 import openaiChat from '../cellRoom/openaiChat/index.vue'
 import openaiChatWeb from '../cellRoom/openaiChatWeb/index.vue'
+import openaiImg from '../cellRoom/openaiImg/index.vue'
 import newBing from '../cellRoom/newBing/index.vue'
 import { useRoomStore } from '@/store'
 import { isEmpty } from '@/utils/common/index'
@@ -27,6 +28,7 @@ const { roomData } = toRefs(roomStore)
       <openaiChat v-if="roomStore.roomData.cellCode === 'openai_chat_api_3_5'" :key="roomStore.roomData.roomId" :room-data="roomStore.roomData" />
       <openaiChatWeb v-if="roomStore.roomData.cellCode === 'openai_chat_web_3_5'" :key="roomStore.roomData.roomId" :room-data="roomStore.roomData" />
       <newBing v-if="roomStore.roomData.cellCode === 'new_bing'" :key="roomStore.roomData.roomId" :room-data="roomStore.roomData" />
+      <openaiImg v-if="roomStore.roomData.cellCode === 'openai_image'" :key="roomStore.roomData.roomId" :room-data="roomStore.roomData" />
     </div>
   </MainPage>
 </template>

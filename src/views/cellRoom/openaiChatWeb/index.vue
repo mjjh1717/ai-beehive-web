@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, toRefs } from 'vue'
+import { onMounted, onUnmounted, toRefs } from 'vue'
 import { useMessage } from 'naive-ui'
 import api from './api'
 import type { RoomOpenAiChatMsgVO, RoomOpenaiChatListRequest, sendRequest } from './types/apiTypes'
@@ -14,6 +14,10 @@ const props = defineProps({
       return {}
     },
   },
+})
+
+onUnmounted(() => {
+  api.handleStop()
 })
 
 const roomStore = useRoomStore()
@@ -74,8 +78,8 @@ function loadingMore() {
   }
   else {
     firstGetListType.value = true
-    paramsData.value.isUseCursor = true
-    paramsData.value.cursor = String(messageList.value[0].id)
+    getNewData()
+    return
   }
 
   messageScrollbar.value.scrollTo({ top: 10 })
@@ -95,7 +99,33 @@ function getScrollData(e: any) {
   // if (e.srcElement.scrollTop + e.srcElement.offsetHeight >= e.srcElement.scrollHeight && getMore.value)
   //   getRoomMessageList(toRaw(paramsData.value))
 }
+async function getNewData() {
+  // 循环请求到最后一个数据 同步多个房间请求时产生的数据
+  while (true) {
+    const oldList = toRaw(messageList.value)
 
+    // 输出完了的回调
+    const pushData = {
+      cursor: oldList.length === 0 ? '' : String(oldList[oldList.length - 1].id),
+      isUseCursor: oldList.length !== 0,
+      roomId: roomData.value.roomId,
+      size: 2,
+      isAsc: true,
+    }
+    const { data } = await api.getRoomOpenaiChatList(pushData)
+
+    if (data.length < 2)
+      break
+
+    // 往栈存数据
+    messageList.value = []
+    messageList.value.push(...oldList, ...data)
+    paramsData.value.isUseCursor = true
+    paramsData.value.cursor = String(messageList.value[0].id)
+  }
+  // 滚动到底部
+  messageScrollbar.value.scrollTo({ top: 999999999 })
+}
 const sendData = ref(null)
 const sendReturnData = ref(null)
 const isSend = ref(false)
@@ -122,34 +152,12 @@ async function sendClick() {
 // 流输入调用的函数
 async function changData(talkdata: any, done = false) {
   if (done) {
-    // 循环请求到最后一个数据 同步多个房间请求时产生的数据
-    while (true) {
-      const oldList = toRaw(messageList.value)
-
-      // 输出完了的回调
-      const paramsData = {
-        cursor: oldList.length === 0 ? '' : String(oldList[oldList.length - 1].id),
-        isUseCursor: oldList.length !== 0,
-        roomId: roomData.value.roomId,
-        size: 2,
-        isAsc: true,
-      }
-      const { data } = await api.getRoomOpenaiChatList(paramsData)
-
-      if (data.length < 2)
-        break
-
-      // 往栈存数据
-      messageList.value = []
-      messageList.value.push(...oldList, ...data)
-    }
+    getNewData()
 
     // 重置数据
     sendData.value = null
     sendReturnData.value = null
     isSend.value = false
-    // 滚动到底部
-    messageScrollbar.value.scrollTo({ top: 999999999 })
   }
   else {
     const lastIndex = talkdata.lastIndexOf('\n', talkdata.length - 2)

@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import type { CSSProperties } from 'vue'
 import { onMounted, onUnmounted, toRefs } from 'vue'
 import { useMessage } from 'naive-ui'
 import api from './api'
-import type { RoomNewBingListRequest, RoomNewBingMsgVO, sendRequest } from './types/apiTypes'
+import type { RoomOpenAiImageListRequest, RoomOpenAiImageMsgVO, sendRequest } from './types/apiTypes'
 import roomHeader from '@/components/common/roomHeader.vue'
 import { useRoomStore } from '@/store'
+
 const props = defineProps({
   // 子组件接收父组件传递过来的值
   roomData: {
@@ -15,16 +15,18 @@ const props = defineProps({
     },
   },
 })
+
 onUnmounted(() => {
   api.handleStop()
 })
+
 const roomStore = useRoomStore()
 
 const ms = useMessage()
 
 // 使用父组件传递过来的值
 const { roomData } = toRefs(props)
-const paramsData = ref<RoomNewBingListRequest>({
+const paramsData = ref<RoomOpenAiImageListRequest>({
   cursor: '',
   isUseCursor: false,
   roomId: roomData.value.roomId,
@@ -33,7 +35,7 @@ const paramsData = ref<RoomNewBingListRequest>({
 })
 const getMore = ref(false)
 const messageScrollbar = ref()
-const messageList = ref <RoomNewBingMsgVO[]>(roomStore.messageListData)
+const messageList = ref <RoomOpenAiImageMsgVO[]>(roomStore.messageListData)
 const firstGetListType = ref(roomStore.messageListData.length === 0)
 
 watch(props, (value, oldValue) => {
@@ -48,8 +50,8 @@ watch(messageList, (value, oldValue) => {
   }
 })
 
-async function getRoomMessageList(params: RoomNewBingListRequest) {
-  const { data } = await api.getRoomNewBingList(params)
+async function getRoomMessageList(params: RoomOpenAiImageListRequest) {
+  const { data } = await api.getRoomOpenaiImgList(params)
 
   if (data.length > 0) {
     const oldList = toRaw(messageList.value)
@@ -65,12 +67,9 @@ async function getRoomMessageList(params: RoomNewBingListRequest) {
     ms.warning('没有更多数据哩!!!')
     getMore.value = false
   }
-
-  // 以id为标识符,存到对应的浏览器缓存中
 }
-// getRoomMessageList(toRaw(paramsData.value))
 
-function loadingMore() {
+async function loadingMore() {
   if (firstGetListType.value) {
     getRoomMessageList(toRaw(paramsData.value))
   }
@@ -98,32 +97,6 @@ function getScrollData(e: any) {
   //   getRoomMessageList(toRaw(paramsData.value))
 }
 
-const sendData = ref(null)
-const sendReturnData = ref(null)
-const isSend = ref(false)
-const isNewTopic = ref(false)
-
-async function sendClick() {
-  if (sendData.value) {
-    isSend.value = true
-    const pushData: sendRequest = {
-      roomId: roomData.value.roomId,
-      content: sendData.value,
-      isNewTopic: isNewTopic.value,
-    }
-    const data = await api.RoomNewBingSend(pushData, changData)
-    // 此处的data只有错误的时候才会返回
-    if (data && data.code !== 200) {
-      ms.error(`请求失败!  ${data.message}`)
-      // 重置数据
-      sendData.value = null
-      sendReturnData.value = null
-      isSend.value = false
-      // 滚动到底部
-      messageScrollbar.value.scrollTo({ top: 999999999 })
-    }
-  }
-}
 async function getNewData() {
   // 循环请求到最后一个数据 同步多个房间请求时产生的数据
   while (true) {
@@ -137,7 +110,7 @@ async function getNewData() {
       size: 2,
       isAsc: true,
     }
-    const { data } = await api.getRoomNewBingList(pushData)
+    const { data } = await api.getRoomOpenaiImgList(pushData)
 
     if (data.length < 2)
       break
@@ -150,6 +123,31 @@ async function getNewData() {
   }
   // 滚动到底部
   messageScrollbar.value.scrollTo({ top: 999999999 })
+}
+
+const sendData = ref(null)
+const sendReturnData = ref(null)
+const isSend = ref(false)
+
+async function sendClick() {
+  if (sendData.value) {
+    isSend.value = true
+    const pushData: sendRequest = {
+      roomId: roomData.value.roomId,
+      prompt: sendData.value,
+    }
+    const data = await api.RoomOpenaiImgSend(pushData, changData)
+    // 此处的data只有错误的时候才会返回
+    if (data && data.code !== 200) {
+      ms.error(`请求失败!  ${data.message}`)
+      // 重置数据
+      sendData.value = null
+      sendReturnData.value = null
+      isSend.value = false
+      // 滚动到底部
+      messageScrollbar.value.scrollTo({ top: 999999999 })
+    }
+  }
 }
 // 流输入调用的函数
 async function changData(talkdata: any, done = false) {
@@ -174,28 +172,6 @@ async function changData(talkdata: any, done = false) {
     }
   }
 }
-
-// 开关的颜色
-const railStyle = ({
-  focused,
-  checked,
-}: {
-  focused: boolean
-  checked: boolean
-}) => {
-  const style: CSSProperties = {}
-  if (checked) {
-    style.background = roomData.value.color
-    if (focused)
-      style.boxShadow = '0 0 0 2px #d0305040'
-  }
-  else {
-    style.background = '#dbdbdb'
-    if (focused)
-      style.boxShadow = '0 0 0 2px #2080f040'
-  }
-  return style
-}
 </script>
 
 <template>
@@ -213,7 +189,7 @@ const railStyle = ({
         </div>
         <div v-for="(item, index) of messageList" v-else :key="index">
           <!-- ai的回答 -->
-          <div v-if="item.type === 'answer'" flex justify-start items-start mb-20>
+          <div v-if="item.messageType === 'answer'" flex justify-start items-start mb-20>
             <div min-w-50>
               <n-avatar round>
                 ai
@@ -225,9 +201,15 @@ const railStyle = ({
               </n-ellipsis>
               <div flex justify-start>
                 <div p-10 rd-10 inline-block break-all class="bg-[#f4f6f8]" dark:bg-hex-24272e>
-                  {{ item.content }}
+                  {{ item.prompt }}
                 </div>
               </div>
+              <n-image
+                :width="item.size?.split('x')[0]"
+                :height="item.size?.split('x')[1]"
+                :src="item.openaiImageUrl"
+                fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+              />
             </div>
           </div>
           <!-- 用户的提问 -->
@@ -238,7 +220,7 @@ const railStyle = ({
               </n-ellipsis>
               <div flex justify-end>
                 <div p-10 rd-10 inline-block break-all style="background-color: #fed784;  color: #3a3a3a;">
-                  {{ item.content }}
+                  {{ item.prompt }}
                 </div>
               </div>
             </div>
@@ -278,16 +260,6 @@ const railStyle = ({
       <!-- v-model:value="searchValue"  -->
       <!-- :on-input="searchClick" -->
       <div p-10 flex items-center>
-        <div>
-          <n-switch v-model:value="isNewTopic" size="large" w-100 :rail-style="railStyle">
-            <template #checked>
-              新话题
-            </template>
-            <template #unchecked>
-              默认
-            </template>
-          </n-switch>
-        </div>
         <n-input
           v-model:value="sendData"
           type="textarea"

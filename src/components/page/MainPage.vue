@@ -236,7 +236,7 @@ function resetAddData() {
                   </n-icon>
                 </template>
               </n-input>
-              <n-button round type="primary" @click="showAddModal = true">
+              <n-button round type="primary" @click="showAddModal = true; getCellList()">
                 <n-icon size="20">
                   <icon-ion:add-circle />
                 </n-icon>
@@ -271,9 +271,9 @@ function resetAddData() {
                       <n-ellipsis style="overflow-x: hidden; white-space: nowrap; text-overflow: ellipsis;" cursor-pointer>
                         {{ item.name }}
                       </n-ellipsis>
-                      <n-ellipsis cursor-pointer style="overflow-x: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 8px; color: #929292; ">
+                      <!-- <n-ellipsis cursor-pointer style="overflow-x: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 8px; color: #929292; ">
                         {{ item.createTime }}
-                      </n-ellipsis>
+                      </n-ellipsis> -->
                     </div>
                     <div v-if="isActive(item.roomId)" flex min-w-35>
                       <n-button size="tiny" circle>

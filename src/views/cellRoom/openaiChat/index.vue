@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { onMounted, toRefs } from 'vue'
+import { onMounted, onUnmounted, toRefs } from 'vue'
 import { useMessage } from 'naive-ui'
 import api from './api'
 import type { RoomOpenAiChatMsgVO, RoomOpenaiChatListRequest, sendRequest } from './types/apiTypes'
 import roomHeader from '@/components/common/roomHeader.vue'
 import { useRoomStore } from '@/store'
-
 const props = defineProps({
   // 子组件接收父组件传递过来的值
   roomData: {
@@ -15,7 +14,9 @@ const props = defineProps({
     },
   },
 })
-
+onUnmounted(() => {
+  api.handleStop()
+})
 const roomStore = useRoomStore()
 
 const ms = useMessage()

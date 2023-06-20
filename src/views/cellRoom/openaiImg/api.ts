@@ -1,13 +1,11 @@
 /*
  * @Author: mjjh
- * @LastEditTime: 2023-06-21 01:53:52
- * @FilePath: \ai-beehive-web\src\views\cellRoom\openaiChatWeb\api.ts
+ * @LastEditTime: 2023-06-21 01:52:25
+ * @FilePath: \ai-beehive-web\src\views\cellRoom\openaiImg\api.ts
  * @Description: 登录注册逻辑
  */
-import { useMessage } from 'naive-ui'
-import type { RoomOpenaiChatListRequest, sendRequest } from './types/apiTypes'
+import type { RoomOpenAiImageListRequest, sendRequest } from './types/apiTypes'
 import { request } from '@/utils'
-const ms = useMessage()
 let controller = new AbortController()
 function handleStop() {
   controller.abort()
@@ -15,7 +13,7 @@ function handleStop() {
 }
 async function loadData(postData: sendRequest, returnData: Function) {
   try {
-    const response = await fetch('/api/room/openai_chat/send', {
+    const response = await fetch('/api/room/openai_image/send', {
       method: 'post',
       headers: {
         'Content-Type': 'application/json;charset=utf-8',
@@ -47,14 +45,14 @@ async function loadData(postData: sendRequest, returnData: Function) {
     }
   }
   catch {
-    ms.error('请求失败')
+    console.error('请求失败')
   }
 }
 
 export default {
   // 获取消息列表
-  getRoomOpenaiChatList: (params: RoomOpenaiChatListRequest) => request.get('/room/openai_chat_web/list', { params }),
+  getRoomOpenaiImgList: (params: RoomOpenAiImageListRequest) => request.get('/room/openai_image/list', { params }),
   // RoomOpenaiChatSend: (data: sendRequest) => request.post('/room/openai_chat/send', data),
-  RoomOpenaiChatSend: (data: sendRequest, returnData: Function) => loadData(data, returnData),
+  RoomOpenaiImgSend: (data: sendRequest, returnData: Function) => loadData(data, returnData),
   handleStop: () => handleStop(),
 }
