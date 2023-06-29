@@ -233,9 +233,11 @@ const railStyle = ({
           <!-- 用户的提问 -->
           <div v-else flex justify-end items-start mb-20>
             <div>
-              <n-ellipsis min-width-140px>
-                {{ item.createTime }}
-              </n-ellipsis>
+              <div style="width: 100%;" flex justify-end>
+                <n-ellipsis min-width-140px>
+                  {{ item.createTime }}
+                </n-ellipsis>
+              </div>
               <div flex justify-end>
                 <div p-10 rd-10 inline-block break-all style="background-color: #fed784;  color: #3a3a3a;">
                   {{ item.content }}
