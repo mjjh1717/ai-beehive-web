@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, toRefs } from 'vue'
 import { useMessage } from 'naive-ui'
+import MdEditor from 'md-editor-v3'
 import api from './api'
 import type { RoomOpenAiChatMsgVO, RoomOpenaiChatListRequest, sendRequest } from './types/apiTypes'
 import roomHeader from '@/components/common/roomHeader.vue'
@@ -202,7 +203,8 @@ async function changData(talkdata: any, done = false) {
               </n-ellipsis>
               <div flex justify-start>
                 <div p-10 rd-10 inline-block break-all class="bg-[#f4f6f8]" dark:bg-hex-24272e>
-                  {{ item.content }}
+                  <!-- {{ item.content }} -->
+                  <MdEditor v-model="item.content" preview-only />
                 </div>
               </div>
             </div>
@@ -247,7 +249,8 @@ async function changData(talkdata: any, done = false) {
             </n-avatar>
           </div>
           <div p-10 rd-10 break-all class="bg-[#f4f6f8]" dark:bg-hex-24272e>
-            {{ sendReturnData }}
+            <!-- {{ sendReturnData }} -->
+            <MdEditor v-if="sendReturnData" v-model="sendReturnData" preview-only />
           </div>
         </div>
       </n-scrollbar>

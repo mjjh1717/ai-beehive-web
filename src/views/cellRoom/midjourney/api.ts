@@ -1,6 +1,6 @@
 /*
  * @Author: mjjh
- * @LastEditTime: 2023-06-28 22:29:15
+ * @LastEditTime: 2023-06-29 23:00:21
  * @FilePath: \ai-beehive-web\src\views\cellRoom\midjourney\api.ts
  * @Description: 登录注册逻辑
  */
@@ -10,6 +10,7 @@ import { request } from '@/utils'
 export default {
   // 获取消息列表
   getRoomMidjourneyList: (params: RoomMidjourneyRequest) => request.get('/room/midjourney/list', { params }),
+  getRoomMidjourneyItem: (msgId: string) => request.get(`/room/midjourney/detail?msgId=${msgId}`),
   RoomMidjourneyImagine: (data: ImagineRequest) => request.post('/room/midjourney/imagine', data),
   RoomMidjourneyDescribe: (data: DescribeRequest) => request.post('/room/midjourney/describe', data),
   RoomMidjourneyUpscale: (data: UpscaleRequest) => request.post('/room/midjourney/upscale', data),

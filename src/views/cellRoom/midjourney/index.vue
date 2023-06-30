@@ -2,6 +2,8 @@
 import { onMounted, toRaw, toRefs } from 'vue'
 import { useMessage } from 'naive-ui'
 import type { UploadFileInfo } from 'naive-ui'
+import MdEditor from 'md-editor-v3'
+// import 'md-editor-v3/lib/style.css'
 import api from './api'
 import type { DescribeRequest, ImagineRequest, RoomMidjourneyMsgVO, RoomMidjourneyRequest, UpscaleRequest, VariationRequest } from './types/apiTypes'
 import roomHeader from '@/components/common/roomHeader.vue'
@@ -46,7 +48,7 @@ watch(props, (value, oldValue) => {
 })
 
 watch(messageList, (value, oldValue) => {
-  console.log('111roomStore')
+  // console.log('111roomStore')
 
   if (value.length > 0) {
     // messageList不为空则存入本地数据中
@@ -107,33 +109,22 @@ const selectType = ref('imagine')
 
 // 对话点击
 async function sendClick() {
-  if (selectType.value === 'imagine') {
-    // 文生图
-    imagineClick(sendData.value ?? '')
-  }
-  else {
+  if (sendData.value) {
+    isSend.value = true
+    if (selectType.value === 'imagine') {
+      // 文生图
+      imagineClick(sendData.value ?? '')
+    }
+    else {
     // 图生文
+    }
+    getNewData()
+    // 重置数据
+    sendData.value = null
+    isSend.value = false
+    // 滚动到底部
+    messageScrollbar.value.scrollTo({ top: 999999999 })
   }
-
-  // if (sendData.value) {
-  //   isSend.value = true
-  //   const pushData: sendRequest = {
-  //     roomId: roomData.value.roomId,
-  //     content: sendData.value,
-  //     isNewTopic: isNewTopic.value,
-  //   }
-  //   const data = await api.RoomNewBingSend(pushData)
-  //   // 此处的data只有错误的时候才会返回
-  //   if (data && data.code !== 200) {
-  //     ms.error(`请求失败!  ${data.message}`)
-  //     // 重置数据
-  //     sendData.value = null
-  //     sendReturnData.value = null
-  //     isSend.value = false
-  //     // 滚动到底部
-  //     messageScrollbar.value.scrollTo({ top: 999999999 })
-  //   }
-  // }
 }
 // 获取新数据
 async function getNewData() {
@@ -162,6 +153,7 @@ async function getNewData() {
   }
   // 滚动到底部
   messageScrollbar.value.scrollTo({ top: 999999999 })
+  getmsgNewData()
 }
 
 // 继续生成图片
@@ -171,8 +163,8 @@ async function variationClick(msgId: number | undefined, index: number) {
     msgId: msgId ?? -1,
     roomId: roomData.value.roomId,
   }
-  const data = await api.RoomMidjourneyVariation(pushData)
-  console.log('variationClick', data)
+  await api.RoomMidjourneyVariation(pushData)
+  getNewData()
 }
 // 生成高质量图片
 async function upscaleClick(msgId: number | undefined, index: number) {
@@ -181,8 +173,8 @@ async function upscaleClick(msgId: number | undefined, index: number) {
     msgId: msgId ?? -1,
     roomId: roomData.value.roomId,
   }
-  const data = await api.RoomMidjourneyUpscale(pushData)
-  console.log('upscaleClick', data)
+  await api.RoomMidjourneyUpscale(pushData)
+  getNewData()
 }
 // 文生图
 async function imagineClick(prompt: string) {
@@ -190,8 +182,7 @@ async function imagineClick(prompt: string) {
     prompt,
     roomId: roomData.value.roomId,
   }
-  const data = await api.RoomMidjourneyImagine(pushData)
-  console.log('imagineClick', data)
+  await api.RoomMidjourneyImagine(pushData)
 }
 // 图生文
 // function describeClick() {
@@ -200,89 +191,113 @@ async function imagineClick(prompt: string) {
 
 // mj 更新数据
 // setp1 遍历消息数组
+// 进入房间的时候遍历一次加载一次状态 发送消息后遍历一次加载一次状态
+
 // 查看每个消息的状态
 
-// 一下三个状态需要开启定时任务, 请求数据
+// 以下三个状态需要开启定时任务, 请求数据
 // SYS_QUEUING 系统排队中 60s
 // MJ_WAIT_RECEIVED 等待 MJ 接收消息 30s
 // MJ_IN_PROGRESS MJ 执行中 10s
 const mjState = [
   {
     value: false,
-    // MJ 失败
     text: 'MJ_FAILURE',
+    label: 'MJ 加载失败',
   },
   {
-    value: 10,
-    // MJ 执行中
+    value: 10000,
     text: 'MJ_IN_PROGRESS',
+    label: 'MJ 加载执行中',
   },
   {
     value: false,
-    // MJ 成功
     text: 'MJ_SUCCESS',
+    label: 'MJ 加载成功',
   },
   {
-    value: 30,
-    // 等待 MJ 接受消息
+    value: 30000,
     text: 'MJ_WAIT_RECEIVED',
+    label: '等待 MJ 接受消息',
   },
   {
     value: false,
-    // 系统发送 MJ 请求失败
     text: 'SYS_FAILURE',
+    label: '系统发送 MJ 请求失败',
   },
   {
     value: false,
-    // 系统完成 MJ 执行中任务失败
     text: 'SYS_FINISH_MJ_IN_PROGRESS_FAILURE',
+    label: '系统完成 MJ 执行中任务失败',
   },
   {
     value: false,
-    // 系统排队上限
     text: 'SYS_MAX_QUEUE',
+    label: '系统排队上限',
   },
   {
-    value: 60,
-    // 系统排队中
+    value: 60000,
     text: 'SYS_QUEUING',
+    label: '系统排队中',
   },
   {
     value: false,
-    // 系统等待 MJ 接收消息失败
     text: 'SYS_SEND_MJ_REQUEST_FAILURE',
+    label: '系统等待 MJ 接收消息失败',
   },
   {
     value: false,
-    // 系统成功
     text: 'SYS_SUCCESS',
+    label: '系统成功',
   },
   {
     value: false,
-    // 系统发送 MJ 请求失败
     text: 'SYS_WAIT_MJ_RECEIVED_FAILURE',
+    label: '系统发送 MJ 请求失败',
   },
 ]
 // 判断状态
 function isState(state: string) {
   for (const item of mjState) {
     if (item.text === state)
-      return item.value
+      return item
   }
-}
-// 开启定时任务 定时请求数据并且更新
-function timingNewData(time: number) {
-  setTimeout(() => { console.log('此处声明了一个定时器') }, time)
 }
 
 // 获取新数据
 function getmsgNewData() {
-  messageList.value.map((item) => {
+  clearAllInterval()
+  messageList.value.map(async (item) => {
     const isStateData = isState(String(item.status))
-    if (isStateData) {
-      // 获取最新数据
-      console.log('1111', isStateData)
-      timingNewData(isStateData)
+    if (isStateData && isStateData.value) {
+      const id = item.id
+      const { data } = await api.getRoomMidjourneyItem(String(item.id))
+      // console.log(data.status)
+      // console.log(!['MJ_IN_PROGRESS', 'MJ_WAIT_RECEIVED', 'SYS_QUEUING'].includes(data.status))
+
+      for (const index in messageList.value) {
+        if (messageList.value[index].id === id)
+          messageList.value[index] = data
+      }
+      roomStore.setlocaMessageList(messageList.value)
+      if (!['MJ_IN_PROGRESS', 'MJ_WAIT_RECEIVED', 'SYS_QUEUING'].includes(data.status))
+        clearAllInterval()
+      setInterval(async () => {
+        const id = item.id
+        const { data } = await api.getRoomMidjourneyItem(String(item.id))
+        // console.log(data.status)
+        // console.log(!['MJ_IN_PROGRESS', 'MJ_WAIT_RECEIVED', 'SYS_QUEUING'].includes(data.status))
+
+        for (const index in messageList.value) {
+          if (messageList.value[index].id === id)
+            messageList.value[index] = data
+        }
+        roomStore.setlocaMessageList(messageList.value)
+        if (!['MJ_IN_PROGRESS', 'MJ_WAIT_RECEIVED', 'SYS_QUEUING'].includes(data.status))
+          clearAllInterval()
+
+        // console.log(messageList)
+      }, Number(isStateData.value))
     }
     return item
   })
@@ -292,6 +307,13 @@ getmsgNewData()
 // setp2 根据状态 获取对应消息的最新数据
 
 // setp3 根据 消息id 更新消息列表 并且更新本地存储(已经watch)
+
+// 清除所有定时器
+
+function clearAllInterval() {
+  for (let i = 0; i < 10000; i++)
+    clearInterval(i)
+}
 </script>
 
 <template>
@@ -320,23 +342,38 @@ getmsgNewData()
                 {{ item.createTime }}
               </n-ellipsis>
               <div flex justify-start>
-                <div p-10 rd-10 inline-block break-all class="bg-[#f4f6f8]" dark:bg-hex-24272e>
-                  <div w-500>
+                <div p-20 rd-10 inline-block break-all class="bg-[#f4f6f8]" dark:bg-hex-24272e>
+                  <div max-w-600>
                     <span fw-bold>
                       画图描述:
                     </span>
                     {{ item.prompt }}
                   </div>
-                  {{ item }}
+                  <div w-500>
+                    <span fw-bold>
+                      加载状态:
+                    </span>
+
+                    {{ isState(String(item.status))?.label }}
+                  </div>
+                  <div v-if="item.responseContent" flex>
+                    <span fw-bold>
+                      响应内容：
+                    </span>
+                    <MdEditor v-model="item.responseContent" preview-only />
+                    <!-- {{ item.responseContent }} -->
+                  </div>
+                  <!-- {{ item }} -->
                   <n-image
+                    v-if="item.imageUrl"
                     mt-10
-                    mb-10
+                    b-rd-10
                     :width="500"
-                    :src="` ${baseURL}/${item.imageUrl}`"
+                    :src="`${baseURL}${item.imageUrl}`"
                     fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
                   />
                   <!-- 文生图 和 重新生成图片才有的按钮 -->
-                  <div v-if="item.action === 'IMAGINE' || item.action === 'VARIATION'" w-300>
+                  <div v-if="item.status === 'MJ_SUCCESS' && (item.action === 'IMAGINE' || item.action === 'VARIATION')" mt-10 w-300>
                     <div flex justify-between>
                       <n-button strong @click="upscaleClick(item.id, 1)">
                         u1
@@ -367,7 +404,7 @@ getmsgNewData()
                     </div>
                   </div>
                   <!-- 图生文才有的按钮 -->
-                  <div v-else-if="item.action === 'DESCRIBE'" w-300>
+                  <div v-else-if="item.status === 'MJ_SUCCESS' && item.action === 'DESCRIBE'" w-300>
                     <div flex justify-between>
                       <n-button strong>
                         1
@@ -397,7 +434,7 @@ getmsgNewData()
               </div>
               <div flex justify-end>
                 <div p-10 rd-10 inline-block break-all style="background-color: #fed784;  color: #3a3a3a;">
-                  {{ item.prompt }}
+                  {{ `/${item.action} ${item.prompt}` }}
                 </div>
               </div>
             </div>

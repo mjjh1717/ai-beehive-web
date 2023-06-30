@@ -1,11 +1,11 @@
 /*
  * @Author: mjjh
- * @LastEditTime: 2023-06-11 22:23:51
+ * @LastEditTime: 2023-06-30 09:35:02
  * @FilePath: \ai-beehive-web\src\store\modules\room\index.ts
  * @Description:
  */
 import { defineStore } from 'pinia'
-import { getLocal, getLocalExpire, isEmpty, removeLocal, setLocal } from '@/utils'
+import { getLocal, isEmpty, setLocal } from '@/utils'
 
 interface RoomInfo {
   /**

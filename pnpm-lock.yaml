@@ -24,6 +24,7 @@ specifiers:
   husky: ^8.0.1
   lint-staged: ^13.0.3
   lodash-es: ^4.17.21
+  md-editor-v3: ^2.9.0
   mockjs: ^1.1.0
   naive-ui: ^2.34.3
   pinia: ^2.0.28
@@ -50,6 +51,7 @@ dependencies:
   busuanzi.pure.js: 1.0.3
   crypto-js: 4.1.1
   lodash-es: 4.17.21
+  md-editor-v3: 2.11.3_vue@3.2.45
   mockjs: 1.1.0
   pinia: 2.0.28_zwu2zepfy3m6u2gunxlolp35gi
   vue: 3.2.45
@@ -4626,6 +4628,14 @@ packages:
     dependencies:
       object-visit: 1.0.1
     dev: true
+
+  /md-editor-v3/2.11.3_vue@3.2.45:
+    resolution: {integrity: sha512-SCfS4qMy0HldFdplcIGUMCpSv8qkNWkYShSdv2gTHeViKduA34zV89BOrWcqls2EZSlvt2n3G7nHRzYUvJjDKw==}
+    peerDependencies:
+      vue: ^3.2.47
+    dependencies:
+      vue: 3.2.45
+    dev: false
 
   /mdast-util-from-markdown/0.8.5:
     resolution: {integrity: sha512-2hkTXtYYnr+NubD/g6KGBS/0mFmBcifAsI0yIWRiRo0PjVs6SSOSOdtzbp6kSGnShDN6G5aWZpKQ2lWRy27mWQ==}
