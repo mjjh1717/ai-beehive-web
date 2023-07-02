@@ -206,6 +206,7 @@ async function changData(talkdata: any, done = false) {
                 </div>
               </div>
               <n-image
+                lazy
                 :width="item.size?.split('x')[0]"
                 :height="item.size?.split('x')[1]"
                 :src="item.openaiImageUrl"

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, toRaw, toRefs } from 'vue'
+import { onMounted, onUnmounted, toRaw, toRefs } from 'vue'
 import { useMessage } from 'naive-ui'
 import type { UploadFileInfo } from 'naive-ui'
 import MdEditor from 'md-editor-v3'
@@ -41,6 +41,14 @@ const firstGetListType = ref(roomStore.messageListData.length === 0)
 
 // 图生文 的文件
 const fileList = ref<UploadFileInfo[]>([])
+onMounted(() => {
+  loadingMore()
+  messageScrollbar.value.scrollTo({ top: 999999999 })
+})
+onUnmounted(() => {
+  // 取消所有定时器
+  clearAllInterval()
+})
 
 watch(props, (value, oldValue) => {
   roomData.value = toRefs(value)
@@ -91,11 +99,6 @@ function loadingMore() {
   messageScrollbar.value.scrollTo({ top: 10 })
 }
 
-onMounted(() => {
-  loadingMore()
-  messageScrollbar.value.scrollTo({ top: 999999999 })
-})
-
 // 获取滚动到顶部部的事件
 function getScrollData(e: any) {
   // 滚动到顶部
@@ -113,7 +116,7 @@ async function sendClick() {
     isSend.value = true
     if (selectType.value === 'imagine') {
       // 文生图
-      imagineClick(sendData.value ?? '')
+      await imagineClick(sendData.value ?? '')
     }
     else {
     // 图生文
@@ -163,6 +166,12 @@ async function variationClick(msgId: number | undefined, index: number) {
     msgId: msgId ?? -1,
     roomId: roomData.value.roomId,
   }
+  const { data } = await api.getRoomMidjourneyItem(String(msgId))
+  for (const index in messageList.value) {
+    if (messageList.value[index].id === msgId)
+      messageList.value[index] = data
+  }
+  roomStore.setlocaMessageList(messageList.value)
   await api.RoomMidjourneyVariation(pushData)
   getNewData()
 }
@@ -173,6 +182,12 @@ async function upscaleClick(msgId: number | undefined, index: number) {
     msgId: msgId ?? -1,
     roomId: roomData.value.roomId,
   }
+  const { data } = await api.getRoomMidjourneyItem(String(msgId))
+  for (const index in messageList.value) {
+    if (messageList.value[index].id === msgId)
+      messageList.value[index] = data
+  }
+  roomStore.setlocaMessageList(messageList.value)
   await api.RoomMidjourneyUpscale(pushData)
   getNewData()
 }
@@ -193,8 +208,17 @@ async function imagineClick(prompt: string) {
 // setp1 遍历消息数组
 // 进入房间的时候遍历一次加载一次状态 发送消息后遍历一次加载一次状态
 
-// 查看每个消息的状态
+// 需要维护一个定时器对象数组
+// 1: 属性值为 messageid, 定时器对象
+// 2: 有两个方法, 开启定时器(开启时默认请求一次) 删除定时器, 传入值为messageId
+// 3: 在加载对应消息的状态为上面三个加载中的状态时 定时器开启,并且根据预设值请求数据
+// 4: 在手动点击刷新进度时, 需要删除旧的定时器, 然后重新开启新的定时器,并且此时将按钮置为不可点击(5s后恢复)
 
+// setp2 根据状态 获取对应消息的最新数据
+
+// setp3 根据 消息id 更新消息列表 并且更新本地存储(已经watch)
+
+// 查看每个消息的状态
 // 以下三个状态需要开启定时任务, 请求数据
 // SYS_QUEUING 系统排队中 60s
 // MJ_WAIT_RECEIVED 等待 MJ 接收消息 30s
@@ -216,7 +240,7 @@ const mjState = [
     label: 'MJ 加载成功',
   },
   {
-    value: 30000,
+    value: 20000,
     text: 'MJ_WAIT_RECEIVED',
     label: '等待 MJ 接受消息',
   },
@@ -236,7 +260,7 @@ const mjState = [
     label: '系统排队上限',
   },
   {
-    value: 60000,
+    value: 30000,
     text: 'SYS_QUEUING',
     label: '系统排队中',
   },
@@ -256,6 +280,13 @@ const mjState = [
     label: '系统发送 MJ 请求失败',
   },
 ]
+interface MESSAGE_INTERVAL_TYPE {
+  [key: string]: any // 字段扩展声明
+}
+const messageIntervalDatas = ref<MESSAGE_INTERVAL_TYPE> ({})
+
+// const messageBtnTimeOut = ref<MESSAGE_INTERVAL_TYPE> ({})
+
 // 判断状态
 function isState(state: string) {
   for (const item of mjState) {
@@ -264,63 +295,116 @@ function isState(state: string) {
   }
 }
 
-// 获取新数据
+// 遍历列表 如果状态为加载中则 获取新数据
 function getmsgNewData() {
-  clearAllInterval()
   messageList.value.map(async (item) => {
     const isStateData = isState(String(item.status))
-    if (isStateData && isStateData.value) {
-      const id = item.id
-      const { data } = await api.getRoomMidjourneyItem(String(item.id))
-      // console.log(data.status)
-      // console.log(!['MJ_IN_PROGRESS', 'MJ_WAIT_RECEIVED', 'SYS_QUEUING'].includes(data.status))
+    if (isStateData && isStateData.value && item.id)
+      newMessageInterval(String(item.id), Number(isStateData.value))
 
-      for (const index in messageList.value) {
-        if (messageList.value[index].id === id)
-          messageList.value[index] = data
-      }
-      roomStore.setlocaMessageList(messageList.value)
-      if (!['MJ_IN_PROGRESS', 'MJ_WAIT_RECEIVED', 'SYS_QUEUING'].includes(data.status))
-        clearAllInterval()
-      setInterval(async () => {
-        const id = item.id
-        const { data } = await api.getRoomMidjourneyItem(String(item.id))
-        // console.log(data.status)
-        // console.log(!['MJ_IN_PROGRESS', 'MJ_WAIT_RECEIVED', 'SYS_QUEUING'].includes(data.status))
-
-        for (const index in messageList.value) {
-          if (messageList.value[index].id === id)
-            messageList.value[index] = data
-        }
-        roomStore.setlocaMessageList(messageList.value)
-        if (!['MJ_IN_PROGRESS', 'MJ_WAIT_RECEIVED', 'SYS_QUEUING'].includes(data.status))
-          clearAllInterval()
-
-        // console.log(messageList)
-      }, Number(isStateData.value))
-    }
     return item
   })
 }
 getmsgNewData()
 
-// setp2 根据状态 获取对应消息的最新数据
+// 创建定时器
+async function newMessageInterval(id: string, time = 10000) {
+  // step 1 如果有定时器就先销毁
+  if (messageIntervalDatas.value[id])
+    clearMessageInterval(id)
 
-// setp3 根据 消息id 更新消息列表 并且更新本地存储(已经watch)
+  // step 2 第一次进来请求一次数据
+  const { data } = await api.getRoomMidjourneyItem(id)
+  for (const index in messageList.value) {
+    if (String(messageList.value[index].id) === id)
+      messageList.value[index] = data
+  }
+  roomStore.setlocaMessageList(messageList.value)
+  // step 3 维护messageIntervalDatas.value对象
+  messageIntervalDatas.value[id] = setInterval(async () => {
+    const { data } = await api.getRoomMidjourneyItem(id)
+    for (const index in messageList.value) {
+      if (String(messageList.value[index].id) === id)
+        messageList.value[index] = data
+    }
+    roomStore.setlocaMessageList(messageList.value)
+    // step 4 如果状态更新则 清除定时器
+    if (!['MJ_IN_PROGRESS', 'MJ_WAIT_RECEIVED', 'SYS_QUEUING'].includes(data.status)) {
+      // messageScrollbar.value.scrollTo({ top: 999999999 })
+      clearMessageInterval(id)
+      clearBtnTimeOut(id)
+    }
+  }, time)
+}
+
+// 清除对应id的定时器
+function clearMessageInterval(id: string) {
+  clearInterval(messageIntervalDatas.value[id])
+  delete messageIntervalDatas.value[id]
+}
+
+// function clearBtnTimeOut(id: string) {
+//   clearTimeout(messageIntervalDatas.value[id])
+//   delete messageBtnTimeOut.value[id]
+// }
 
 // 清除所有定时器
-
 function clearAllInterval() {
-  for (let i = 0; i < 10000; i++)
+  for (let i = 0; i < 10000; i++) {
+    clearTimeout(i)
     clearInterval(i)
+  }
+}
+// 获取哪个按钮可以刷新
+// function getrsBtnType(id: string, status: string) {
+//   if (['MJ_IN_PROGRESS', 'MJ_WAIT_RECEIVED', 'SYS_QUEUING'].includes(status)) {
+//     messageBtnTimeOut.value[id] = 'false111'
+//     console.log('false111222')
+
+//     return true
+//   }
+//   return false
+// }
+
+// 刷新按钮点击
+// function rsBtnClick(id: string, status: string) {
+//   clearBtnTimeOut(id)
+//   messageBtnTimeOut.value[id] = 'true333'
+//   console.log(messageBtnTimeOut.value[id])
+
+//   const isStateData = isState(String(status))
+//   if (isStateData && isStateData.value && id)
+//     newMessageInterval(id, Number(isStateData.value))
+
+//   setTimeout(() => {
+//     clearBtnTimeOut(id)
+//     messageBtnTimeOut.value[id] = 'false222'
+//     console.log(messageBtnTimeOut.value[id])
+//   }, 5000)
+// }
+
+// 获取哪个按钮被点击了 不能再次点击
+function selectBit(num: number, flag: number) {
+  const strFlag = (num).toString(2)
+  if (strFlag.charAt(flag - 1) === '1')
+    return true
+
+  return false
+}
+
+// 计算日期时间差距
+function getTimeDate(newDate: string, oldDate: string) {
+  const new_date = new Date(newDate)
+  const old_date = new Date(oldDate)
+  return (new_date - old_date) / 1000
 }
 </script>
 
 <template>
   <div h-screen class="text-[#fff] dark:text-[#3a3a3a]" flex flex-col>
     <roomHeader :color="roomData.color" :name="roomData.name" :cell-code="roomData.cellCode" :create-time="roomData.createTime" />
-    <div flex-1 p-24 class=" text-[#3a3a3a] dark:text-[#fff]">
-      <n-scrollbar ref="messageScrollbar" style="max-height: calc(100vh - 200px)" pr-14 :on-scroll="getScrollData">
+    <div flex-1 p-24 pb-0 class=" text-[#3a3a3a] dark:text-[#fff]">
+      <n-scrollbar ref="messageScrollbar" style="max-height: calc(100vh - 130px)" pr-14 :on-scroll="getScrollData">
         <div v-if="getMore" absolute top-0 right-0 left-0 f-c-c>
           <n-button tertiary round size="small" @click="loadingMore">
             加载更多...
@@ -344,28 +428,45 @@ function clearAllInterval() {
               <div flex justify-start>
                 <div p-20 rd-10 inline-block break-all class="bg-[#f4f6f8]" dark:bg-hex-24272e>
                   <div max-w-600>
-                    <span fw-bold>
+                    <span fw-bold min-w-70>
                       画图描述:
                     </span>
-                    {{ item.prompt }}
+                    {{ `/${item.action}${item.uvIndex ? `: ${item.uvIndex}` : ''} ${item.prompt}` }}
                   </div>
                   <div w-500>
-                    <span fw-bold>
+                    <span fw-bold min-w-70>
                       加载状态:
                     </span>
 
-                    {{ isState(String(item.status))?.label }}
+                    {{ `${isState(String(item.status))?.label} ${item.waitQueueLength ?? ''}` }}
+                  </div>
+                  <div v-if="item.discordFinishTime" w-500>
+                    <span fw-bold min-w-70>
+                      加载耗时:
+                    </span>
+                    <span fw-bold>
+                      {{ item.discordFinishTime ? ` ${getTimeDate(String(item.discordFinishTime), String(item.createTime))}秒` : '' }}
+                    </span>
+                    {{ item.createTime }}{{ item.discordFinishTime ? `-${item.discordFinishTime}` : '' }}
                   </div>
                   <div v-if="item.responseContent" flex>
-                    <span fw-bold>
+                    <span fw-bold min-w-70>
                       响应内容：
                     </span>
                     <MdEditor v-model="item.responseContent" preview-only />
-                    <!-- {{ item.responseContent }} -->
                   </div>
+                  <!-- <div w-100>
+                    {{ messageBtnTimeOut[String(item.id)] }}
+                    <n-button v-if="getrsBtnType(String(item.id), String(item.status))" size="large" ml-10 strong w-100 @click="rsBtnClick(String(item.id), item.status)">
+                      <n-icon size="20">
+                        <icon-material-symbols:autorenew />
+                      </n-icon>
+                    </n-button>
+                  </div> -->
                   <!-- {{ item }} -->
                   <n-image
-                    v-if="item.imageUrl"
+                    v-if="item.imageUrl && !['MJ_IN_PROGRESS', 'MJ_WAIT_RECEIVED', 'SYS_QUEUING'].includes(String(item.status))"
+                    lazy
                     mt-10
                     b-rd-10
                     :width="500"
@@ -373,34 +474,36 @@ function clearAllInterval() {
                     fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
                   />
                   <!-- 文生图 和 重新生成图片才有的按钮 -->
-                  <div v-if="item.status === 'MJ_SUCCESS' && (item.action === 'IMAGINE' || item.action === 'VARIATION')" mt-10 w-300>
-                    <div flex justify-between>
-                      <n-button strong @click="upscaleClick(item.id, 1)">
-                        u1
-                      </n-button>
-                      <n-button strong @click="upscaleClick(item.id, 2)">
-                        u2
-                      </n-button>
-                      <n-button strong @click="upscaleClick(item.id, 3)">
-                        u3
-                      </n-button>
-                      <n-button strong @click="upscaleClick(item.id, 4)">
-                        u4
-                      </n-button>
-                    </div>
-                    <div mt-5 flex justify-between>
-                      <n-button strong @click="variationClick(item.id, 1)">
-                        v1
-                      </n-button>
-                      <n-button strong @click="variationClick(item.id, 2)">
-                        v2
-                      </n-button>
-                      <n-button strong @click="variationClick(item.id, 3)">
-                        v3
-                      </n-button>
-                      <n-button strong @click="variationClick(item.id, 4)">
-                        v4
-                      </n-button>
+                  <div v-if="item.status === 'MJ_SUCCESS' && (item.action === 'IMAGINE' || item.action === 'VARIATION')" mt-10 w-500 flex>
+                    <div w-400>
+                      <div flex justify-between>
+                        <n-button w-80 size="large" :type="selectBit(item.uuseBit ?? 0, 1) ? 'primary' : ''" :disabled="selectBit(item.uuseBit ?? 0, 1)" strong @click="upscaleClick(item.id, 1)">
+                          U1
+                        </n-button>
+                        <n-button w-80 size="large" :type="selectBit(item.uuseBit ?? 0, 2) ? 'primary' : ''" :disabled="selectBit(item.uuseBit ?? 0, 2)" strong @click="upscaleClick(item.id, 2)">
+                          U2
+                        </n-button>
+                        <n-button w-80 size="large" :type="selectBit(item.uuseBit ?? 0, 3) ? 'primary' : ''" :disabled="selectBit(item.uuseBit ?? 0, 3)" strong @click="upscaleClick(item.id, 3)">
+                          U3
+                        </n-button>
+                        <n-button w-80 size="large" :type="selectBit(item.uuseBit ?? 0, 4) ? 'primary' : ''" :disabled="selectBit(item.uuseBit ?? 0, 4)" strong @click="upscaleClick(item.id, 4)">
+                          U4
+                        </n-button>
+                      </div>
+                      <div mt-5 flex justify-between>
+                        <n-button w-80 size="large" strong @click="variationClick(item.id, 1)">
+                          V1
+                        </n-button>
+                        <n-button w-80 size="large" strong @click="variationClick(item.id, 2)">
+                          V2
+                        </n-button>
+                        <n-button w-80 size="large" strong @click="variationClick(item.id, 3)">
+                          V3
+                        </n-button>
+                        <n-button w-80 size="large" strong @click="variationClick(item.id, 4)">
+                          V4
+                        </n-button>
+                      </div>
                     </div>
                   </div>
                   <!-- 图生文才有的按钮 -->
@@ -434,7 +537,8 @@ function clearAllInterval() {
               </div>
               <div flex justify-end>
                 <div p-10 rd-10 inline-block break-all style="background-color: #fed784;  color: #3a3a3a;">
-                  {{ `/${item.action} ${item.prompt}` }}
+                  <!-- {{ `/${item.action} ${item.prompt}` }} -->
+                  {{ `/${item.action}${item.uvIndex ? `: ${item.uvIndex}` : ''} ${item.prompt}` }}
                 </div>
               </div>
             </div>
@@ -506,7 +610,7 @@ function clearAllInterval() {
             directory-dnd
             :default-upload="false"
             :multiple="false"
-            max="1"
+            :max="1"
             :show-file-list="false"
           >
             <n-upload-dragger flex justify-center items-center>
