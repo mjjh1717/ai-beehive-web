@@ -1,30 +1,25 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, toRefs } from 'vue'
+import { onMounted, onUnmounted } from 'vue'
 import { useMessage } from 'naive-ui'
 import MdEditor from 'md-editor-v3'
 import api from './api'
 import type { RoomOpenAiChatMsgVO, RoomOpenaiChatListRequest, sendRequest } from './types/apiTypes'
 import roomHeader from '@/components/common/roomHeader.vue'
 import { useRoomStore } from '@/store'
+const route = useRoute()
 
-const props = defineProps({
-  // 子组件接收父组件传递过来的值
-  roomData: {
-    type: Object, // 数据类型
-    default() {
-      return {}
-    },
-  },
+const roomData = ref({
+  cellCode: '',
+  color: '',
+  createTime: '',
+  roomId: String(route.query.roomId),
+  name: '',
 })
-onUnmounted(() => {
-  api.handleStop()
-})
+
 const roomStore = useRoomStore()
 
 const ms = useMessage()
 
-// 使用父组件传递过来的值
-const { roomData } = toRefs(props)
 const paramsData = ref<RoomOpenaiChatListRequest>({
   cursor: '',
   isUseCursor: false,
@@ -37,10 +32,26 @@ const messageScrollbar = ref()
 const messageList = ref <RoomOpenAiChatMsgVO[]>(roomStore.messageListData)
 const firstGetListType = ref(roomStore.messageListData.length === 0)
 
-watch(props, (value, oldValue) => {
-  roomData.value = toRefs(value)
-  getRoomMessageList(toRaw(paramsData.value))
+async function getDetail() {
+  const { data } = await api.getRoomDetail(String(route.query.roomId))
+  roomData.value.cellCode = data.cellCode
+  roomData.value.color = data.color
+  roomData.value.createTime = data.createTime
+  roomData.value.name = data.name
+}
+
+onMounted(() => {
+  getDetail()
+  loadingMore()
+  messageScrollbar.value.scrollTo({ top: 999999999 })
 })
+onUnmounted(() => {
+  api.handleStop()
+})
+// watch(props, (value, oldValue) => {
+//   roomData.value = toRefs(value)
+//   getRoomMessageList(toRaw(paramsData.value))
+// })
 
 watch(messageList, (value, oldValue) => {
   if (value.length > 0) {
@@ -83,11 +94,6 @@ function loadingMore() {
 
   messageScrollbar.value.scrollTo({ top: 10 })
 }
-
-onMounted(() => {
-  loadingMore()
-  messageScrollbar.value.scrollTo({ top: 999999999 })
-})
 
 // 获取滚动到顶部部的事件
 function getScrollData(e: any) {

@@ -2,7 +2,7 @@ export interface RoomNewBingListRequest {
   cursor: string
   isAsc: boolean
   isUseCursor: boolean
-  roomId: number
+  roomId: number | string
   size: number
 }
 
@@ -62,7 +62,7 @@ export interface sendRequest {
   /**
    * 房间 id
    */
-  roomId: number
+  roomId: number | string
   /**
      * 是否开启新话题
      */

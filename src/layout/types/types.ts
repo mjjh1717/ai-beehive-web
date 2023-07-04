@@ -1,6 +1,6 @@
 /*
  * @Author: mjjh
- * @LastEditTime: 2023-06-17 22:56:56
+ * @LastEditTime: 2023-07-04 07:22:34
  * @FilePath: \ai-beehive-web\src\components\page\types\types.ts
  * @Description:
  */
@@ -219,6 +219,38 @@ export enum Code {
   OpenaiChatapi3_5 = 'openai_chat_api_3_5',
   OpenaiChatapi4 = 'openai_chat_api_4',
   OpenaiImage = 'openai_image',
+}
+
+/**
+ * 响应结果
+ */
+export interface CellImgResponse {
+  /**
+   * 状态码
+   */
+  code?: number
+  /**
+   * 承载数据
+   */
+  data?: CellImageVO[]
+  /**
+   * 返回消息
+   */
+  message?: string
+}
+
+/**
+* Cell 封面展示对象
+*/
+export interface CellImageVO {
+  /**
+   * 编码
+   */
+  code?: Code
+  /**
+   * 封面
+   */
+  imageUrl?: string
 }
 
 /**

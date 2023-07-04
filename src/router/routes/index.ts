@@ -1,6 +1,4 @@
 import type { RouteModule, RouteType, RoutesType } from '~/types/router'
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const Layout = () => import('@/layout/index.vue')
 
 export const basicRoutes: RoutesType = [
   {
@@ -9,7 +7,6 @@ export const basicRoutes: RoutesType = [
     component: () => import('@/views/error-page/404.vue'),
     isHidden: true,
   },
-
   {
     name: 'Login',
     path: '/login',

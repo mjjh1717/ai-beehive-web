@@ -1,6 +1,6 @@
 /*
  * @Author: mjjh
- * @LastEditTime: 2023-06-21 01:52:25
+ * @LastEditTime: 2023-07-04 21:34:32
  * @FilePath: \ai-beehive-web\src\views\cellRoom\openaiImg\api.ts
  * @Description: 登录注册逻辑
  */
@@ -50,6 +50,8 @@ async function loadData(postData: sendRequest, returnData: Function) {
 }
 
 export default {
+  // 获取房间消息详情
+  getRoomDetail: (roomId: number | string) => request.get(`/room/detail?roomId=${roomId}`),
   // 获取消息列表
   getRoomOpenaiImgList: (params: RoomOpenAiImageListRequest) => request.get('/room/openai_image/list', { params }),
   // RoomOpenaiChatSend: (data: sendRequest) => request.post('/room/openai_chat/send', data),

@@ -1,32 +1,28 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, toRefs } from 'vue'
+import { onMounted, onUnmounted } from 'vue'
 import { useMessage } from 'naive-ui'
 import MdEditor from 'md-editor-v3'
 import api from './api'
 import type { RoomOpenAiImageListRequest, RoomOpenAiImageMsgVO, sendRequest } from './types/apiTypes'
 import roomHeader from '@/components/common/roomHeader.vue'
 import { useRoomStore } from '@/store'
-
-const props = defineProps({
-  // 子组件接收父组件传递过来的值
-  roomData: {
-    type: Object, // 数据类型
-    default() {
-      return {}
-    },
-  },
-})
-
-onUnmounted(() => {
-  api.handleStop()
-})
+const route = useRoute()
 
 const roomStore = useRoomStore()
+const roomData = ref({
+  cellCode: '',
+  color: '',
+  createTime: '',
+  roomId: String(route.query.roomId),
+  name: '',
+})
+
+// const roomId = route.query.roomId
+
+const baseURL = import.meta.env.VITE_BASE_URL
 
 const ms = useMessage()
 
-// 使用父组件传递过来的值
-const { roomData } = toRefs(props)
 const paramsData = ref<RoomOpenAiImageListRequest>({
   cursor: '',
   isUseCursor: false,
@@ -39,10 +35,27 @@ const messageScrollbar = ref()
 const messageList = ref <RoomOpenAiImageMsgVO[]>(roomStore.messageListData)
 const firstGetListType = ref(roomStore.messageListData.length === 0)
 
-watch(props, (value, oldValue) => {
-  roomData.value = toRefs(value)
-  getRoomMessageList(toRaw(paramsData.value))
+async function getDetail() {
+  const { data } = await api.getRoomDetail(String(route.query.roomId))
+  roomData.value.cellCode = data.cellCode
+  roomData.value.color = data.color
+  roomData.value.createTime = data.createTime
+  roomData.value.name = data.name
+}
+
+onMounted(() => {
+  getDetail()
+  loadingMore()
+  messageScrollbar.value.scrollTo({ top: 999999999 })
 })
+onUnmounted(() => {
+  api.handleStop()
+})
+
+// watch(props, (value, oldValue) => {
+//   roomData.value = toRefs(value)
+//   getRoomMessageList(toRaw(paramsData.value))
+// })
 
 watch(messageList, (value, oldValue) => {
   if (value.length > 0) {
@@ -82,11 +95,6 @@ async function loadingMore() {
 
   messageScrollbar.value.scrollTo({ top: 10 })
 }
-
-onMounted(() => {
-  loadingMore()
-  messageScrollbar.value.scrollTo({ top: 999999999 })
-})
 
 // 获取滚动到顶部部的事件
 function getScrollData(e: any) {
@@ -134,7 +142,7 @@ async function sendClick() {
   if (sendData.value) {
     isSend.value = true
     const pushData: sendRequest = {
-      roomId: roomData.value.roomId,
+      roomId: roomData.value.roomId ?? -1,
       prompt: sendData.value,
     }
     const data = await api.RoomOpenaiImgSend(pushData, changData)
@@ -177,7 +185,7 @@ async function changData(talkdata: any, done = false) {
 
 <template>
   <div h-screen class="text-[#fff] dark:text-[#3a3a3a]" flex flex-col>
-    <roomHeader :color="roomData.color" :name="roomData.name" :cell-code="roomData.cellCode" :create-time="roomData.createTime" />
+    <roomHeader :color="roomData.color ?? ''" :name="roomData.name ?? ''" :cell-code="roomData.cellCode ?? ''" :create-time="roomData.createTime ?? ''" />
     <div flex-1 p-24 class=" text-[#3a3a3a] dark:text-[#fff]">
       <n-scrollbar ref="messageScrollbar" style="max-height: calc(100vh - 200px)" pr-14 :on-scroll="getScrollData">
         <div v-if="getMore" absolute top-0 right-0 left-0 f-c-c>
@@ -205,11 +213,12 @@ async function changData(talkdata: any, done = false) {
                   <MdEditor v-model="item.prompt" preview-only />
                 </div>
               </div>
+              <!-- :src="item.openaiImageUrl" -->
               <n-image
                 lazy
                 :width="item.size?.split('x')[0]"
                 :height="item.size?.split('x')[1]"
-                :src="item.openaiImageUrl"
+                :src="`${baseURL}${item.imageUrl}`"
                 fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
               />
             </div>

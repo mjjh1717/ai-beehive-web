@@ -5,7 +5,7 @@ export interface RoomMidjourneyRequest {
   cursor: string
   isAsc: boolean
   isUseCursor: boolean
-  roomId: number
+  roomId: number | string
   size: number
 }
 /**
@@ -19,7 +19,7 @@ export interface ImagineRequest {
   /**
    * 房间 id
    */
-  roomId: number
+  roomId: number | string
 }
 /**
  * Midjourney 描述请求
@@ -29,7 +29,7 @@ export interface DescribeRequest {
   /**
    * 房间 id
    */
-  roomId: number
+  roomId: number | string
 }
 /**
  * Midjourney upscale 转换请求参数
@@ -46,7 +46,7 @@ export interface UpscaleRequest {
   /**
    * 房间 id
    */
-  roomId: number
+  roomId: number | string
 }
 /**
  * Midjourney variation 转换请求参数
@@ -63,7 +63,7 @@ export interface VariationRequest {
   /**
    * 房间 id
    */
-  roomId: number
+  roomId: number | string
 }
 /**
  * Midjourney 房间列表请求响应结果
@@ -97,7 +97,7 @@ export interface RoomMidjourneyMsgVO {
   imageUrl?: string
   prompt?: string
   responseContent?: string
-  roomId?: number
+  roomId?: number | string
   status?: Status
   type?: Type
   uuseBit?: number

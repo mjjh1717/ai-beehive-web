@@ -1,6 +1,6 @@
 /*
  * @Author: mjjh
- * @LastEditTime: 2023-06-05 22:45:08
+ * @LastEditTime: 2023-07-04 07:21:48
  * @FilePath: \ai-beehive-web\src\components\page\api.ts
  * @Description:
  */
@@ -19,5 +19,6 @@ export default {
 
   addRoom: (data: addRoomVo) => request.post('/room/create', data),
   getCellList: () => request.get('/cell/list'),
+  getCellImgList: () => request.get('/cell/list_image'),
   getCellConfigList: (cellCode: string) => request.get(`/cell_config/list?cellCode=${cellCode}`),
 }

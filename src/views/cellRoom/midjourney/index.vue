@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, toRaw, toRefs } from 'vue'
+import { onMounted, onUnmounted, toRaw } from 'vue'
 import { useMessage } from 'naive-ui'
 import type { UploadFileInfo } from 'naive-ui'
 import MdEditor from 'md-editor-v3'
@@ -8,15 +8,14 @@ import api from './api'
 import type { DescribeRequest, ImagineRequest, RoomMidjourneyMsgVO, RoomMidjourneyRequest, UpscaleRequest, VariationRequest } from './types/apiTypes'
 import roomHeader from '@/components/common/roomHeader.vue'
 import { useRoomStore } from '@/store'
+const route = useRoute()
 
-const props = defineProps({
-  // 子组件接收父组件传递过来的值
-  roomData: {
-    type: Object, // 数据类型
-    default() {
-      return {}
-    },
-  },
+const roomData = ref({
+  cellCode: '',
+  color: '',
+  createTime: '',
+  roomId: String(route.query.roomId),
+  name: '',
 })
 
 const baseURL = import.meta.env.VITE_BASE_URL
@@ -25,8 +24,6 @@ const roomStore = useRoomStore()
 
 const ms = useMessage()
 
-// 使用父组件传递过来的值
-const { roomData } = toRefs(props)
 const paramsData = ref<RoomMidjourneyRequest>({
   cursor: '',
   isUseCursor: false,
@@ -41,7 +38,17 @@ const firstGetListType = ref(roomStore.messageListData.length === 0)
 
 // 图生文 的文件
 const fileList = ref<UploadFileInfo[]>([])
+
+async function getDetail() {
+  const { data } = await api.getRoomDetail(String(route.query.roomId))
+  roomData.value.cellCode = data.cellCode
+  roomData.value.color = data.color
+  roomData.value.createTime = data.createTime
+  roomData.value.name = data.name
+}
+
 onMounted(() => {
+  getDetail()
   loadingMore()
   messageScrollbar.value.scrollTo({ top: 999999999 })
 })
@@ -50,10 +57,10 @@ onUnmounted(() => {
   clearAllInterval()
 })
 
-watch(props, (value, oldValue) => {
-  roomData.value = toRefs(value)
-  getRoomMessageList(toRaw(paramsData.value))
-})
+// watch(props, (value, oldValue) => {
+//   roomData.value = toRefs(value)
+//   getRoomMessageList(toRaw(paramsData.value))
+// })
 
 watch(messageList, (value, oldValue) => {
   // console.log('111roomStore')
@@ -332,7 +339,7 @@ async function newMessageInterval(id: string, time = 10000) {
     if (!['MJ_IN_PROGRESS', 'MJ_WAIT_RECEIVED', 'SYS_QUEUING'].includes(data.status)) {
       // messageScrollbar.value.scrollTo({ top: 999999999 })
       clearMessageInterval(id)
-      clearBtnTimeOut(id)
+      // clearBtnTimeOut(id)
     }
   }, time)
 }
@@ -394,8 +401,8 @@ function selectBit(num: number, flag: number) {
 
 // 计算日期时间差距
 function getTimeDate(newDate: string, oldDate: string) {
-  const new_date = new Date(newDate)
-  const old_date = new Date(oldDate)
+  const new_date = new Date(newDate).valueOf()
+  const old_date = new Date(oldDate).valueOf()
   return (new_date - old_date) / 1000
 }
 </script>

@@ -1,6 +1,6 @@
 /*
  * @Author: mjjh
- * @LastEditTime: 2023-06-21 00:35:13
+ * @LastEditTime: 2023-07-04 22:07:10
  * @FilePath: \ai-beehive-web\src\views\cellRoom\openaiImg\types\apiTypes.ts
  * @Description:
  */
@@ -8,7 +8,7 @@ export interface RoomOpenAiImageListRequest {
   cursor: string
   isAsc: boolean
   isUseCursor: boolean
-  roomId: number
+  roomId: undefined | number | string
   size: number
 }
 
@@ -84,7 +84,7 @@ export interface sendRequest {
   /**
    * 房间 id
    */
-  roomId: number
+  roomId: number | string
 }
 /**
  * 消息状态
