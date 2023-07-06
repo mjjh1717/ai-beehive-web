@@ -87,21 +87,70 @@ export interface Response {
 * Midjourney 房间消息
 */
 export interface RoomMidjourneyMsgVO {
+  /**
+     * 指令动作枚举
+     */
   action?: Action
+  /**
+   * 压缩图片地址
+   */
+  compressedImageUrl?: string
+  /**
+   * 创建时间
+   */
   createTime?: Date
+  /**
+   * discord 结束时间
+   */
   discordFinishTime?: Date
+  /**
+   * discord 图片地址
+   */
   discordImageUrl?: string
+  /**
+   * discord 开始时间
+   */
   discordStartTime?: Date
+  /**
+   * 最终的输入
+   */
   finalPrompt?: string
+  /**
+   * 消息 id
+   */
   id?: number
-  imageUrl?: string
+  /**
+   * 原始图片地址
+   */
+  originalImageUrl?: string
+  /**
+   * 用户输入
+   */
   prompt?: string
+  /**
+   * 响应内容
+   */
   responseContent?: string
-  roomId?: number | string
+  /**
+   * 房间 id
+   */
+  roomId?: number
+  /**
+   * 状态枚举
+   */
   status?: Status
+  /**
+   * 消息类型
+   */
   type?: Type
   uuseBit?: number
+  /**
+   * uv 位置
+   */
   uvIndex?: number
+  /**
+   * 排队中的队列长度
+   */
   waitQueueLength?: number
 }
 

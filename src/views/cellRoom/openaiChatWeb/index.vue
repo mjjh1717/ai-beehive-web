@@ -8,6 +8,7 @@ import roomHeader from '@/components/common/roomHeader.vue'
 import { useRoomStore } from '@/store'
 
 const route = useRoute()
+const aiImgUrl = ref('')
 const roomData = ref({
   cellCode: '',
   color: '',
@@ -38,6 +39,7 @@ async function getDetail() {
   roomData.value.color = data.color
   roomData.value.createTime = data.createTime
   roomData.value.name = data.name
+  aiImgUrl.value = roomStore.getImgUrl(data.cellCode)
 }
 onMounted(() => {
   getDetail()
@@ -197,9 +199,11 @@ async function changData(talkdata: any, done = false) {
           <!-- ai的回答 -->
           <div v-if="item.messageType === 'answer'" flex justify-start items-start mb-20>
             <div min-w-50>
-              <n-avatar round>
-                ai
-              </n-avatar>
+              <n-avatar
+                round
+                :src="aiImgUrl"
+                fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+              />
             </div>
             <div>
               <n-ellipsis min-width-140px>
@@ -248,9 +252,11 @@ async function changData(talkdata: any, done = false) {
 
         <div v-if="isSend" flex justify-start items-start mb-20>
           <div min-w-50>
-            <n-avatar round>
-              ai
-            </n-avatar>
+            <n-avatar
+              round
+              :src="aiImgUrl"
+              fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+            />
           </div>
           <div p-10 rd-10 break-all class="bg-[#f4f6f8]" dark:bg-hex-24272e>
             <!-- {{ sendReturnData }} -->

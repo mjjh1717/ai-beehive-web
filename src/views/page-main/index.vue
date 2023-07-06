@@ -180,6 +180,7 @@ async function getCellList() {
   const resImg: CellImgResponse = await api.getCellImgList()
   cellList.value = toRaw(res.data)
   cellImgList.value = toRaw(resImg.data)
+  roomStore.setCellImgList(resImg.data ?? [])
 }
 
 function getCellImg(type: string) {

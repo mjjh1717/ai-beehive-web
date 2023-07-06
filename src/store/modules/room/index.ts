@@ -1,6 +1,6 @@
 /*
  * @Author: mjjh
- * @LastEditTime: 2023-06-30 09:35:02
+ * @LastEditTime: 2023-07-05 05:50:19
  * @FilePath: \ai-beehive-web\src\store\modules\room\index.ts
  * @Description:
  */
@@ -58,6 +58,19 @@ enum MessageType {
   Question = 'question',
 }
 const ROOMS_MESSAGE_CODE = 'rooms_message'
+/**
+* Cell 封面展示对象
+*/
+interface CellImageVO {
+  /**
+   * 编码
+   */
+  code?: string
+  /**
+   * 封面
+   */
+  imageUrl?: string
+}
 
 //  去重
 const unique = (arr: any, key: string) => {
@@ -85,6 +98,7 @@ export const useRoomStore = defineStore('room', {
   state() {
     return {
       roomInfo: <RoomInfo> {},
+      cellImgList: <CellImageVO[]> [],
       // 存在本地的消息
       messageList: <RoomOpenAiChatMsgVO[]> [],
     }
@@ -104,6 +118,9 @@ export const useRoomStore = defineStore('room', {
     setRoomInfo(roomInfo: RoomInfo = {}) {
       this.roomInfo = { ...this.roomInfo, ...roomInfo }
       this.getlocaMessageItem()
+    },
+    setCellImgList(imgList: CellImageVO[]) {
+      this.cellImgList = imgList
     },
 
     setlocaMessageList(mList: RoomOpenAiChatMsgVO[]) {
@@ -126,6 +143,13 @@ export const useRoomStore = defineStore('room', {
 
       if (locaData !== null && !isEmpty(locaData) && this.roomInfo.roomId)
         this.messageList = contains(locaData, this.roomInfo.roomId)
+    },
+    getImgUrl(cellType: string) {
+      for (const item of this.cellImgList) {
+        if (cellType === item.code)
+          return item.imageUrl ?? ''
+      }
+      return ''
     },
   },
 })

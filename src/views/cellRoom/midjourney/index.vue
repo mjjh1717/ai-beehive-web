@@ -9,6 +9,7 @@ import type { DescribeRequest, ImagineRequest, RoomMidjourneyMsgVO, RoomMidjourn
 import roomHeader from '@/components/common/roomHeader.vue'
 import { useRoomStore } from '@/store'
 const route = useRoute()
+const aiImgUrl = ref('')
 
 const roomData = ref({
   cellCode: '',
@@ -45,6 +46,7 @@ async function getDetail() {
   roomData.value.color = data.color
   roomData.value.createTime = data.createTime
   roomData.value.name = data.name
+  aiImgUrl.value = roomStore.getImgUrl(data.cellCode)
 }
 
 onMounted(() => {
@@ -103,7 +105,7 @@ function loadingMore() {
     return
   }
 
-  messageScrollbar.value.scrollTo({ top: 10 })
+  messageScrollbar.value.scrollTo({ top: 9999 })
 }
 
 // 获取滚动到顶部部的事件
@@ -292,7 +294,7 @@ interface MESSAGE_INTERVAL_TYPE {
 }
 const messageIntervalDatas = ref<MESSAGE_INTERVAL_TYPE> ({})
 
-// const messageBtnTimeOut = ref<MESSAGE_INTERVAL_TYPE> ({})
+const messageBtnTimeOut = ref<MESSAGE_INTERVAL_TYPE> ({})
 
 // 判断状态
 function isState(state: string) {
@@ -339,7 +341,7 @@ async function newMessageInterval(id: string, time = 10000) {
     if (!['MJ_IN_PROGRESS', 'MJ_WAIT_RECEIVED', 'SYS_QUEUING'].includes(data.status)) {
       // messageScrollbar.value.scrollTo({ top: 999999999 })
       clearMessageInterval(id)
-      // clearBtnTimeOut(id)
+      clearBtnTimeOut(id)
     }
   }, time)
 }
@@ -350,10 +352,10 @@ function clearMessageInterval(id: string) {
   delete messageIntervalDatas.value[id]
 }
 
-// function clearBtnTimeOut(id: string) {
-//   clearTimeout(messageIntervalDatas.value[id])
-//   delete messageBtnTimeOut.value[id]
-// }
+function clearBtnTimeOut(id: string) {
+  clearTimeout(messageIntervalDatas.value[id])
+  delete messageBtnTimeOut.value[id]
+}
 
 // 清除所有定时器
 function clearAllInterval() {
@@ -363,32 +365,32 @@ function clearAllInterval() {
   }
 }
 // 获取哪个按钮可以刷新
-// function getrsBtnType(id: string, status: string) {
-//   if (['MJ_IN_PROGRESS', 'MJ_WAIT_RECEIVED', 'SYS_QUEUING'].includes(status)) {
-//     messageBtnTimeOut.value[id] = 'false111'
-//     console.log('false111222')
+function getrsBtnType(id: string, status: string) {
+  if (['MJ_IN_PROGRESS', 'MJ_WAIT_RECEIVED', 'SYS_QUEUING'].includes(status)) {
+    if (messageBtnTimeOut.value[id] === undefined)
+      messageBtnTimeOut.value[id] = false
 
-//     return true
-//   }
-//   return false
-// }
+    return true
+  }
+  return false
+}
 
 // 刷新按钮点击
-// function rsBtnClick(id: string, status: string) {
-//   clearBtnTimeOut(id)
-//   messageBtnTimeOut.value[id] = 'true333'
-//   console.log(messageBtnTimeOut.value[id])
+async function rsBtnClick(id: string, status: string) {
+  clearBtnTimeOut(id)
+  messageBtnTimeOut.value[id] = true
 
-//   const isStateData = isState(String(status))
-//   if (isStateData && isStateData.value && id)
-//     newMessageInterval(id, Number(isStateData.value))
+  const isStateData = isState(String(status))
+  if (isStateData && isStateData.value && id) {
+    await newMessageInterval(id, Number(isStateData.value))
+    ms.success('进度更新成功!!!')
+  }
 
-//   setTimeout(() => {
-//     clearBtnTimeOut(id)
-//     messageBtnTimeOut.value[id] = 'false222'
-//     console.log(messageBtnTimeOut.value[id])
-//   }, 5000)
-// }
+  setTimeout(() => {
+    clearBtnTimeOut(id)
+    messageBtnTimeOut.value[id] = false
+  }, 5000)
+}
 
 // 获取哪个按钮被点击了 不能再次点击
 function selectBit(num: number, flag: number) {
@@ -424,9 +426,11 @@ function getTimeDate(newDate: string, oldDate: string) {
           <!-- ai的回答 -->
           <div v-if="item.type === 'answer'" flex justify-start items-start mb-20>
             <div min-w-50>
-              <n-avatar round>
-                ai
-              </n-avatar>
+              <n-avatar
+                round
+                :src="aiImgUrl"
+                fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+              />
             </div>
             <div>
               <n-ellipsis min-width-140px>
@@ -440,12 +444,17 @@ function getTimeDate(newDate: string, oldDate: string) {
                     </span>
                     {{ `/${item.action}${item.uvIndex ? `: ${item.uvIndex}` : ''} ${item.prompt}` }}
                   </div>
-                  <div w-500>
+                  <div w-500 flex items-center>
                     <span fw-bold min-w-70>
-                      加载状态:
+                      加载状态:1
                     </span>
-
                     {{ `${isState(String(item.status))?.label} ${item.waitQueueLength ?? ''}` }}
+                    <n-button v-if="getrsBtnType(String(item.id), String(item.status))" type="success" ml-10 text :disabled="messageBtnTimeOut[String(item.id)]" size="tiny" strong w-60 @click="rsBtnClick(String(item.id), String(item.status))">
+                      <n-icon size="20">
+                        <icon-material-symbols:autorenew />
+                      </n-icon>
+                      更新进度
+                    </n-button>
                   </div>
                   <div v-if="item.discordFinishTime" w-500>
                     <span fw-bold min-w-70>
@@ -462,23 +471,14 @@ function getTimeDate(newDate: string, oldDate: string) {
                     </span>
                     <MdEditor v-model="item.responseContent" preview-only />
                   </div>
-                  <!-- <div w-100>
-                    {{ messageBtnTimeOut[String(item.id)] }}
-                    <n-button v-if="getrsBtnType(String(item.id), String(item.status))" size="large" ml-10 strong w-100 @click="rsBtnClick(String(item.id), item.status)">
-                      <n-icon size="20">
-                        <icon-material-symbols:autorenew />
-                      </n-icon>
-                    </n-button>
-                  </div> -->
-                  <!-- {{ item }} -->
                   <n-image
-                    v-if="item.imageUrl && !['MJ_IN_PROGRESS', 'MJ_WAIT_RECEIVED', 'SYS_QUEUING'].includes(String(item.status))"
+                    v-if="item.compressedImageUrl && item.originalImageUrl && !['MJ_IN_PROGRESS', 'MJ_WAIT_RECEIVED', 'SYS_QUEUING'].includes(String(item.status))"
                     lazy
                     mt-10
                     b-rd-10
-                    :width="500"
-                    :src="`${baseURL}${item.imageUrl}`"
-                    fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+                    :width="200"
+                    :src="`${baseURL}${item.compressedImageUrl}`"
+                    :preview-src="`${baseURL}${item.originalImageUrl}`"
                   />
                   <!-- 文生图 和 重新生成图片才有的按钮 -->
                   <div v-if="item.status === 'MJ_SUCCESS' && (item.action === 'IMAGINE' || item.action === 'VARIATION')" mt-10 w-500 flex>
@@ -554,28 +554,6 @@ function getTimeDate(newDate: string, oldDate: string) {
                 user
               </n-avatar>
             </div>
-            <!-- 用户的提问 -->
-            <!-- <div v-if="isSend" flex justify-end items-start mb-20>
-          <div p-10 rd-10 break-all style="background-color: #fed784; color: #3a3a3a; ">
-            {{ sendData }}
-          </div>
-          <div min-w-50 flex justify-end>
-            <n-avatar round>
-              user
-            </n-avatar>
-          </div>
-        </div>
-
-        <div v-if="isSend" flex justify-start items-start mb-20>
-          <div min-w-50>
-            <n-avatar round>
-              ai
-            </n-avatar>
-          </div>
-          <div p-10 rd-10 break-all class="bg-[#f4f6f8]" dark:bg-hex-24272e>
-            {{ sendReturnData }}
-          </div>
-        </div> -->
           </div>
         </div>
       </n-scrollbar>

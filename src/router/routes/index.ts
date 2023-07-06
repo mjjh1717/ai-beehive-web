@@ -1,3 +1,9 @@
+/*
+ * @Author: mjjh
+ * @LastEditTime: 2023-07-05 06:03:24
+ * @FilePath: \ai-beehive-web\src\router\routes\index.ts
+ * @Description:
+ */
 import type { RouteModule, RouteType, RoutesType } from '~/types/router'
 
 export const basicRoutes: RoutesType = [
@@ -5,6 +11,12 @@ export const basicRoutes: RoutesType = [
     name: '404',
     path: '/404',
     component: () => import('@/views/error-page/404.vue'),
+    isHidden: true,
+  },
+  {
+    name: 'emailValidation',
+    path: '/emailValidation',
+    component: () => import('@/views/login/emailValidation.vue'),
     isHidden: true,
   },
   {
