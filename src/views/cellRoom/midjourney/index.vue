@@ -3,11 +3,13 @@ import { onMounted, onUnmounted, toRaw } from 'vue'
 import { useMessage } from 'naive-ui'
 import type { UploadFileInfo } from 'naive-ui'
 import MdEditor from 'md-editor-v3'
-// import 'md-editor-v3/lib/style.css'
 import api from './api'
 import type { DescribeRequest, ImagineRequest, RoomMidjourneyMsgVO, RoomMidjourneyRequest, UpscaleRequest, VariationRequest } from './types/apiTypes'
 import roomHeader from '@/components/common/roomHeader.vue'
 import { useRoomStore } from '@/store'
+import { useScroll } from '~/src/utils/common/useScroll'
+
+const { scrollRef, scrollToBottom } = useScroll()
 const route = useRoute()
 const aiImgUrl = ref('')
 
@@ -33,7 +35,7 @@ const paramsData = ref<RoomMidjourneyRequest>({
   isAsc: false,
 })
 const getMore = ref(false)
-const messageScrollbar = ref()
+const showGetMoreBtn = ref(true)
 const messageList = ref <RoomMidjourneyMsgVO[]>(roomStore.messageListData)
 const firstGetListType = ref(roomStore.messageListData.length === 0)
 
@@ -52,17 +54,17 @@ async function getDetail() {
 onMounted(() => {
   getDetail()
   loadingMore()
-  messageScrollbar.value.scrollTo({ top: 999999999 })
 })
 onUnmounted(() => {
   // 取消所有定时器
   clearAllInterval()
 })
 
-// watch(props, (value, oldValue) => {
-//   roomData.value = toRefs(value)
-//   getRoomMessageList(toRaw(paramsData.value))
-// })
+// 监听相同的路由变动
+const reload = inject('reload')
+watch(route, (value, oldValue) => {
+  reload()
+})
 
 watch(messageList, (value, oldValue) => {
   // console.log('111roomStore')
@@ -93,7 +95,6 @@ async function getRoomMessageList(params: RoomMidjourneyRequest) {
 
   // 以id为标识符,存到对应的浏览器缓存中
 }
-// getRoomMessageList(toRaw(paramsData.value))
 
 function loadingMore() {
   if (firstGetListType.value) {
@@ -102,14 +103,16 @@ function loadingMore() {
   else {
     firstGetListType.value = true
     getNewData()
-    return
   }
 
-  messageScrollbar.value.scrollTo({ top: 9999 })
+  scrollToBottom()
 }
 
 // 获取滚动到顶部部的事件
 function getScrollData(e: any) {
+  if (showGetMoreBtn.value)
+    showGetMoreBtn.value = false
+
   // 滚动到顶部
   if (e.srcElement.scrollTop === 0 && getMore.value)
     loadingMore()
@@ -118,6 +121,8 @@ function getScrollData(e: any) {
 const sendData = ref(null)
 const isSend = ref(false)
 const selectType = ref('imagine')
+const showModal = ref(false)
+const showModalUrl = ref('')
 
 // 对话点击
 async function sendClick() {
@@ -135,7 +140,7 @@ async function sendClick() {
     sendData.value = null
     isSend.value = false
     // 滚动到底部
-    messageScrollbar.value.scrollTo({ top: 999999999 })
+    scrollToBottom()
   }
 }
 // 获取新数据
@@ -164,7 +169,7 @@ async function getNewData() {
     paramsData.value.cursor = String(messageList.value[0].id)
   }
   // 滚动到底部
-  messageScrollbar.value.scrollTo({ top: 999999999 })
+  scrollToBottom()
   getmsgNewData()
 }
 
@@ -339,7 +344,7 @@ async function newMessageInterval(id: string, time = 10000) {
     roomStore.setlocaMessageList(messageList.value)
     // step 4 如果状态更新则 清除定时器
     if (!['MJ_IN_PROGRESS', 'MJ_WAIT_RECEIVED', 'SYS_QUEUING'].includes(data.status)) {
-      // messageScrollbar.value.scrollTo({ top: 999999999 })
+      scrollToBottom()
       clearMessageInterval(id)
       clearBtnTimeOut(id)
     }
@@ -410,156 +415,154 @@ function getTimeDate(newDate: string, oldDate: string) {
 </script>
 
 <template>
-  <div h-screen class="text-[#fff] dark:text-[#3a3a3a]" flex flex-col>
+  <div style="height: 100vh;" class="text-[#3a3a3a] dark:text-[#fff]" flex flex-col>
     <roomHeader :color="roomData.color" :name="roomData.name" :cell-code="roomData.cellCode" :create-time="roomData.createTime" />
-    <div flex-1 p-24 pb-0 class=" text-[#3a3a3a] dark:text-[#fff]">
-      <n-scrollbar ref="messageScrollbar" style="max-height: calc(100vh - 130px)" pr-14 :on-scroll="getScrollData">
-        <div v-if="getMore" absolute top-0 right-0 left-0 f-c-c>
-          <n-button tertiary round size="small" @click="loadingMore">
-            加载更多...
-          </n-button>
-        </div>
-        <div v-if="messageList.length === 0" flex justify-center>
-          暂无数据
-        </div>
-        <div v-for="(item, index) of messageList" v-else :key="index">
-          <!-- ai的回答 -->
-          <div v-if="item.type === 'answer'" flex justify-start items-start mb-20>
-            <div min-w-50>
-              <n-avatar
-                round
-                :src="aiImgUrl"
-                fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
-              />
+    <div id="scrollRef" ref="scrollRef" relative flex-1 overflow-hidden overflow-y-auto p-r-24 p-l-24 p-t-24 class=" text-[#3a3a3a] dark:text-[#fff]" @scroll="getScrollData">
+      <div v-if="getMore && showGetMoreBtn" absolute top-10 right-0 left-0 f-c-c>
+        <n-button tertiary round size="small" @click="loadingMore">
+          加载更多...
+        </n-button>
+      </div>
+      <div v-if="messageList.length === 0" m-t-10 flex justify-center>
+        暂无数据
+      </div>
+      <div v-for="(item, index) of messageList" v-else :key="index">
+        <div v-if="item.type === 'answer'" flex justify-start items-start mb-20>
+          <div min-w-50>
+            <n-avatar
+              round
+              :src="aiImgUrl"
+              fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+            />
+          </div>
+          <div>
+            <n-ellipsis min-width-140px>
+              {{ item.createTime }}
+            </n-ellipsis>
+            <div flex justify-start>
+              <div p-20 rd-10 inline-block break-all class="bg-[#f4f6f8]" dark:bg-hex-24272e>
+                <div max-w-600>
+                  <span fw-bold min-w-70>
+                    画图描述:
+                  </span>
+                  {{ `/${item.action}${item.uvIndex ? `: ${item.uvIndex}` : ''} ${item.prompt}` }}
+                </div>
+                <div w-500 flex items-center>
+                  <span fw-bold min-w-70>
+                    加载状态:1
+                  </span>
+                  {{ `${isState(String(item.status))?.label} ${item.waitQueueLength ?? ''}` }}
+                  <n-button v-if="getrsBtnType(String(item.id), String(item.status))" type="success" ml-10 text :disabled="messageBtnTimeOut[String(item.id)]" size="tiny" strong w-60 @click="rsBtnClick(String(item.id), String(item.status))">
+                    <n-icon size="20">
+                      <icon-material-symbols:autorenew />
+                    </n-icon>
+                    更新进度
+                  </n-button>
+                </div>
+                <div v-if="item.discordFinishTime" w-500>
+                  <span fw-bold min-w-70>
+                    加载耗时:
+                  </span>
+                  <span fw-bold>
+                    {{ item.discordFinishTime ? ` ${getTimeDate(String(item.discordFinishTime), String(item.createTime))}秒` : '' }}
+                  </span>
+                  {{ item.createTime }}{{ item.discordFinishTime ? `-${item.discordFinishTime}` : '' }}
+                </div>
+                <div v-if="item.responseContent" flex>
+                  <span fw-bold min-w-70>
+                    响应内容：
+                  </span>
+                  <MdEditor v-model="item.responseContent" preview-only />
+                </div>
+                <div v-if="item.compressedImageUrl && item.originalImageUrl && !['MJ_IN_PROGRESS', 'MJ_WAIT_RECEIVED', 'SYS_QUEUING'].includes(String(item.status))" relative w-200 flex items-end>
+                  <n-image
+                    lazy
+                    mt-10
+                    b-rd-4
+                    :show-toolbar="false"
+                    :width="200"
+                    :src="`${baseURL}${item.compressedImageUrl}`"
+                  />
+                  <n-button absolute bottom-0 right-0 type="primary" size="tiny" color="#767c82" @click="showModal = true; showModalUrl = `${baseURL}${item.originalImageUrl}`">
+                    查看原图
+                  </n-button>
+                </div>
+                <div v-if="item.status === 'MJ_SUCCESS' && (item.action === 'IMAGINE' || item.action === 'VARIATION')" mt-10 w-500 flex>
+                  <div w-400>
+                    <div flex justify-between>
+                      <n-button w-80 size="large" :type="selectBit(item.uuseBit ?? 0, 1) ? 'primary' : ''" :disabled="selectBit(item.uuseBit ?? 0, 1)" strong @click="upscaleClick(item.id, 1)">
+                        U1
+                      </n-button>
+                      <n-button w-80 size="large" :type="selectBit(item.uuseBit ?? 0, 2) ? 'primary' : ''" :disabled="selectBit(item.uuseBit ?? 0, 2)" strong @click="upscaleClick(item.id, 2)">
+                        U2
+                      </n-button>
+                      <n-button w-80 size="large" :type="selectBit(item.uuseBit ?? 0, 3) ? 'primary' : ''" :disabled="selectBit(item.uuseBit ?? 0, 3)" strong @click="upscaleClick(item.id, 3)">
+                        U3
+                      </n-button>
+                      <n-button w-80 size="large" :type="selectBit(item.uuseBit ?? 0, 4) ? 'primary' : ''" :disabled="selectBit(item.uuseBit ?? 0, 4)" strong @click="upscaleClick(item.id, 4)">
+                        U4
+                      </n-button>
+                    </div>
+                    <div mt-5 flex justify-between>
+                      <n-button w-80 size="large" strong @click="variationClick(item.id, 1)">
+                        V1
+                      </n-button>
+                      <n-button w-80 size="large" strong @click="variationClick(item.id, 2)">
+                        V2
+                      </n-button>
+                      <n-button w-80 size="large" strong @click="variationClick(item.id, 3)">
+                        V3
+                      </n-button>
+                      <n-button w-80 size="large" strong @click="variationClick(item.id, 4)">
+                        V4
+                      </n-button>
+                    </div>
+                  </div>
+                </div>
+                <div v-else-if="item.status === 'MJ_SUCCESS' && item.action === 'DESCRIBE'" w-300>
+                  <div flex justify-between>
+                    <n-button strong>
+                      1
+                    </n-button>
+                    <n-button strong>
+                      2
+                    </n-button>
+                    <n-button strong>
+                      3
+                    </n-button>
+                    <n-button strong>
+                      4
+                    </n-button>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div>
+          </div>
+        </div>
+        <div v-else flex justify-end items-strat mb-20>
+          <div>
+            <div style="width: 100%;" flex justify-end>
               <n-ellipsis min-width-140px>
                 {{ item.createTime }}
               </n-ellipsis>
-              <div flex justify-start>
-                <div p-20 rd-10 inline-block break-all class="bg-[#f4f6f8]" dark:bg-hex-24272e>
-                  <div max-w-600>
-                    <span fw-bold min-w-70>
-                      画图描述:
-                    </span>
-                    {{ `/${item.action}${item.uvIndex ? `: ${item.uvIndex}` : ''} ${item.prompt}` }}
-                  </div>
-                  <div w-500 flex items-center>
-                    <span fw-bold min-w-70>
-                      加载状态:1
-                    </span>
-                    {{ `${isState(String(item.status))?.label} ${item.waitQueueLength ?? ''}` }}
-                    <n-button v-if="getrsBtnType(String(item.id), String(item.status))" type="success" ml-10 text :disabled="messageBtnTimeOut[String(item.id)]" size="tiny" strong w-60 @click="rsBtnClick(String(item.id), String(item.status))">
-                      <n-icon size="20">
-                        <icon-material-symbols:autorenew />
-                      </n-icon>
-                      更新进度
-                    </n-button>
-                  </div>
-                  <div v-if="item.discordFinishTime" w-500>
-                    <span fw-bold min-w-70>
-                      加载耗时:
-                    </span>
-                    <span fw-bold>
-                      {{ item.discordFinishTime ? ` ${getTimeDate(String(item.discordFinishTime), String(item.createTime))}秒` : '' }}
-                    </span>
-                    {{ item.createTime }}{{ item.discordFinishTime ? `-${item.discordFinishTime}` : '' }}
-                  </div>
-                  <div v-if="item.responseContent" flex>
-                    <span fw-bold min-w-70>
-                      响应内容：
-                    </span>
-                    <MdEditor v-model="item.responseContent" preview-only />
-                  </div>
-                  <n-image
-                    v-if="item.compressedImageUrl && item.originalImageUrl && !['MJ_IN_PROGRESS', 'MJ_WAIT_RECEIVED', 'SYS_QUEUING'].includes(String(item.status))"
-                    lazy
-                    mt-10
-                    b-rd-10
-                    :width="200"
-                    :src="`${baseURL}${item.compressedImageUrl}`"
-                    :preview-src="`${baseURL}${item.originalImageUrl}`"
-                  />
-                  <!-- 文生图 和 重新生成图片才有的按钮 -->
-                  <div v-if="item.status === 'MJ_SUCCESS' && (item.action === 'IMAGINE' || item.action === 'VARIATION')" mt-10 w-500 flex>
-                    <div w-400>
-                      <div flex justify-between>
-                        <n-button w-80 size="large" :type="selectBit(item.uuseBit ?? 0, 1) ? 'primary' : ''" :disabled="selectBit(item.uuseBit ?? 0, 1)" strong @click="upscaleClick(item.id, 1)">
-                          U1
-                        </n-button>
-                        <n-button w-80 size="large" :type="selectBit(item.uuseBit ?? 0, 2) ? 'primary' : ''" :disabled="selectBit(item.uuseBit ?? 0, 2)" strong @click="upscaleClick(item.id, 2)">
-                          U2
-                        </n-button>
-                        <n-button w-80 size="large" :type="selectBit(item.uuseBit ?? 0, 3) ? 'primary' : ''" :disabled="selectBit(item.uuseBit ?? 0, 3)" strong @click="upscaleClick(item.id, 3)">
-                          U3
-                        </n-button>
-                        <n-button w-80 size="large" :type="selectBit(item.uuseBit ?? 0, 4) ? 'primary' : ''" :disabled="selectBit(item.uuseBit ?? 0, 4)" strong @click="upscaleClick(item.id, 4)">
-                          U4
-                        </n-button>
-                      </div>
-                      <div mt-5 flex justify-between>
-                        <n-button w-80 size="large" strong @click="variationClick(item.id, 1)">
-                          V1
-                        </n-button>
-                        <n-button w-80 size="large" strong @click="variationClick(item.id, 2)">
-                          V2
-                        </n-button>
-                        <n-button w-80 size="large" strong @click="variationClick(item.id, 3)">
-                          V3
-                        </n-button>
-                        <n-button w-80 size="large" strong @click="variationClick(item.id, 4)">
-                          V4
-                        </n-button>
-                      </div>
-                    </div>
-                  </div>
-                  <!-- 图生文才有的按钮 -->
-                  <div v-else-if="item.status === 'MJ_SUCCESS' && item.action === 'DESCRIBE'" w-300>
-                    <div flex justify-between>
-                      <n-button strong>
-                        1
-                      </n-button>
-                      <n-button strong>
-                        2
-                      </n-button>
-                      <n-button strong>
-                        3
-                      </n-button>
-                      <n-button strong>
-                        4
-                      </n-button>
-                    </div>
-                  </div>
-                </div>
+            </div>
+            <div flex justify-end>
+              <div p-10 rd-10 inline-block break-all style="background-color: #fed784;  color: #3a3a3a;">
+                {{ `/${item.action}${item.uvIndex ? `: ${item.uvIndex}` : ''} ${item.prompt}` }}
               </div>
             </div>
           </div>
-          <!-- 用户的提问 -->
-          <div v-else flex justify-end items-strat mb-20>
-            <div>
-              <div style="width: 100%;" flex justify-end>
-                <n-ellipsis min-width-140px>
-                  {{ item.createTime }}
-                </n-ellipsis>
-              </div>
-              <div flex justify-end>
-                <div p-10 rd-10 inline-block break-all style="background-color: #fed784;  color: #3a3a3a;">
-                  <!-- {{ `/${item.action} ${item.prompt}` }} -->
-                  {{ `/${item.action}${item.uvIndex ? `: ${item.uvIndex}` : ''} ${item.prompt}` }}
-                </div>
-              </div>
-            </div>
-            <div min-w-50 flex justify-end>
-              <n-avatar round>
-                user
-              </n-avatar>
-            </div>
+          <div min-w-50 flex justify-end>
+            <n-avatar round>
+              user
+            </n-avatar>
           </div>
         </div>
-      </n-scrollbar>
+      </div>
+      <div h-500 />
     </div>
     <div>
-      <div p-10 flex items-end>
+      <div p-10 flex items-center>
         <div m-r-10px>
           <n-select
             v-model:value="selectType" size="large" :consistent-menu-width="false" :options="[
@@ -579,9 +582,8 @@ function getTimeDate(newDate: string, oldDate: string) {
           v-model:value="sendData"
           type="textarea"
           :disabled="isSend"
-          maxlength="200"
           show-count size="large"
-          :autosize="{ minRows: 1, maxRows: 8 }"
+          :autosize="{ minRows: 1, maxRows: 7 }"
           placeholder="来说点啥吧....."
         />
         <div
@@ -619,12 +621,22 @@ function getTimeDate(newDate: string, oldDate: string) {
             fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
           /> -->
         </div>
-        <n-button ml-10 size="large" type="primary" :color="`${roomData.color}`" :loading="isSend" @click="sendClick">
+        <!-- :color="`${roomData.color}`" -->
+        <n-button ml-10 size="large" type="primary" :loading="isSend" @click="sendClick">
           <n-icon size="20">
             <icon-ri:send-plane-fill />
           </n-icon>
         </n-button>
       </div>
     </div>
+
+    <n-modal v-model:show="showModal" display-directive="if">
+      <n-image
+        lazy
+        preview-disabled
+        :width="900"
+        :src="showModalUrl"
+      />
+    </n-modal>
   </div>
 </template>

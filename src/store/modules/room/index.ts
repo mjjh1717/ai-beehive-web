@@ -1,6 +1,6 @@
 /*
  * @Author: mjjh
- * @LastEditTime: 2023-07-05 05:50:19
+ * @LastEditTime: 2023-07-08 20:59:39
  * @FilePath: \ai-beehive-web\src\store\modules\room\index.ts
  * @Description:
  */
@@ -145,10 +145,20 @@ export const useRoomStore = defineStore('room', {
         this.messageList = contains(locaData, this.roomInfo.roomId)
     },
     getImgUrl(cellType: string) {
-      for (const item of this.cellImgList) {
-        if (cellType === item.code)
-          return item.imageUrl ?? ''
+      // console.log('this.cellImgList', this.cellImgList)
+      if (this.cellImgList.length > 0) {
+        for (const item of this.cellImgList) {
+          if (cellType === item.code)
+            return item.imageUrl ?? ''
+        }
       }
+      else {
+        for (const item of getLocal('cellImgList') as CellImageVO[]) {
+          if (cellType === item.code)
+            return item.imageUrl ?? ''
+        }
+      }
+
       return ''
     },
   },

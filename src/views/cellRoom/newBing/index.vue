@@ -7,6 +7,9 @@ import api from './api'
 import type { RoomNewBingListRequest, RoomNewBingMsgVO, sendRequest } from './types/apiTypes'
 import roomHeader from '@/components/common/roomHeader.vue'
 import { useRoomStore } from '@/store'
+import { useScroll } from '~/src/utils/common/useScroll'
+const { scrollRef, scrollToBottom, scrollToTop } = useScroll()
+
 const route = useRoute()
 const aiImgUrl = ref('')
 const roomData = ref({
@@ -30,7 +33,7 @@ const paramsData = ref<RoomNewBingListRequest>({
   isAsc: false,
 })
 const getMore = ref(false)
-const messageScrollbar = ref()
+const showGetMoreBtn = ref(true)
 const messageList = ref <RoomNewBingMsgVO[]>(roomStore.messageListData)
 const firstGetListType = ref(roomStore.messageListData.length === 0)
 
@@ -46,16 +49,16 @@ async function getDetail() {
 onMounted(() => {
   getDetail()
   loadingMore()
-  messageScrollbar.value.scrollTo({ top: 999999999 })
 })
 onUnmounted(() => {
   api.handleStop()
 })
 
-// watch(props, (value, oldValue) => {
-//   roomData.value = toRefs(value)
-//   getRoomMessageList(toRaw(paramsData.value))
-// })
+// 监听相同的路由变动
+const reload = inject('reload')
+watch(route, (value, oldValue) => {
+  reload()
+})
 
 watch(messageList, (value, oldValue) => {
   if (value.length > 0) {
@@ -84,7 +87,6 @@ async function getRoomMessageList(params: RoomNewBingListRequest) {
 
   // 以id为标识符,存到对应的浏览器缓存中
 }
-// getRoomMessageList(toRaw(paramsData.value))
 
 function loadingMore() {
   if (firstGetListType.value) {
@@ -93,20 +95,19 @@ function loadingMore() {
   else {
     firstGetListType.value = true
     getNewData()
-    return
   }
 
-  messageScrollbar.value.scrollTo({ top: 10 })
+  scrollToTop()
 }
 
 // 获取滚动到顶部部的事件
 function getScrollData(e: any) {
+  if (showGetMoreBtn.value)
+    showGetMoreBtn.value = false
+
   // 滚动到顶部
   if (e.srcElement.scrollTop === 0 && getMore.value)
     loadingMore()
-
-  // if (e.srcElement.scrollTop + e.srcElement.offsetHeight >= e.srcElement.scrollHeight && getMore.value)
-  //   getRoomMessageList(toRaw(paramsData.value))
 }
 
 const sendData = ref(null)
@@ -131,7 +132,7 @@ async function sendClick() {
       sendReturnData.value = null
       isSend.value = false
       // 滚动到底部
-      messageScrollbar.value.scrollTo({ top: 999999999 })
+      scrollToBottom()
     }
   }
 }
@@ -160,7 +161,7 @@ async function getNewData() {
     paramsData.value.cursor = String(messageList.value[0].id)
   }
   // 滚动到底部
-  messageScrollbar.value.scrollTo({ top: 999999999 })
+  scrollToBottom()
 }
 // 流输入调用的函数
 async function changData(talkdata: any, done = false) {
@@ -187,97 +188,44 @@ async function changData(talkdata: any, done = false) {
 }
 
 // 开关的颜色
-const railStyle = ({
-  focused,
-  checked,
-}: {
-  focused: boolean
-  checked: boolean
-}) => {
-  const style: CSSProperties = {}
-  if (checked) {
-    style.background = roomData.value.color
-    if (focused)
-      style.boxShadow = '0 0 0 2px #d0305040'
-  }
-  else {
-    style.background = '#dbdbdb'
-    if (focused)
-      style.boxShadow = '0 0 0 2px #2080f040'
-  }
-  return style
-}
+// const railStyle = ({
+//   focused,
+//   checked,
+// }: {
+//   focused: boolean
+//   checked: boolean
+// }) => {
+//   const style: CSSProperties = {}
+//   if (checked) {
+//     // style.background = roomData.value.color
+//     style.background = roomData.value.color
+//     if (focused)
+//       style.boxShadow = '0 0 0 2px #d0305040'
+//   }
+//   else {
+//     style.background = '#dbdbdb'
+//     if (focused)
+//       style.boxShadow = '0 0 0 2px #2080f040'
+//   }
+//   return style
+// }
 </script>
 
 <template>
-  <div h-screen class="text-[#fff] dark:text-[#3a3a3a]" flex flex-col>
+  <div h-screen class="text-[#3a3a3a] dark:text-[#fff]" flex flex-col>
     <roomHeader :color="roomData.color" :name="roomData.name" :cell-code="roomData.cellCode" :create-time="roomData.createTime" />
-    <div flex-1 p-24 class=" text-[#3a3a3a] dark:text-[#fff]">
-      <n-scrollbar ref="messageScrollbar" style="max-height: calc(100vh - 200px)" pr-14 :on-scroll="getScrollData">
-        <div v-if="getMore" absolute top-0 right-0 left-0 f-c-c>
-          <n-button tertiary round size="small" @click="loadingMore">
-            加载更多...
-          </n-button>
-        </div>
-        <div v-if="messageList.length === 0" flex justify-center>
-          暂无数据
-        </div>
-        <div v-for="(item, index) of messageList" v-else :key="index">
-          <!-- ai的回答 -->
-          <div v-if="item.type === 'answer'" flex justify-start items-start mb-20>
-            <div min-w-50>
-              <n-avatar
-                round
-                :src="aiImgUrl"
-                fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
-              />
-            </div>
-            <div>
-              <n-ellipsis min-width-140px>
-                {{ item.createTime }}
-              </n-ellipsis>
-              <div flex justify-start>
-                <div p-10 rd-10 inline-block break-all class="bg-[#f4f6f8]" dark:bg-hex-24272e>
-                  <!-- {{ item.content }} -->
-                  <MdEditor v-model="item.content" preview-only />
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- 用户的提问 -->
-          <div v-else flex justify-end items-start mb-20>
-            <div>
-              <div style="width: 100%;" flex justify-end>
-                <n-ellipsis min-width-140px>
-                  {{ item.createTime }}
-                </n-ellipsis>
-              </div>
-              <div flex justify-end>
-                <div p-10 rd-10 inline-block break-all style="background-color: #fed784;  color: #3a3a3a;">
-                  {{ item.content }}
-                </div>
-              </div>
-            </div>
-            <div min-w-50 flex justify-end>
-              <n-avatar round>
-                user
-              </n-avatar>
-            </div>
-          </div>
-        </div>
-        <!-- 用户的提问 -->
-        <div v-if="isSend" flex justify-end items-start mb-20>
-          <div p-10 rd-10 break-all style="background-color: #fed784; color: #3a3a3a; ">
-            {{ sendData }}
-          </div>
-          <div min-w-50 flex justify-end>
-            <n-avatar round>
-              user
-            </n-avatar>
-          </div>
-        </div>
-
-        <div v-if="isSend" flex justify-start items-start mb-20>
+    <div id="scrollRef" ref="scrollRef" relative flex-1 overflow-hidden overflow-y-auto p-r-24 p-l-24 p-t-24 class=" text-[#3a3a3a] dark:text-[#fff]" @scroll="getScrollData">
+      <div v-if="getMore && showGetMoreBtn" absolute top-10 right-0 left-0 f-c-c>
+        <n-button tertiary round size="small" @click="loadingMore">
+          加载更多...
+        </n-button>
+      </div>
+      <div v-if="messageList.length === 0" mt-10 flex justify-center>
+        暂无数据
+      </div>
+      <div v-for="(item, index) of messageList" v-else :key="index">
+        <!-- ai的回答 -->
+        <div v-if="item.type === 'answer'" flex justify-start items-start mb-20>
           <div min-w-50>
             <n-avatar
               round
@@ -285,12 +233,65 @@ const railStyle = ({
               fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
             />
           </div>
-          <div p-10 rd-10 break-all class="bg-[#f4f6f8]" dark:bg-hex-24272e>
-            <!-- {{ sendReturnData }} -->
-            <MdEditor v-if="sendReturnData" v-model="sendReturnData" preview-only />
+          <div>
+            <n-ellipsis min-width-140px>
+              {{ item.createTime }}
+            </n-ellipsis>
+            <div flex justify-start>
+              <div p-10 rd-10 inline-block break-all class="bg-[#f4f6f8]" dark:bg-hex-24272e>
+                <!-- {{ item.content }} -->
+                <MdEditor v-model="item.content" preview-only />
+              </div>
+            </div>
           </div>
         </div>
-      </n-scrollbar>
+        <!-- 用户的提问 -->
+        <div v-else flex justify-end items-start mb-20>
+          <div>
+            <div style="width: 100%;" flex justify-end>
+              <n-ellipsis min-width-140px>
+                {{ item.createTime }}
+              </n-ellipsis>
+            </div>
+            <div flex justify-end>
+              <div p-10 rd-10 inline-block break-all style="background-color: #fed784;  color: #3a3a3a;">
+                {{ item.content }}
+              </div>
+            </div>
+          </div>
+          <div min-w-50 flex justify-end>
+            <n-avatar round>
+              user
+            </n-avatar>
+          </div>
+        </div>
+      </div>
+      <!-- 用户的提问 -->
+      <div v-if="isSend" flex justify-end items-start mb-20>
+        <div p-10 rd-10 break-all style="background-color: #fed784; color: #3a3a3a; ">
+          {{ sendData }}
+        </div>
+        <div min-w-50 flex justify-end>
+          <n-avatar round>
+            user
+          </n-avatar>
+        </div>
+      </div>
+
+      <div v-if="isSend" flex justify-start items-start mb-20>
+        <div min-w-50>
+          <n-avatar
+            round
+            :src="aiImgUrl"
+            fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+          />
+        </div>
+        <div p-10 rd-10 break-all class="bg-[#f4f6f8]" dark:bg-hex-24272e>
+          <!-- {{ sendReturnData }} -->
+          <MdEditor v-if="sendReturnData" v-model="sendReturnData" preview-only />
+        </div>
+      </div>
+      <div h-500 />
     </div>
     <div>
       <!-- todo NAutoComplete / 提示 -->
@@ -298,7 +299,8 @@ const railStyle = ({
       <!-- :on-input="searchClick" -->
       <div p-10 flex items-center>
         <div>
-          <n-switch v-model:value="isNewTopic" size="large" w-100 :rail-style="railStyle">
+          <!-- :rail-style="railStyle" -->
+          <n-switch v-model:value="isNewTopic" size="large" w-100>
             <template #checked>
               新话题
             </template>
@@ -311,11 +313,12 @@ const railStyle = ({
           v-model:value="sendData"
           type="textarea"
           :disabled="isSend"
-          maxlength="200" show-count size="large"
+          show-count size="large"
           :autosize="{ minRows: 1, maxRows: 8 }"
           placeholder="来说点啥吧....."
         />
-        <n-button ml-10 size="large" type="primary" :color="`${roomData.color}`" :loading="isSend" @click="sendClick">
+        <!--  :color="`${roomData.color}`" -->
+        <n-button ml-10 size="large" type="primary" :loading="isSend" @click="sendClick">
           <n-icon size="20">
             <icon-ri:send-plane-fill />
           </n-icon>

@@ -5,7 +5,7 @@ import api from './api'
 import type { CellConfigResponse, CellConfigVO, CellImageVO, CellImgResponse, CellResponse, CellVO, RoomListVO, RoomResponse, addRoomVo } from './types/types'
 import { useCRUD } from '@/components/index.js'
 import { useRoomStore } from '@/store'
-import colorList from '@/assets/color'
+import { setLocal } from '~/src/utils'
 withDefaults(defineProps<Props>(), {
   cellType: 'allCell',
 })
@@ -22,7 +22,7 @@ interface Props {
 // 获取当前cell下的聊天室列表数据,然后加载
 // 列表的分页数据
 const pNum = ref(1)
-const pSize = ref(10)
+const pSize = ref(20)
 const total = ref<number>(0)
 const cellMenuList = ref<undefined | RoomListVO[]>([])
 const isActiveCell = ref(1)
@@ -64,7 +64,6 @@ function getScrollData(e: any) {
   if (e.srcElement.scrollTop + e.srcElement.offsetHeight >= e.srcElement.scrollHeight)
     getMoreData()
 }
-
 // 选中对应的聊天室
 function handleSelect(item: RoomListVO) {
   if (isActive(item.roomId))
@@ -75,8 +74,9 @@ function handleSelect(item: RoomListVO) {
 
   // setp1 将对应的聊天室数据存入到store
   roomStore.setRoomInfo(item)
-
   // setp2 在mainpage钟根据对应的聊天室渲染对应格式的组件页面
+  // console.log('item', item)
+
   router.push({
     name: item.cellCode,
     query: {
@@ -180,7 +180,10 @@ async function getCellList() {
   const resImg: CellImgResponse = await api.getCellImgList()
   cellList.value = toRaw(res.data)
   cellImgList.value = toRaw(resImg.data)
-  roomStore.setCellImgList(resImg.data ?? [])
+  if (resImg.data) {
+    roomStore.setCellImgList(resImg.data)
+    setLocal('cellImgList', resImg.data)
+  }
 }
 
 function getCellImg(type: string) {
@@ -231,6 +234,17 @@ function resetAddData() {
   current.value = 1
   cellConfigList.value = undefined
 }
+
+// 刷新相同路由
+const isReload = ref(true)
+
+function reload() {
+  isReload.value = false
+  nextTick(() => {
+    isReload.value = true
+  })
+}
+provide('reload', reload)
 </script>
 
 <template>
@@ -267,9 +281,9 @@ function resetAddData() {
                 <n-card
                   size="small" hoverable mt-6
                   :class="isActive(item.roomId) && ['bg-neutral-100', 'text-[#FFAD0A]', 'dark:bg-[#24272e]']"
-                  :style="{ borderBottom: `2px solid ${item.color}` }"
                   @click="handleSelect(item)"
                 >
+                  <!-- :style="{ borderBottom: `2px solid ${item.color}` }" -->
                   <div flex items-center>
                     <!-- 顶部icon -->
                     <div min-w-30 f-c-c>
@@ -309,7 +323,7 @@ function resetAddData() {
                   </div>
                 </n-card>
               </div>
-              <n-button round type="primary" mt-10 wh-full h-40 @click="getMoreData">
+              <n-button v-if="pNum * pSize < total" round type="primary" mt-10 wh-full h-40 @click="getMoreData">
                 <n-icon size="20">
                   <icon-material-symbols:local-shipping-rounded />
                 </n-icon>
@@ -323,7 +337,20 @@ function resetAddData() {
         <n-layout>
           <n-layout-content h-screen>
             <!-- <slot /> -->
-            <router-view />
+            <n-watermark
+              content="stargpt"
+              cross
+              selectable
+              :font-size="16"
+              :line-height="16"
+              :width="192"
+              :height="128"
+              :x-offset="12"
+              :y-offset="28"
+              :rotate="-15"
+            >
+              <router-view v-if="isReload" />
+            </n-watermark>
           </n-layout-content>
         </n-layout>
       </n-layout>
@@ -355,7 +382,7 @@ function resetAddData() {
           >
             <n-input v-model:value="modalForm.name" placeholder="请输入房间名称" />
           </n-form-item>
-          <n-form-item path="roomInfo.color" label="房间颜色">
+          <!-- <n-form-item path="roomInfo.color" label="房间颜色">
             <div flex flex-wrap>
               <n-color-picker v-model:value="modalForm.color" mb-10 :show-alpha="false" :modes="['hsv']" />
               <n-radio-group v-model:value="modalForm.color">
@@ -368,7 +395,7 @@ function resetAddData() {
                 </n-space>
               </n-radio-group>
             </div>
-          </n-form-item>
+          </n-form-item> -->
         </n-form>
       </CrudModal>
 
@@ -439,7 +466,7 @@ function resetAddData() {
           <n-form-item v-show="current === 3" path="roomInfo.name" label="房间名称">
             <n-input v-model:value="AddModalForm.roomInfo.name" placeholder="请输入房间名称" />
           </n-form-item>
-          <n-form-item v-show="current === 3" path="roomInfo.color" label="房间颜色">
+          <!-- <n-form-item v-show="current === 3" path="roomInfo.color" label="房间颜色">
             <div flex flex-wrap>
               <n-color-picker v-model:value="AddModalForm.roomInfo.color" mb-10 :show-alpha="false" :modes="['hsv']" />
               <n-radio-group v-model:value="AddModalForm.roomInfo.color">
@@ -452,7 +479,7 @@ function resetAddData() {
                 </n-space>
               </n-radio-group>
             </div>
-          </n-form-item>
+          </n-form-item> -->
         </n-form>
         <template #footer>
           <footer flex justify-end>
