@@ -7,7 +7,7 @@ import type { RoomOpenAiChatMsgVO, RoomOpenaiChatListRequest, sendRequest } from
 import roomHeader from '@/components/common/roomHeader.vue'
 import { useRoomStore } from '@/store'
 import { useScroll } from '~/src/utils/common/useScroll'
-const { scrollRef, scrollToBottom, scrollToTop } = useScroll()
+const { scrollRef, scrollToBottom } = useScroll()
 
 const route = useRoute()
 
@@ -94,8 +94,6 @@ function loadingMore() {
     firstGetListType.value = true
     getNewData()
   }
-
-  scrollToTop()
 }
 
 // 获取滚动到顶部部的事件
@@ -110,6 +108,13 @@ function getScrollData(e: any) {
 const sendData = ref(null)
 const sendReturnData = ref(null)
 const isSend = ref(false)
+
+function handleEnter(event: KeyboardEvent) {
+  if (event.code === 'Enter' && event.ctrlKey) {
+    event.preventDefault()
+    sendClick()
+  }
+}
 
 async function sendClick() {
   if (sendData.value) {
@@ -191,8 +196,8 @@ async function changData(talkdata: any, done = false) {
           加载更多...
         </n-button>
       </div>
-      <div v-if="messageList.length === 0" mt-10 flex justify-center>
-        暂无数据
+      <div v-if="messageList.length === 0 && !isSend" mt-10 flex justify-center>
+        你敢不敢说句话试试
       </div>
       <div v-for="(item, index) of messageList" v-else :key="index">
         <!-- ai的回答 -->
@@ -262,7 +267,8 @@ async function changData(talkdata: any, done = false) {
           <MdEditor v-if="sendReturnData" v-model="sendReturnData" preview-only />
         </div>
       </div>
-      <div h-500 />
+      <!-- 与输入框的距离 -->
+      <!-- <div h-500 /> -->
     </div>
     <div>
       <!-- todo NAutoComplete / 提示 -->
@@ -275,7 +281,8 @@ async function changData(talkdata: any, done = false) {
           :disabled="isSend"
           show-count size="large"
           :autosize="{ minRows: 1, maxRows: 8 }"
-          placeholder="来说点啥吧....."
+          placeholder="来说点啥吧..... ( Ctrl + Enter = 发送 ) "
+          @keypress="handleEnter"
         />
         <!--  :color="`${roomData.color}`" -->
         <n-button ml-10 size="large" type="primary" :loading="isSend" @click="sendClick">

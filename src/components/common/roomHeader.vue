@@ -1,6 +1,6 @@
 <!--
  * @Author: mjjh
- * @LastEditTime: 2023-07-08 23:28:35
+ * @LastEditTime: 2023-07-12 00:39:49
  * @FilePath: \ai-beehive-web\src\components\common\roomHeader.vue
  * @Description:
 -->
@@ -46,11 +46,11 @@ const props = withDefaults(defineProps<Props>(), {})
     </div>
     <div flex-1 />
     <!-- :color="`${props.color}`" -->
-    <n-button type="primary">
+    <!-- <n-button type="primary">
       <n-icon size="16">
         <icon-ri:edit-line />
       </n-icon>
       编辑
-    </n-button>
+    </n-button> -->
   </div>
 </template>

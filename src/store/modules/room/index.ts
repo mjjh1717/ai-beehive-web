@@ -1,6 +1,6 @@
 /*
  * @Author: mjjh
- * @LastEditTime: 2023-07-08 20:59:39
+ * @LastEditTime: 2023-07-12 00:37:14
  * @FilePath: \ai-beehive-web\src\store\modules\room\index.ts
  * @Description:
  */
@@ -86,7 +86,6 @@ function contains(arr: Array<{ roomId: number; messageList: RoomOpenAiChatMsgVO[
   let selectItem: RoomOpenAiChatMsgVO[] = []
   for (const item of arr) {
     if (item.roomId === val) {
-      // console.log('item', item)
       selectItem = item.messageList
       break
     }
@@ -145,7 +144,6 @@ export const useRoomStore = defineStore('room', {
         this.messageList = contains(locaData, this.roomInfo.roomId)
     },
     getImgUrl(cellType: string) {
-      // console.log('this.cellImgList', this.cellImgList)
       if (this.cellImgList.length > 0) {
         for (const item of this.cellImgList) {
           if (cellType === item.code)

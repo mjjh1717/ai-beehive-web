@@ -1,6 +1,6 @@
 /*
  * @Author: mjjh
- * @LastEditTime: 2023-05-28 22:44:14
+ * @LastEditTime: 2023-07-10 22:32:53
  * @FilePath: \ai-beehive-web\src\views\login\api.ts
  * @Description: 登录注册逻辑
  */
@@ -16,5 +16,5 @@ export default {
   // 获取图片验证码
   getPicCode: () => request.get('/user/get_pic_code', { noNeedToken: true } as RequestConfig),
   // 邮件验证回调验证码
-  verifyEmailCode: (code: string) => request.get(`/user/verify_email_code?code=${code}`),
+  verifyEmailCode: (code: string) => request.get(`/user/verify_email_code?code=${code}`, { noNeedToken: true } as RequestConfig),
 }

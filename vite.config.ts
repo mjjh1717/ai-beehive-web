@@ -21,7 +21,6 @@ export default defineConfig((configEnv: ConfigEnv) => {
   // // 写入修改后的JSON数据到本地文件中
   // fs.writeFileSync('vercel.json', JSON.stringify(jsonData))
   // // eslint-disable-next-line no-console
-  // console.log(JSON.parse(fs.readFileSync('vercel.json')))
 
   const { VITE_PORT, VITE_PUBLIC_PATH } = viteEnv
   return {

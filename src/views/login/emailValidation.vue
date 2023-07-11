@@ -1,6 +1,6 @@
 <!--
  * @Author: mjjh
- * @LastEditTime: 2023-07-05 06:43:04
+ * @LastEditTime: 2023-07-10 22:36:30
  * @FilePath: \ai-beehive-web\src\views\login\emailValidation.vue
  * @Description: 邮箱验证页面
 -->
@@ -23,8 +23,8 @@ async function confirmation() {
     loading.value = true
     let messageData = ''
     if (isString(route.query.verifyCode)) {
-      const { data } = await api.verifyEmailCode(String(route.query.verifyCode))
-      messageData = data.message ?? ''
+      const { message } = await api.verifyEmailCode(String(route.query.verifyCode))
+      messageData = message
     }
     else {
       return

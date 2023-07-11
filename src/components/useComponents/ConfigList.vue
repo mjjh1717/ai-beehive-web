@@ -1,6 +1,6 @@
 <!--
  * @Author: mjjh
- * @LastEditTime: 2023-06-18 01:21:19
+ * @LastEditTime: 2023-07-12 00:35:59
  * @FilePath: \ai-beehive-web\src\components\useComponents\ConfigList.vue
  * @Description:
 -->
@@ -32,10 +32,6 @@ interface CellConfigVO {
    * 是否必填，false 否 true 是
    */
   isRequired?: boolean
-  /**
-   * 用户是否可以使用默认值，false 否 true 是
-   */
-  isUserCanUseDefaultValue?: boolean
   /**
    * 用户创建房间后是否可修改，false 否 true 是
    */
@@ -87,7 +83,7 @@ watch(
       const newList: RoomConfigVO[] = []
       for (const item of toRaw(value)) {
         newList.push({
-          value: item.isUserValueVisible && item.isHaveDefaultValue && item.isUserCanUseDefaultValue ? item.defaultValue : '',
+          value: item.isUserValueVisible && item.isHaveDefaultValue ? item.defaultValue : '',
           isUseDefaultValue: (item.isHaveDefaultValue && item.isUserModifiable) ?? false,
           cellConfigCode: item.cellConfigCode ?? '',
         })
@@ -98,9 +94,9 @@ watch(
 )
 
 watch(cellConfigModalForm, (value, oldValue) => {
-  const newValue = value.filter(item => item.value === '')
+  const newValue = value.filter(item => item.value !== '')
   emit('update:newCellConfigList', newValue)
-})
+}, { deep: true })
 
 // function resetData() {
 //   cellConfigModalForm.value = []
@@ -115,7 +111,7 @@ watch(cellConfigModalForm, (value, oldValue) => {
     <n-form ref="AddModalFormRef" :model="cellConfigModalForm">
       <n-space v-if="cellConfigModalForm.length > 0" item-style="display: flex;">
         <n-form-item v-for="(item, index) of props?.cellConfigList" :key="index">
-          <!-- <n-switch v-model:value="cellConfigModalForm[index].isUseDefaultValue" :disabled="item.defaultValue && item.isUserCanUseDefaultValue" mr-10 /> -->
+          <!-- <n-switch v-model:value="cellConfigModalForm[index].isUseDefaultValue" :disabled="item.defaultValue " mr-10 /> -->
           <template #label>
             <n-popover trigger="hover">
               <template #trigger>
@@ -134,7 +130,7 @@ watch(cellConfigModalForm, (value, oldValue) => {
                 编辑
               </div>
               <div v-else>
-                取消
+                确定
               </div>
             </n-button>
           </div>

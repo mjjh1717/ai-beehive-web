@@ -311,10 +311,6 @@ export interface CellConfigVO {
    */
   isRequired?: boolean
   /**
-   * 用户是否可以使用默认值，false 否 true 是
-   */
-  isUserCanUseDefaultValue?: boolean
-  /**
    * 用户创建房间后是否可修改，false 否 true 是
    */
   isUserLiveModifiable?: boolean

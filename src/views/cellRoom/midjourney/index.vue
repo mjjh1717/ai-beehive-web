@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, toRaw } from 'vue'
 import { useMessage } from 'naive-ui'
-import type { UploadFileInfo } from 'naive-ui'
 import MdEditor from 'md-editor-v3'
+import type { UploadFileInfo } from 'naive-ui'
 import api from './api'
 import type { DescribeRequest, ImagineRequest, RoomMidjourneyMsgVO, RoomMidjourneyRequest, UpscaleRequest, VariationRequest } from './types/apiTypes'
 import roomHeader from '@/components/common/roomHeader.vue'
@@ -39,9 +39,6 @@ const showGetMoreBtn = ref(true)
 const messageList = ref <RoomMidjourneyMsgVO[]>(roomStore.messageListData)
 const firstGetListType = ref(roomStore.messageListData.length === 0)
 
-// 图生文 的文件
-const fileList = ref<UploadFileInfo[]>([])
-
 async function getDetail() {
   const { data } = await api.getRoomDetail(String(route.query.roomId))
   roomData.value.cellCode = data.cellCode
@@ -54,6 +51,7 @@ async function getDetail() {
 onMounted(() => {
   getDetail()
   loadingMore()
+  getmsgNewData()
 })
 onUnmounted(() => {
   // 取消所有定时器
@@ -67,8 +65,6 @@ watch(route, (value, oldValue) => {
 })
 
 watch(messageList, (value, oldValue) => {
-  // console.log('111roomStore')
-
   if (value.length > 0) {
     // messageList不为空则存入本地数据中
     roomStore.setlocaMessageList(value)
@@ -124,6 +120,12 @@ const selectType = ref('imagine')
 const showModal = ref(false)
 const showModalUrl = ref('')
 
+function handleEnter(event: KeyboardEvent) {
+  if (event.code === 'Enter' && event.ctrlKey) {
+    event.preventDefault()
+    sendClick()
+  }
+}
 // 对话点击
 async function sendClick() {
   if (sendData.value) {
@@ -189,6 +191,7 @@ async function variationClick(msgId: number | undefined, index: number) {
   await api.RoomMidjourneyVariation(pushData)
   getNewData()
 }
+
 // 生成高质量图片
 async function upscaleClick(msgId: number | undefined, index: number) {
   const pushData: UpscaleRequest = {
@@ -212,11 +215,38 @@ async function imagineClick(prompt: string) {
     roomId: roomData.value.roomId,
   }
   await api.RoomMidjourneyImagine(pushData)
+  getNewData()
 }
 // 图生文
-// function describeClick() {
+const isShowDescribeModal = ref(false)
+const describeFileList = ref<UploadFileInfo[]>([])
+// 限制文件类型
+async function beforeUpload(data: {
+  file: UploadFileInfo
+  fileList: UploadFileInfo[]
+}) {
+  if (data.file.file?.type === 'image/png' || data.file.file?.type === 'image/jpeg')
+    return true
+  else
+    ms.error('只能上传png/jpeg格式的图片文件，请重新上传')
 
-// }
+  return false
+}
+
+async function describeClick() {
+  const pushData = new FormData()
+  pushData.append('file', describeFileList.value[0].file)
+  pushData.append('roomId', roomData.value.roomId)
+  await api.RoomMidjourneyDescribe(pushData)
+  getNewData()
+}
+
+function describeItemClick(id: number, str: string | undefined) {
+  if (str)
+    imagineClick(str.split('\n\n')[id - 1].slice(4))
+}
+
+// 定时间请求模块
 
 // mj 更新数据
 // setp1 遍历消息数组
@@ -319,7 +349,6 @@ function getmsgNewData() {
     return item
   })
 }
-getmsgNewData()
 
 // 创建定时器
 async function newMessageInterval(id: string, time = 10000) {
@@ -424,7 +453,7 @@ function getTimeDate(newDate: string, oldDate: string) {
         </n-button>
       </div>
       <div v-if="messageList.length === 0" m-t-10 flex justify-center>
-        暂无数据
+        你敢不敢说句话试试
       </div>
       <div v-for="(item, index) of messageList" v-else :key="index">
         <div v-if="item.type === 'answer'" flex justify-start items-start mb-20>
@@ -445,11 +474,11 @@ function getTimeDate(newDate: string, oldDate: string) {
                   <span fw-bold min-w-70>
                     画图描述:
                   </span>
-                  {{ `/${item.action}${item.uvIndex ? `: ${item.uvIndex}` : ''} ${item.prompt}` }}
+                  {{ `/${item.action}${item.uvIndex ? `: ${item.uvIndex}` : ''} ${item.prompt ?? ''}` }}
                 </div>
                 <div w-500 flex items-center>
                   <span fw-bold min-w-70>
-                    加载状态:1
+                    任务状态:
                   </span>
                   {{ `${isState(String(item.status))?.label} ${item.waitQueueLength ?? ''}` }}
                   <n-button v-if="getrsBtnType(String(item.id), String(item.status))" type="success" ml-10 text :disabled="messageBtnTimeOut[String(item.id)]" size="tiny" strong w-60 @click="rsBtnClick(String(item.id), String(item.status))">
@@ -461,7 +490,7 @@ function getTimeDate(newDate: string, oldDate: string) {
                 </div>
                 <div v-if="item.discordFinishTime" w-500>
                   <span fw-bold min-w-70>
-                    加载耗时:
+                    任务耗时:
                   </span>
                   <span fw-bold>
                     {{ item.discordFinishTime ? ` ${getTimeDate(String(item.discordFinishTime), String(item.createTime))}秒` : '' }}
@@ -482,6 +511,7 @@ function getTimeDate(newDate: string, oldDate: string) {
                     :show-toolbar="false"
                     :width="200"
                     :src="`${baseURL}${item.compressedImageUrl}`"
+                    fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
                   />
                   <n-button absolute bottom-0 right-0 type="primary" size="tiny" color="#767c82" @click="showModal = true; showModalUrl = `${baseURL}${item.originalImageUrl}`">
                     查看原图
@@ -519,18 +549,18 @@ function getTimeDate(newDate: string, oldDate: string) {
                     </div>
                   </div>
                 </div>
-                <div v-else-if="item.status === 'MJ_SUCCESS' && item.action === 'DESCRIBE'" w-300>
+                <div v-else-if="item.status === 'MJ_SUCCESS' && item.action === 'DESCRIBE'" mt-10 w-400>
                   <div flex justify-between>
-                    <n-button strong>
+                    <n-button w-80 size="large" @click="describeItemClick(1, item.responseContent)">
                       1
                     </n-button>
-                    <n-button strong>
+                    <n-button w-80 size="large" @click="describeItemClick(2, item.responseContent)">
                       2
                     </n-button>
-                    <n-button strong>
+                    <n-button w-80 size="large" @click="describeItemClick(3, item.responseContent)">
                       3
                     </n-button>
-                    <n-button strong>
+                    <n-button w-80 size="large" @click="describeItemClick(4, item.responseContent)">
                       4
                     </n-button>
                   </div>
@@ -548,7 +578,7 @@ function getTimeDate(newDate: string, oldDate: string) {
             </div>
             <div flex justify-end>
               <div p-10 rd-10 inline-block break-all style="background-color: #fed784;  color: #3a3a3a;">
-                {{ `/${item.action}${item.uvIndex ? `: ${item.uvIndex}` : ''} ${item.prompt}` }}
+                {{ `/${item.action}${item.uvIndex ? `: ${item.uvIndex}` : ''} ${item.prompt ?? ''}` }}
               </div>
             </div>
           </div>
@@ -559,68 +589,25 @@ function getTimeDate(newDate: string, oldDate: string) {
           </div>
         </div>
       </div>
-      <div h-500 />
+      <!-- 与输入框的距离 -->
+      <!-- <div h-500 /> -->
     </div>
     <div>
       <div p-10 flex items-center>
-        <div m-r-10px>
-          <n-select
-            v-model:value="selectType" size="large" :consistent-menu-width="false" :options="[
-              {
-                label: '图生文',
-                value: 'describe',
-              },
-              {
-                label: '文生图',
-                value: 'imagine',
-              },
-            ]"
-          />
-        </div>
+        <n-button mr-10 size="large" type="primary" @click="isShowDescribeModal = true">
+          <n-icon size="20">
+            <icon-material-symbols:image />
+          </n-icon>
+        </n-button>
         <n-input
-          v-if="selectType === 'imagine'"
           v-model:value="sendData"
           type="textarea"
           :disabled="isSend"
           show-count size="large"
           :autosize="{ minRows: 1, maxRows: 7 }"
-          placeholder="来说点啥吧....."
+          placeholder="来说点啥吧..... ( Ctrl + Enter = 发送 ) "
+          @keypress="handleEnter"
         />
-        <div
-          v-else
-          style="width: 100%;"
-        >
-          <n-upload
-            v-if="fileList.length === 0"
-            ref="upload"
-            v-model:file-list="fileList"
-            directory-dnd
-            :default-upload="false"
-            :multiple="false"
-            :max="1"
-            :show-file-list="false"
-          >
-            <n-upload-dragger flex justify-center items-center>
-              <n-icon mr-10 size="28" color="#feac0a">
-                <icon-material-symbols:upload-sharp />
-              </n-icon>
-              <n-text style="font-size: 16px">
-                点击或者拖动文件到该区域来上传
-              </n-text>
-            </n-upload-dragger>
-          </n-upload>
-          <div v-else c-black>
-            {{ toRaw(fileList[0].file) }}
-          </div>
-          <!-- <n-image
-            v-else
-            mt-10
-            mb-10
-            :width="500"
-            :src="fileList[0].url"
-            fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
-          /> -->
-        </div>
         <!-- :color="`${roomData.color}`" -->
         <n-button ml-10 size="large" type="primary" :loading="isSend" @click="sendClick">
           <n-icon size="20">
@@ -637,6 +624,37 @@ function getTimeDate(newDate: string, oldDate: string) {
         :width="900"
         :src="showModalUrl"
       />
+    </n-modal>
+    <n-modal
+      v-model:show="isShowDescribeModal"
+      preset="dialog"
+      title="图生文"
+      :style="{ width: 600 }"
+      :show-icon="false"
+      positive-text="确认"
+      negative-text="取消"
+      @positive-click="describeClick"
+      @negative-click="isShowDescribeModal = false"
+    >
+      <n-upload
+        v-model:file-list="describeFileList"
+        directory-dnd
+        @before-upload="beforeUpload"
+      >
+        <n-upload-dragger>
+          <div style="margin-bottom: 12px">
+            <n-icon size="48" :depth="3">
+              <icon-material-symbols:image />
+            </n-icon>
+          </div>
+          <n-text style="font-size: 16px">
+            点击或者拖动图片到该区域来上传
+          </n-text>
+          <n-p depth="3" style="margin: 8px 0 0 0">
+            仅支持 PNG 和 JPEG 格式图片
+          </n-p>
+        </n-upload-dragger>
+      </n-upload>
     </n-modal>
   </div>
 </template>

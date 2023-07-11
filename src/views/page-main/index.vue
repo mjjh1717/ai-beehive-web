@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useMessage } from 'naive-ui'
+import { useDebounceFn } from '@vueuse/core'
 import api from './api'
 import type { CellConfigResponse, CellConfigVO, CellImageVO, CellImgResponse, CellResponse, CellVO, RoomListVO, RoomResponse, addRoomVo } from './types/types'
 import { useCRUD } from '@/components/index.js'
 import { useRoomStore } from '@/store'
 import { setLocal } from '~/src/utils'
+
 withDefaults(defineProps<Props>(), {
   cellType: 'allCell',
 })
@@ -52,7 +54,7 @@ function getMoreData() {
 // 搜索
 function searchClick() {
   pNum.value = 1
-  pSize.value = 10
+  pSize.value = 20
   cellMenuList.value = []
   getRoomList(searchValue.value)
 }
@@ -65,25 +67,26 @@ function getScrollData(e: any) {
     getMoreData()
 }
 // 选中对应的聊天室
-function handleSelect(item: RoomListVO) {
-  if (isActive(item.roomId))
-    return
+const handleSelect = useDebounceFn(
+  (item: RoomListVO) => {
+    if (isActive(item.roomId))
+      return
 
-  if (isActiveCell.value)
-    isActiveCell.value = item.roomId
+    if (isActiveCell.value)
+      isActiveCell.value = item.roomId
 
-  // setp1 将对应的聊天室数据存入到store
-  roomStore.setRoomInfo(item)
-  // setp2 在mainpage钟根据对应的聊天室渲染对应格式的组件页面
-  // console.log('item', item)
+    // setp1 将对应的聊天室数据存入到store
+    roomStore.setRoomInfo(item)
+    // setp2 在mainpage钟根据对应的聊天室渲染对应格式的组件页面
 
-  router.push({
-    name: item.cellCode,
-    query: {
-      roomId: item.roomId,
-    },
-  })
-}
+    router.push({
+      name: item.cellCode,
+      query: {
+        roomId: item.roomId,
+      },
+    })
+  }, 1000,
+)
 
 // 判断当前是否是选中的聊天室
 function isActive(roomId: number) {
@@ -106,7 +109,7 @@ const {
   doUpdate: api.updateRoom,
   refresh: () => {
     pNum.value = 1
-    pSize.value = 10
+    pSize.value = 20
     cellMenuList.value = []
     searchValue.value = undefined
     getRoomList()
@@ -188,8 +191,6 @@ async function getCellList() {
 
 function getCellImg(type: string) {
   if (cellImgList.value) {
-    // console.log('cellImgList.value', cellImgList.value)
-
     for (const item of cellImgList.value) {
       if (type === item.code)
         return item.imageUrl
@@ -213,7 +214,7 @@ function addItem() {
       addloading.value = false
       resetAddData()
       pNum.value = 1
-      pSize.value = 10
+      pSize.value = 20
       cellMenuList.value = []
       searchValue.value = undefined
       getRoomList()
@@ -253,7 +254,9 @@ provide('reload', reload)
       <n-layout flex-1 min-w-375 has-sider>
         <n-layout-sider
           bordered
+          collapse-mode="width"
           content-style="padding: 15px;"
+          width="350"
         >
           <n-layout-header bordered pb-15>
             <n-input-group>
@@ -275,7 +278,7 @@ provide('reload', reload)
             <!-- 房间固定isPinned -->
             <n-scrollbar style="max-height: calc(100vh - 95px)" pr-14 :on-scroll="getScrollData">
               <div v-if="cellMenuList?.length === 0" mt-6 f-c-c>
-                暂无数据
+                你敢不敢开个房试试
               </div>
               <div v-for="(item, index) of cellMenuList" v-else :key="index" flex>
                 <n-card
@@ -288,6 +291,7 @@ provide('reload', reload)
                     <!-- 顶部icon -->
                     <div min-w-30 f-c-c>
                       <n-avatar
+                        style="border: 2px solid #fff;"
                         round
                         size="small"
                         :src="getCellImg(item.cellCode ?? '')"
@@ -309,16 +313,11 @@ provide('reload', reload)
                           <icon-ri:edit-line />
                         </n-icon>
                       </n-button>
-                      <n-popconfirm placement="bottom" @positive-click="handleDelete(item.roomId)">
-                        <template #trigger>
-                          <n-button size="tiny" circle>
-                            <n-icon size="16">
-                              <icon-ri:delete-bin-line />
-                            </n-icon>
-                          </n-button>
-                        </template>
-                        确定删除此聊天室吗?
-                      </n-popconfirm>
+                      <n-button size="tiny" circle @click="handleDelete(item.roomId), router.replace('/main')">
+                        <n-icon size="16">
+                          <icon-ri:delete-bin-line />
+                        </n-icon>
+                      </n-button>
                     </div>
                   </div>
                 </n-card>
@@ -337,7 +336,7 @@ provide('reload', reload)
         <n-layout>
           <n-layout-content h-screen>
             <!-- <slot /> -->
-            <n-watermark
+            <!-- <n-watermark
               content="stargpt"
               cross
               selectable
@@ -350,7 +349,9 @@ provide('reload', reload)
               :rotate="-15"
             >
               <router-view v-if="isReload" />
-            </n-watermark>
+            </n-watermark> -->
+
+            <router-view v-if="isReload" />
           </n-layout-content>
         </n-layout>
       </n-layout>

@@ -1,6 +1,6 @@
 /*
  * @Author: mjjh
- * @LastEditTime: 2023-07-08 21:10:44
+ * @LastEditTime: 2023-07-11 23:34:57
  * @FilePath: \ai-beehive-web\src\views\page-main\route.ts
  * @Description:
  */
@@ -55,7 +55,25 @@ export default {
           },
         },
         {
+          name: 'openai_chat_api_4',
+          path: 'openaiChat',
+          isHidden: true,
+          component: () => import('../cellRoom/openaiChat/index.vue'),
+          meta: {
+            routerViewKey: 'main-page',
+          },
+        },
+        {
           name: 'openai_chat_web_3_5',
+          path: 'openaiChatWeb',
+          isHidden: true,
+          component: () => import('../cellRoom/openaiChatWeb/index.vue'),
+          meta: {
+            routerViewKey: 'main-page',
+          },
+        },
+        {
+          name: 'openai_chat_web_4',
           path: 'openaiChatWeb',
           isHidden: true,
           component: () => import('../cellRoom/openaiChatWeb/index.vue'),

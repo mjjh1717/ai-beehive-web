@@ -25,7 +25,7 @@ export interface ImagineRequest {
  * Midjourney 描述请求
  */
 export interface DescribeRequest {
-  file: string
+  file: any
   /**
    * 房间 id
    */

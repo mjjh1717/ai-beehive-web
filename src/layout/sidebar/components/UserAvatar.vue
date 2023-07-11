@@ -1,6 +1,6 @@
 <!--
  * @Author: mjjh
- * @LastEditTime: 2023-05-30 01:04:10
+ * @LastEditTime: 2023-07-12 00:40:51
  * @FilePath: \ai-beehive-web\src\layout\sidebar\components\UserAvatar.vue
  * @Description:
 -->
@@ -20,7 +20,7 @@ const options = [
 
 function handleSelect(key: string) {
   if (key === 'logout') {
-    window.$dialog?.info({
+    window.$dialog?.success({
       content: '确认退出？',
       title: '提示',
       positiveText: '确定',
