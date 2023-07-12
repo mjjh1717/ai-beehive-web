@@ -52,11 +52,20 @@ function getMoreData() {
   }
 }
 // 搜索
-function searchClick() {
+async function searchClick() {
   pNum.value = 1
   pSize.value = 20
-  cellMenuList.value = []
-  getRoomList(searchValue.value)
+  const pageNum: number = pNum.value
+  const pageSize: number = pSize.value
+  const res: RoomResponse = await api.getRoomPage({ pageNum, pageSize, name: searchValue.value })
+  if (res.data?.total)
+    total.value = res.data?.total
+  if (res.data?.records) {
+    cellMenuList.value = []
+    cellMenuList.value?.push(...res.data?.records)
+  }
+  // cellMenuList.value = []
+  // getRoomList(searchValue.value)
 }
 
 // 函数2 筛选数据函数
@@ -274,7 +283,7 @@ provide('reload', reload)
               </n-button>
             </n-input-group>
           </n-layout-header>
-          <n-layout-content pt-15>
+          <div mt-15>
             <!-- 房间固定isPinned -->
             <n-scrollbar style="max-height: calc(100vh - 95px)" pr-14 :on-scroll="getScrollData">
               <div v-if="cellMenuList?.length === 0" mt-6 f-c-c>
@@ -331,7 +340,7 @@ provide('reload', reload)
                 </div>
               </n-button>
             </n-scrollbar>
-          </n-layout-content>
+          </div>
         </n-layout-sider>
         <n-layout>
           <n-layout-content h-screen>

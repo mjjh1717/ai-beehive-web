@@ -225,20 +225,28 @@ async function beforeUpload(data: {
   file: UploadFileInfo
   fileList: UploadFileInfo[]
 }) {
-  if (data.file.file?.type === 'image/png' || data.file.file?.type === 'image/jpeg')
+  if (data.file.file?.size && data.file.file?.size < 10 * 1024 * 1024 && (data.file.file?.type === 'image/png' || data.file.file?.type === 'image/jpeg'))
     return true
   else
-    ms.error('只能上传png/jpeg格式的图片文件，请重新上传')
+    ms.error('只能上传不超过 10MB 的 png/jpeg 格式的图片文件，请重新上传')
 
   return false
 }
 
 async function describeClick() {
-  const pushData = new FormData()
-  pushData.append('file', describeFileList.value[0].file)
-  pushData.append('roomId', roomData.value.roomId)
-  await api.RoomMidjourneyDescribe(pushData)
-  getNewData()
+  if (describeFileList.value.length) {
+    const pushData = new FormData()
+    pushData.append('file', describeFileList.value[0].file)
+    pushData.append('roomId', roomData.value.roomId)
+    await api.RoomMidjourneyDescribe(pushData)
+    ms.success('图片上传成功')
+    describeFileList.value = []
+    getNewData()
+  }
+  else {
+    ms.warning('请上传图片')
+    return false
+  }
 }
 
 function describeItemClick(id: number, str: string | undefined) {
@@ -510,6 +518,7 @@ function getTimeDate(newDate: string, oldDate: string) {
                     b-rd-4
                     :show-toolbar="false"
                     :width="200"
+                    :height="200"
                     :src="`${baseURL}${item.compressedImageUrl}`"
                     fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
                   />
@@ -634,7 +643,8 @@ function getTimeDate(newDate: string, oldDate: string) {
       positive-text="确认"
       negative-text="取消"
       @positive-click="describeClick"
-      @negative-click="isShowDescribeModal = false"
+      @negative-click="isShowDescribeModal = false, describeFileList = []"
+      @mask-click="isShowDescribeModal = false, describeFileList = []"
     >
       <n-upload
         v-model:file-list="describeFileList"
