@@ -35,6 +35,10 @@ const getMore = ref(false)
 const showGetMoreBtn = ref(true)
 const messageList = ref <RoomOpenAiChatMsgVO[]>(roomStore.messageListData)
 const firstGetListType = ref(roomStore.messageListData.length === 0)
+const sendData = ref(null)
+const sendReturnData = ref(null)
+const isSend = ref(false)
+
 async function getDetail() {
   const { data } = await api.getRoomDetail(String(route.query.roomId))
   roomData.value.cellCode = data.cellCode
@@ -123,6 +127,7 @@ async function getNewData() {
     if (data.length < 2)
       break
 
+    isSend.value = false
     // 往栈存数据
     messageList.value = []
     messageList.value.push(...oldList, ...data)
@@ -132,10 +137,6 @@ async function getNewData() {
   // 滚动到底部
   scrollToBottom()
 }
-const sendData = ref(null)
-const sendReturnData = ref(null)
-const isSend = ref(false)
-
 function handleEnter(event: KeyboardEvent) {
   if (event.code === 'Enter' && event.ctrlKey) {
     event.preventDefault()
@@ -165,12 +166,12 @@ async function sendClick() {
 // 流输入调用的函数
 async function changData(talkdata: any, done = false) {
   if (done) {
-    getNewData()
+    await getNewData()
 
     // 重置数据
     sendData.value = null
     sendReturnData.value = null
-    isSend.value = false
+    // isSend.value = false
   }
   else {
     const lastIndex = talkdata.lastIndexOf('\n', talkdata.length - 2)

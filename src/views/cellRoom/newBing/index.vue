@@ -159,6 +159,7 @@ async function getNewData() {
       break
 
     // 往栈存数据
+    isSend.value = false
     messageList.value = []
     messageList.value.push(...oldList, ...data)
     paramsData.value.isUseCursor = true
@@ -170,12 +171,12 @@ async function getNewData() {
 // 流输入调用的函数
 async function changData(talkdata: any, done = false) {
   if (done) {
-    getNewData()
+    await getNewData()
 
     // 重置数据
     sendData.value = null
     sendReturnData.value = null
-    isSend.value = false
+    // isSend.value = false
   }
   else {
     const lastIndex = talkdata.lastIndexOf('\n', talkdata.length - 2)

@@ -137,7 +137,7 @@ async function sendClick() {
     else {
     // 图生文
     }
-    getNewData()
+    await getNewData()
     // 重置数据
     sendData.value = null
     isSend.value = false
