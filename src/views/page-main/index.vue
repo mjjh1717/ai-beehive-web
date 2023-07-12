@@ -85,7 +85,7 @@ const handleSelect = useDebounceFn(
         roomId: item.roomId,
       },
     })
-  }, 1000,
+  }, 100,
 )
 
 // 判断当前是否是选中的聊天室
