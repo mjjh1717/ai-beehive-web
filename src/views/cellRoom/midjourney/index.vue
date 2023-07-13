@@ -220,6 +220,7 @@ async function imagineClick(prompt: string) {
 // 图生文
 const isShowDescribeModal = ref(false)
 const describeFileList = ref<UploadFileInfo[]>([])
+const describeloading = ref(false)
 // 限制文件类型
 async function beforeUpload(data: {
   file: UploadFileInfo
@@ -234,6 +235,7 @@ async function beforeUpload(data: {
 }
 
 async function describeClick() {
+  describeloading.value = true
   if (describeFileList.value.length) {
     const pushData = new FormData()
     pushData.append('file', describeFileList.value[0].file)
@@ -241,9 +243,11 @@ async function describeClick() {
     await api.RoomMidjourneyDescribe(pushData)
     ms.success('图片上传成功')
     describeFileList.value = []
+    describeloading.value = false
     getNewData()
   }
   else {
+    describeloading.value = false
     ms.warning('请上传图片')
     return false
   }
@@ -640,6 +644,7 @@ function getTimeDate(newDate: string, oldDate: string) {
       title="图生文"
       :style="{ width: 600 }"
       :show-icon="false"
+      :loading="describeloading"
       positive-text="确认"
       negative-text="取消"
       @positive-click="describeClick"

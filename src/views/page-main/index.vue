@@ -437,37 +437,41 @@ provide('reload', reload)
         </div>
         <!-- 1 图纸选择 -->
         <n-form ref="AddModalFormRef" :model="AddModalForm" :rules="AddRules" mt-30>
-          <n-form-item v-show="current === 1" path="cellCode" label="图纸类型">
-            <n-radio-group v-model:value="AddModalForm.cellCode" flex-wrap>
-              <n-space item-style="display: flex;">
-                <n-radio-button
-                  v-for="(item, index) in cellList"
-                  :key="index"
-                  :value="item.code"
-                  :disabled="!item.isCanUse || item.status !== 'published' "
-                >
-                  <div mt-10 f-c-c w-250>
-                    <n-avatar
-                      :size="40"
-                      :src="item.imageUrl"
-                      fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
-                    />
-                    <div flex-1 ml-10>
-                      <n-ellipsis style="max-width: 210px">
-                        {{ item.name }}
-                      </n-ellipsis>
-                      <div>
-                        {{ item.status === 'closed' ? '已关闭' : item.status === 'coding' ? '开发中' : item.status === 'fixing' ? '修改中' : '使用中' }}
+          <div h-400 overflow-hidden overflow-y-auto>
+            <n-form-item v-show="current === 1" path="cellCode" label="图纸类型">
+              <n-radio-group v-model:value="AddModalForm.cellCode" flex-wrap>
+                <n-space item-style="display: flex;">
+                  <n-radio-button
+                    v-for="(item, index) in cellList"
+                    :key="index"
+                    :value="item.code"
+                    :disabled="!item.isCanUse || item.status !== 'published' "
+                  >
+                    <div mt-10 f-c-c w-250>
+                      <n-avatar
+                        :size="40"
+                        :src="item.imageUrl"
+                        fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+                      />
+                      <div flex-1 ml-10>
+                        <n-ellipsis style="max-width: 210px">
+                          {{ item.name }}
+                        </n-ellipsis>
+                        <div>
+                          {{ item.status === 'closed' ? '已关闭' : item.status === 'coding' ? '开发中' : item.status === 'fixing' ? '修改中' : '使用中' }}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div mt-5 mb-10 p-10 w-250 break-all overflow-hidden class="bg-[#f2f2f2]" style="white-space:normal; ">
-                    {{ item.introduce }}
-                  </div>
-                </n-radio-button>
-              </n-space>
-            </n-radio-group>
-          </n-form-item>
+                    <div p-10 mt-5 mb-10 class="bg-[#f2f2f2]" f-c-c>
+                      <n-ellipsis :line-clamp="2" w-230 break-all overflow-hidden style="white-space:normal; ">
+                        {{ item.introduce }}
+                      </n-ellipsis>
+                    </div>
+                  </n-radio-button>
+                </n-space>
+              </n-radio-group>
+            </n-form-item>
+          </div>
 
           <n-form-item v-show="current === 2" path="roomConfigParams" label="房间配置参数">
             <ConfigList v-model:newCellConfigList="AddModalForm.roomConfigParams" :cell-config-list="cellConfigList ?? []" />
