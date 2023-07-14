@@ -1,6 +1,6 @@
 <!--
  * @Author: mjjh
- * @LastEditTime: 2023-05-29 00:02:26
+ * @LastEditTime: 2023-07-14 00:18:59
  * @FilePath: \ai-beehive-web\src\views\login\register.vue
  * @Description:
 -->
@@ -173,7 +173,7 @@ async function pushClick() {
   }
   catch (error: any) {
     // 错误弹框
-    ms.error(error.message ?? 'error')
+    // ms.error(error.message ?? 'error')
   }
   finally {
     // 关闭加载状态

@@ -1,6 +1,6 @@
 <!--
  * @Author: mjjh
- * @LastEditTime: 2023-07-10 22:36:30
+ * @LastEditTime: 2023-07-14 00:24:53
  * @FilePath: \ai-beehive-web\src\views\login\emailValidation.vue
  * @Description: 邮箱验证页面
 -->
@@ -11,7 +11,7 @@ import { useDialog } from 'naive-ui'
 import { useRoute, useRouter } from 'vue-router'
 import api from './api'
 import { isString } from '~/src/utils'
-
+import Icon403 from '@/components/icons/403.vue'
 const loading = ref(false)
 const dialog = useDialog()
 const route = useRoute()
@@ -68,16 +68,16 @@ async function confirmation() {
 <template>
   <div flex h-full>
     <div px-4 m-auto space-y-4 text-center max-w-400px>
-      <h1 class="text-4xl text-slate-800 dark:text-neutral-200">
+      <h1 text-6xl text-slate-800 dark:text-neutral-200>
         请点击按钮确认注册
       </h1>
       <div flex items-center justify-center text-center>
-        <!-- <div class="w-[300px]">
-          <Icon403 class="w-[300px]" />
-        </div> -->
+        <div w-300>
+          <Icon403 w-300 />
+        </div>
       </div>
-      <n-button :loading="loading" type="primary" @click="confirmation">
-        确认
+      <n-button w-200 text-4xl :loading="loading" type="primary" @click="confirmation">
+        邮箱验证
       </n-button>
     </div>
   </div>

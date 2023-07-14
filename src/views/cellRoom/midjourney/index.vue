@@ -596,9 +596,11 @@ function getTimeDate(newDate: string, oldDate: string) {
             </div>
           </div>
           <div min-w-50 flex justify-end>
-            <n-avatar round>
-              user
-            </n-avatar>
+            <n-avatar
+              round
+              src="@/assets/images/avatar.png"
+              fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+            />
           </div>
         </div>
       </div>
@@ -654,6 +656,7 @@ function getTimeDate(newDate: string, oldDate: string) {
       <n-upload
         v-model:file-list="describeFileList"
         directory-dnd
+        :max="1"
         @before-upload="beforeUpload"
       >
         <n-upload-dragger>

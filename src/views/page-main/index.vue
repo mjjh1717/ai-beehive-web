@@ -437,8 +437,8 @@ provide('reload', reload)
         </div>
         <!-- 1 图纸选择 -->
         <n-form ref="AddModalFormRef" :model="AddModalForm" :rules="AddRules" mt-30>
-          <div h-400 overflow-hidden overflow-y-auto>
-            <n-form-item v-show="current === 1" path="cellCode" label="图纸类型">
+          <div v-show="current === 1" h-400 overflow-hidden overflow-y-auto>
+            <n-form-item path="cellCode" label="图纸类型">
               <n-radio-group v-model:value="AddModalForm.cellCode" flex-wrap>
                 <n-space item-style="display: flex;">
                   <n-radio-button

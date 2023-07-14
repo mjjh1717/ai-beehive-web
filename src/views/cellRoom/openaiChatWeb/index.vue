@@ -238,9 +238,11 @@ async function changData(talkdata: any, done = false) {
             </div>
           </div>
           <div min-w-50 flex justify-end>
-            <n-avatar round>
-              user
-            </n-avatar>
+            <n-avatar
+              round
+              src="https://img1.imgtp.com/2023/07/12/MBpt152Z.png"
+              fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+            />
           </div>
         </div>
       </div>
@@ -250,9 +252,11 @@ async function changData(talkdata: any, done = false) {
           {{ sendData }}
         </div>
         <div min-w-50 flex justify-end>
-          <n-avatar round>
-            user
-          </n-avatar>
+          <n-avatar
+            round
+            src="https://img1.imgtp.com/2023/07/12/MBpt152Z.png"
+            fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+          />
         </div>
       </div>
 

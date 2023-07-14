@@ -1,10 +1,16 @@
+/*
+ * @Author: mjjh
+ * @LastEditTime: 2023-07-14 09:38:57
+ * @FilePath: \ai-beehive-web\mock\api\user.js
+ * @Description:
+ */
 // import { resolveToken } from '../utils'
 
 const users = {
   admin: {
     id: 1,
     name: 'admin',
-    avatar: 'https://assets.qszone.com/images/avatar.jpg',
+    avatar: 'https://img1.imgtp.com/2023/07/12/MBpt152Z.png',
     email: 'Ronnie@123.com',
     role: ['admin'],
   },
