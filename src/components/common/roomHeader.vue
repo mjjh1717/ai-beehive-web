@@ -1,6 +1,6 @@
 <!--
  * @Author: mjjh
- * @LastEditTime: 2023-07-12 00:39:49
+ * @LastEditTime: 2023-07-16 18:58:12
  * @FilePath: \ai-beehive-web\src\components\common\roomHeader.vue
  * @Description:
 -->
@@ -13,6 +13,8 @@ interface Props {
   createTime: string
 }
 const props = withDefaults(defineProps<Props>(), {})
+
+const showEdit = ref(false)
 
 // todo 编辑按钮未绑定
 </script>
@@ -46,11 +48,26 @@ const props = withDefaults(defineProps<Props>(), {})
     </div>
     <div flex-1 />
     <!-- :color="`${props.color}`" -->
-    <!-- <n-button type="primary">
+    <n-button type="primary" @click="showEdit = true">
       <n-icon size="16">
         <icon-ri:edit-line />
       </n-icon>
       编辑
-    </n-button> -->
+    </n-button>
+
+    <n-modal
+      v-model:show="showEdit"
+      preset="dialog"
+      title="房间参数编辑"
+      :style="{ width: 600 }"
+      :show-icon="false"
+      positive-text="确认"
+      negative-text="取消"
+      @positive-click="showEdit = false"
+      @negative-click="showEdit = false"
+      @mask-click="showEdit = false"
+    >
+      开发中........
+    </n-modal>
   </div>
 </template>

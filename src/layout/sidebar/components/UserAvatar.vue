@@ -1,6 +1,6 @@
 <!--
  * @Author: mjjh
- * @LastEditTime: 2023-07-16 15:43:32
+ * @LastEditTime: 2023-07-16 18:47:32
  * @FilePath: \ai-beehive-web\src\layout\sidebar\components\UserAvatar.vue
  * @Description:
 -->
@@ -13,6 +13,16 @@ const ms = useMessage()
 const userStore = useUserStore()
 
 const options = [
+  {
+    label: userStore.nickname,
+    key: 'nickname',
+    icon: renderIcon('ic:round-account-circle', { size: 14 }),
+  },
+  {
+    label: userStore.email,
+    key: 'email',
+    icon: renderIcon('mdi:email-heart-outline', { size: 14 }),
+  },
   {
     label: '退出登录',
     key: 'logout',
@@ -42,7 +52,8 @@ function handleSelect(key: string) {
 <template>
   <n-dropdown :options="options" @select="handleSelect">
     <div flex items-center justify-center cursor-pointer mt-15 mb-15>
-      <img :src="userStore.avatar" mr10 w-35 h-35 rounded-full>
+      <!-- userStore.avatarUrl -->
+      <img src="https://img1.imgtp.com/2023/07/12/MBpt152Z.png" mr10 w-35 h-35 rounded-full>
     </div>
   </n-dropdown>
 </template>

@@ -1,6 +1,6 @@
 /*
  * @Author: mjjh
- * @LastEditTime: 2023-07-14 09:38:57
+ * @LastEditTime: 2023-07-16 18:25:33
  * @FilePath: \ai-beehive-web\mock\api\user.js
  * @Description:
  */
@@ -17,7 +17,7 @@ const users = {
 }
 export default [
   {
-    url: '/api/user',
+    url: '/api/userInfo',
     method: 'get',
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     response: ({ headers }) => {

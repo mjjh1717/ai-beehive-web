@@ -1,3 +1,15 @@
+/*
+ * @Author: mjjh
+ * @LastEditTime: 2023-07-16 18:36:16
+ * @FilePath: \ai-beehive-web\src\store\modules\user\index.ts
+ * @Description:
+ */
+/*
+ * @Author: mjjh
+ * @LastEditTime: 2023-07-16 18:34:43
+ * @FilePath: \ai-beehive-web\src\store\modules\user\index.ts
+ * @Description:
+ */
 import { defineStore } from 'pinia'
 import { removeToken, toLogin } from '@/utils'
 import { usePermissionStore, useTabStore } from '@/store'
@@ -5,9 +17,12 @@ import { resetRouter } from '@/router'
 import api from '@/api'
 
 interface UserInfo {
-  id?: string
-  name?: string
-  avatar?: string
+  baseUserId?: string
+  nickname?: string
+  status?: string
+  email?: string
+  description?: string
+  avatarUrl?: string
   role?: Array<string>
 }
 
@@ -18,14 +33,23 @@ export const useUserStore = defineStore('user', {
     }
   },
   getters: {
-    userId(): string {
-      return this.userInfo.id || ''
+    baseUserId(): string {
+      return this.userInfo.baseUserId || ''
     },
-    name(): string {
-      return this.userInfo.name || ''
+    nickname(): string {
+      return this.userInfo.nickname || ''
     },
-    avatar(): string {
-      return this.userInfo.avatar || ''
+    status(): string {
+      return this.userInfo.status || ''
+    },
+    email(): string {
+      return this.userInfo.email || ''
+    },
+    description(): string {
+      return this.userInfo.description || ''
+    },
+    avatarUrl(): string {
+      return this.userInfo.avatarUrl || ''
     },
     role(): Array<string> {
       return this.userInfo.role || []
@@ -37,8 +61,8 @@ export const useUserStore = defineStore('user', {
       try {
         const res: any = await api.getUser()
         if (res.code === 200) {
-          const { id, name, avatar, role } = res.data
-          this.userInfo = { id, name, avatar, role }
+          const { baseUserId, nickname, status, email, description, avatarUrl } = res.data
+          this.userInfo = { baseUserId, nickname, status, email, description, avatarUrl }
           return Promise.resolve(res.data)
         }
         else {

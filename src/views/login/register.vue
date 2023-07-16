@@ -1,7 +1,7 @@
 <!--
  * @Author: mjjh
- * @LastEditTime: 2023-07-14 00:18:59
- * @FilePath: \ai-beehive-web\src\views\login\register.vue
+ * @LastEditTime: 2023-07-16 19:08:31
+ * @FilePath: \chatgpt-shuowen\src\views\login\register.vue
  * @Description:
 -->
 <script setup lang="ts">

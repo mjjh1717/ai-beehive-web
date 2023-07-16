@@ -1,6 +1,6 @@
 <!--
  * @Author: mjjh
- * @LastEditTime: 2023-07-16 15:46:20
+ * @LastEditTime: 2023-07-16 18:40:20
  * @FilePath: \ai-beehive-web\src\layout\RecycleBin\header\components\UserAvatar.vue
  * @Description:
 -->
@@ -41,8 +41,8 @@ function handleSelect(key: string) {
 <template>
   <n-dropdown :options="options" @select="handleSelect">
     <div flex items-center cursor-pointer>
-      <img :src="userStore.avatar" mr10 w-35 h-35 rounded-full>
-      <span hidden sm:block>{{ userStore.name }}</span>
+      <img :src="userStore.avatarUrl ?? 'https://img1.imgtp.com/2023/07/12/MBpt152Z.png'" mr10 w-35 h-35 rounded-full>
+      <span hidden sm:block>{{ userStore.nickname }}</span>
     </div>
   </n-dropdown>
 </template>

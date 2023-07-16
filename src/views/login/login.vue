@@ -1,12 +1,13 @@
 <!--
  * @Author: mjjh
- * @LastEditTime: 2023-07-16 15:37:10
+ * @LastEditTime: 2023-07-16 18:53:22
  * @FilePath: \ai-beehive-web\src\views\login\login.vue
  * @Description:
 -->
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
-import type { FormRules } from 'naive-ui'
+import { useMessage } from 'naive-ui'
+import type { FormInst, FormRules } from 'naive-ui'
 import api from './api'
 import type { loginModel } from './types/apiTypes'
 import { getLocal, removeLocal, setLocal, setToken } from '@/utils'
@@ -15,7 +16,8 @@ import { addDynamicRoutes } from '@/router'
 const router = useRouter()
 const route = useRoute()
 const query = route.query
-
+const formRef = ref<FormInst | null>(null)
+const ms = useMessage()
 const rules: FormRules = {
   username: {
     required: true,
@@ -55,39 +57,44 @@ if (localLoginInfo) {
 const loging = ref<boolean>(false)
 const isRemember = useStorage('isRemember', false)
 async function handleLogin() {
-  const { username, password } = loginInfo.value
-  if (!username || !password) {
-    window.$message?.warning('请输入用户名和密码')
-    return
-  }
-  try {
-    loging.value = true
-    const res: any = await api.login({ username, password: password.toString() })
-    // todo 还没做权限判断 暂时写死
+  formRef.value?.validate(async (errors: any) => {
+    if (!errors) {
+      const { username, password } = loginInfo.value
+      if (!username || !password) {
+        ms.warning('请输入用户名和密码')
+        return
+      }
+      try {
+        loging.value = true
+        const res: any = await api.login({ username, password: password.toString() })
 
-    // 存token
-    setToken(res.data.token)
-    // 存用户账户吗密码
-    if (isRemember.value)
-      setLocal('loginInfo', { username, password })
-    else
-      removeLocal('loginInfo')
+        // 存token
+        setToken(res.data.token)
+        // 存用户账户吗密码
+        if (isRemember.value)
+          setLocal('loginInfo', { username, password })
+        else
+          removeLocal('loginInfo')
 
-    // 添加路由操作
-    await addDynamicRoutes()
-    if (query.redirect) {
-      const path = query.redirect as string
-      Reflect.deleteProperty(query, 'redirect')
-      router.push({ path, query })
+        // 添加路由操作
+        await addDynamicRoutes()
+        if (query.redirect) {
+          const path = query.redirect as string
+          Reflect.deleteProperty(query, 'redirect')
+          router.push({ path, query })
+        }
+        else {
+          router.push('/')
+        }
+      }
+      catch (error) {
+        console.error(error)
+      }
+      loging.value = false
     }
-    else {
-      router.push('/')
-    }
-  }
-  catch (error) {
-    console.error(error)
-  }
-  loging.value = false
+
+    else { ms.error('请正确填写输入框中的内容') }
+  })
 }
 /**
  * @description: 监听键盘Enter事件
