@@ -1,6 +1,6 @@
 <!--
  * @Author: mjjh
- * @LastEditTime: 2023-07-14 00:40:27
+ * @LastEditTime: 2023-07-16 16:43:15
  * @FilePath: \ai-beehive-web\src\components\useComponents\ConfigList.vue
  * @Description:
 -->
@@ -125,11 +125,12 @@ watch(cellConfigModalForm, (value, oldValue) => {
               {{ cellConfigModalForm[index].value !== '' ? cellConfigModalForm[index].value : '参数默认为空' }}
             </div>
             <n-input v-else v-model:value="cellConfigModalForm[index].value" :placeholder="item.exampleValue" />
-            <n-button dashed :type=" cellConfigModalForm[index].isUseDefaultValue ? 'primary' : 'info' " w-70 :disabled="!item.isHaveDefaultValue || !item.isUserModifiable" ml-10 @click="cellConfigModalForm[index].isUseDefaultValue = !cellConfigModalForm[index].isUseDefaultValue">
+            <n-button dashed :type=" cellConfigModalForm[index].isUseDefaultValue ? 'primary' : 'info' " w-70 :disabled="!item.isHaveDefaultValue || !item.isUserModifiable" ml-10 @click="cellConfigModalForm[index].isUseDefaultValue = !cellConfigModalForm[index].isUseDefaultValue, cellConfigModalForm[index].isUseDefaultValue ? cellConfigModalForm[index].value = item.defaultValue : ''">
               <div v-if="cellConfigModalForm[index].isUseDefaultValue">
                 编辑
               </div>
-              <div v-else @click="cellConfigModalForm[index].value = item.defaultValue">
+              <!--  @click="cellConfigModalForm[index].value = item.defaultValue" -->
+              <div v-else>
                 重置
               </div>
             </n-button>

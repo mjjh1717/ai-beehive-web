@@ -496,7 +496,8 @@ function getContent(isCanUse: boolean | undefined, status: string) {
                             {{ item.name }}
                           </n-ellipsis>
                           <div>
-                            {{ item.status === 'closed' ? '已关闭' : item.status === 'coding' ? '开发中' : item.status === 'fixing' ? '修改中' : '使用中' }}
+                            {{ getContent(item.isCanUse, String(item.status)) }}
+                            <!-- {{ item.status === 'closed' ? '已关闭' : item.status === 'coding' ? '开发中' : item.status === 'fixing' ? '修改中' : '使用中' }} -->
                           </div>
                         </div>
                       </div>
