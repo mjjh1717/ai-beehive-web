@@ -1,6 +1,7 @@
 interface ViteEnv {
   VITE_PORT: number
   VITE_BASE_URL: string
+  VITE_RESOURCE_BASE_URL: string
   VITE_USE_MOCK?: boolean
   VITE_USE_PROXY?: boolean
   VITE_USE_HASH?: boolean

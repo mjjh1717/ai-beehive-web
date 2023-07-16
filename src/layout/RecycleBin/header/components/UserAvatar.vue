@@ -1,7 +1,15 @@
+<!--
+ * @Author: mjjh
+ * @LastEditTime: 2023-07-16 15:46:20
+ * @FilePath: \ai-beehive-web\src\layout\RecycleBin\header\components\UserAvatar.vue
+ * @Description:
+-->
 <script setup lang="ts">
+import { useMessage } from 'naive-ui'
 import { useUserStore } from '@/store'
 import { renderIcon } from '@/utils'
 
+const ms = useMessage()
 const userStore = useUserStore()
 
 const options = [
@@ -21,7 +29,9 @@ function handleSelect(key: string) {
       negativeText: '取消',
       onPositiveClick() {
         userStore.logout()
-        window.$message?.success('已退出登录!')
+        ms.success('已退出登录!')
+        // console.log('window.$message?.success', window.$message?.success)
+        // window.$message?.success('已退出登录!', { duration: 5000 })
       },
     })
   }

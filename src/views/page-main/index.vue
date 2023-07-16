@@ -255,6 +255,28 @@ function reload() {
   })
 }
 provide('reload', reload)
+
+function getContent(isCanUse: boolean | undefined, status: string) {
+  if (!isCanUse) {
+    return '暂无权限'
+  }
+  else {
+    if (status === 'coding')
+      return '开发中'
+
+    else if (status === 'fixing')
+      return '维护中'
+
+    else if (status === 'closed')
+      return '已关闭'
+
+    else if (status === 'wait_coding')
+      return '计划开发中'
+
+    else
+      return ''
+  }
+}
 </script>
 
 <template>
@@ -291,6 +313,7 @@ provide('reload', reload)
               </div>
               <div v-for="(item, index) of cellMenuList" v-else :key="index" flex>
                 <n-card
+                  cursor-pointer
                   size="small" hoverable mt-6
                   :class="isActive(item.roomId) && ['bg-neutral-100', 'text-[#FFAD0A]', 'dark:bg-[#24272e]']"
                   @click="handleSelect(item)"
@@ -437,37 +460,53 @@ provide('reload', reload)
         </div>
         <!-- 1 图纸选择 -->
         <n-form ref="AddModalFormRef" :model="AddModalForm" :rules="AddRules" mt-30>
-          <div v-show="current === 1" h-400 overflow-hidden overflow-y-auto>
+          <div v-show="current === 1" p-b-50 h-400 overflow-hidden overflow-y-auto>
             <n-form-item path="cellCode" label="图纸类型">
               <n-radio-group v-model:value="AddModalForm.cellCode" flex-wrap>
                 <n-space item-style="display: flex;">
-                  <n-radio-button
+                  <n-watermark
                     v-for="(item, index) in cellList"
                     :key="index"
-                    :value="item.code"
-                    :disabled="!item.isCanUse || item.status !== 'published' "
+                    :content="getContent(item.isCanUse, String(item.status))"
+                    cross
+                    selectable
+                    :font-size="16"
+                    :line-height="17"
+                    :width="160"
+                    :height="100"
+                    :x-offset="12"
+                    :y-offset="28"
+                    :rotate="-15"
                   >
-                    <div mt-10 f-c-c w-250>
-                      <n-avatar
-                        :size="40"
-                        :src="item.imageUrl"
-                        fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
-                      />
-                      <div flex-1 ml-10>
-                        <n-ellipsis style="max-width: 210px">
-                          {{ item.name }}
-                        </n-ellipsis>
-                        <div>
-                          {{ item.status === 'closed' ? '已关闭' : item.status === 'coding' ? '开发中' : item.status === 'fixing' ? '修改中' : '使用中' }}
+                    <n-radio-button
+                      style="border: 1px solid #e0e0e6; border-radius: 5px;"
+                      :value="item.code"
+                      :disabled="!item.isCanUse || item.status !== 'published' "
+                    >
+                      <div mt-10 f-c-c w-250>
+                        <n-avatar
+                          round
+                          style="border: 2px solid #fff;"
+                          :size="40"
+                          :src="item.imageUrl"
+                          fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+                        />
+                        <div flex-1 ml-10>
+                          <n-ellipsis style="max-width: 210px">
+                            {{ item.name }}
+                          </n-ellipsis>
+                          <div>
+                            {{ item.status === 'closed' ? '已关闭' : item.status === 'coding' ? '开发中' : item.status === 'fixing' ? '修改中' : '使用中' }}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div p-10 mt-5 mb-10 class="bg-[#f2f2f2]" f-c-c>
-                      <n-ellipsis :line-clamp="2" w-230 break-all overflow-hidden style="white-space:normal; ">
-                        {{ item.introduce }}
-                      </n-ellipsis>
-                    </div>
-                  </n-radio-button>
+                      <div p-10 mt-5 mb-10 class="bg-[#f2f2f2] dark:bg-hex-121212" f-c-c>
+                        <n-ellipsis :line-clamp="2" w-230 break-all overflow-hidden style="white-space:normal; ">
+                          {{ item.introduce }}
+                        </n-ellipsis>
+                      </div>
+                    </n-radio-button>
+                  </n-watermark>
                 </n-space>
               </n-radio-group>
             </n-form-item>

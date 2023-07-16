@@ -21,7 +21,7 @@ const roomData = ref({
   name: '',
 })
 
-const baseURL = import.meta.env.VITE_BASE_URL
+const baseURL = import.meta.env.VITE_RESOURCE_BASE_URL
 
 const roomStore = useRoomStore()
 
@@ -598,7 +598,7 @@ function getTimeDate(newDate: string, oldDate: string) {
           <div min-w-50 flex justify-end>
             <n-avatar
               round
-              src="@/assets/images/avatar.png"
+              src="https://img1.imgtp.com/2023/07/12/MBpt152Z.png"
               fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
             />
           </div>

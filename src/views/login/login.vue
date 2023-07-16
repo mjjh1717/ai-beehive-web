@@ -1,6 +1,6 @@
 <!--
  * @Author: mjjh
- * @LastEditTime: 2023-06-08 23:33:06
+ * @LastEditTime: 2023-07-16 15:37:10
  * @FilePath: \ai-beehive-web\src\views\login\login.vue
  * @Description:
 -->
@@ -89,6 +89,16 @@ async function handleLogin() {
   }
   loging.value = false
 }
+/**
+ * @description: 监听键盘Enter事件
+ * @param {*} event
+ */
+function handlePress(event: KeyboardEvent) {
+  if (event.key === 'Enter' && !event.shiftKey) {
+    event.preventDefault()
+    handleLogin()
+  }
+}
 </script>
 
 <template>
@@ -97,7 +107,7 @@ async function handleLogin() {
       <n-input v-model:value="loginInfo.username" placeholder="请输入邮箱" />
     </n-formItem>
     <n-formItem path="password" label="密码">
-      <n-input v-model:value="loginInfo.password" type="password" show-password-on="mousedown" placeholder="请输入密码" />
+      <n-input v-model:value="loginInfo.password" type="password" show-password-on="mousedown" placeholder="请输入密码" @keypress="handlePress" />
     </n-formItem>
   </n-form>
   <n-button

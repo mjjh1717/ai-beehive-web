@@ -22,7 +22,7 @@ const roomData = ref({
   name: '',
 })
 
-const baseURL = import.meta.env.VITE_BASE_URL
+const baseURL = import.meta.env.VITE_RESOURCE_BASE_URL
 
 const ms = useMessage()
 
