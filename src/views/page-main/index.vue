@@ -132,7 +132,7 @@ const addloading = ref(false)
 const AddModalFormRef = ref()
 const AddModalForm = ref<addRoomVo>({
   roomInfo: {
-    name: undefined,
+    name: '未填写房间名称',
     color: '#fead0b',
   },
   cellCode: undefined,
@@ -235,7 +235,7 @@ function addItem() {
 function resetAddData() {
   AddModalForm.value = {
     roomInfo: {
-      name: undefined,
+      name: '未填写房间名称',
       color: '#fead0b',
     },
     cellCode: undefined,
