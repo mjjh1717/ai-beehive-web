@@ -116,7 +116,6 @@ function getScrollData(e: any) {
 
 const sendData = ref(null)
 const isSend = ref(false)
-const selectType = ref('imagine')
 const showModal = ref(false)
 const showModalUrl = ref('')
 
@@ -130,17 +129,18 @@ function handleEnter(event: KeyboardEvent) {
 async function sendClick() {
   if (sendData.value) {
     isSend.value = true
-    if (selectType.value === 'imagine') {
-      // 文生图
+    try {
       await imagineClick(sendData.value ?? '')
+      await getNewData()
+      // 重置数据
+      sendData.value = null
+      isSend.value = false
     }
-    else {
-    // 图生文
-    }
-    await getNewData()
+    catch (error) {
     // 重置数据
-    sendData.value = null
-    isSend.value = false
+      sendData.value = null
+      isSend.value = false
+    }
     // 滚动到底部
     scrollToBottom()
   }
@@ -240,11 +240,17 @@ async function describeClick() {
     const pushData = new FormData()
     pushData.append('file', describeFileList.value[0].file)
     pushData.append('roomId', roomData.value.roomId)
-    await api.RoomMidjourneyDescribe(pushData)
-    ms.success('图片上传成功')
-    describeFileList.value = []
-    describeloading.value = false
-    getNewData()
+    try {
+      await api.RoomMidjourneyDescribe(pushData)
+      ms.success('图片上传成功')
+      describeFileList.value = []
+      describeloading.value = false
+      getNewData()
+    }
+    catch (error) {
+      describeloading.value = false
+      return false
+    }
   }
   else {
     describeloading.value = false
