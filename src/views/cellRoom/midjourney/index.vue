@@ -2,6 +2,7 @@
 import { onMounted, onUnmounted, toRaw } from 'vue'
 import { useMessage } from 'naive-ui'
 import MdEditor from 'md-editor-v3'
+import 'md-editor-v3/lib/style.css'
 import type { UploadFileInfo } from 'naive-ui'
 import api from './api'
 import type { DescribeRequest, ImagineRequest, RoomMidjourneyMsgVO, RoomMidjourneyRequest, UpscaleRequest, VariationRequest } from './types/apiTypes'

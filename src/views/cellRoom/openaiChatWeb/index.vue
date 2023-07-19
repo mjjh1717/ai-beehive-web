@@ -2,6 +2,7 @@
 import { onMounted, onUnmounted } from 'vue'
 import { useMessage } from 'naive-ui'
 import MdEditor from 'md-editor-v3'
+import 'md-editor-v3/lib/style.css'
 import api from './api'
 import type { RoomOpenAiChatMsgVO, RoomOpenaiChatListRequest, sendRequest } from './types/apiTypes'
 import roomHeader from '@/components/common/roomHeader.vue'
