@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, toRaw } from 'vue'
 import { useMessage } from 'naive-ui'
-import MdEditor from 'md-editor-v3'
-import 'md-editor-v3/lib/style.css'
 import type { UploadFileInfo } from 'naive-ui'
+import MdEditor from 'md-editor-v3'
+import type { Themes } from 'md-editor-v3'
 import api from './api'
 import type { DescribeRequest, ImagineRequest, RoomMidjourneyMsgVO, RoomMidjourneyRequest, UpscaleRequest, VariationRequest } from './types/apiTypes'
 import roomHeader from '@/components/common/roomHeader.vue'
-import { useRoomStore } from '@/store'
+import { useRoomStore, useThemeStore } from '@/store'
 import { useScroll } from '~/src/utils/common/useScroll'
 
 const { scrollRef, scrollToBottom } = useScroll()
@@ -25,6 +25,24 @@ const roomData = ref({
 const baseURL = import.meta.env.VITE_RESOURCE_BASE_URL
 
 const roomStore = useRoomStore()
+
+const themStore = useThemeStore()
+
+const themeStyle = ref<Themes>('light')
+watch(
+  () => themStore.darkMode,
+  (newValue) => {
+    if (newValue)
+      themeStyle.value = 'dark'
+
+    else
+
+      themeStyle.value = 'light'
+  },
+  {
+    immediate: true,
+  },
+)
 
 const ms = useMessage()
 
@@ -73,7 +91,21 @@ watch(messageList, (value, oldValue) => {
 })
 
 async function getRoomMessageList(params: RoomMidjourneyRequest) {
-  const { data } = await api.getRoomMidjourneyList(params)
+  let { data } = await api.getRoomMidjourneyList(params)
+  data = data.map((item: RoomMidjourneyMsgVO) => {
+    if (item.status !== 'MJ_SUCCESS') {
+      const imgUrl_c = `${baseURL}${item.compressedImageUrl}`
+      const imgUrl_o = `${baseURL}${item.originalImageUrl}`
+      const time = new Date().getTime()
+      item.compressedImageUrl = `${imgUrl_c}?time=${time}`
+      item.originalImageUrl = `${imgUrl_o}?time=${time}`
+    }
+    else {
+      item.compressedImageUrl = `${baseURL}${item.compressedImageUrl}`
+      item.originalImageUrl = `${baseURL}${item.originalImageUrl}`
+    }
+    return item
+  })
 
   if (data.length > 0) {
     const oldList = toRaw(messageList.value)
@@ -160,7 +192,22 @@ async function getNewData() {
       size: 2,
       isAsc: true,
     }
-    const { data } = await api.getRoomMidjourneyList(pushData)
+    let { data } = await api.getRoomMidjourneyList(pushData)
+
+    data = data.map((item: RoomMidjourneyMsgVO) => {
+      if (item.status !== 'MJ_SUCCESS') {
+        const imgUrl_c = `${baseURL}${item.compressedImageUrl}`
+        const imgUrl_o = `${baseURL}${item.originalImageUrl}`
+        const time = new Date().getTime()
+        item.compressedImageUrl = `${imgUrl_c}?time=${time}`
+        item.originalImageUrl = `${imgUrl_o}?time=${time}`
+      }
+      else {
+        item.compressedImageUrl = `${baseURL}${item.compressedImageUrl}`
+        item.originalImageUrl = `${baseURL}${item.originalImageUrl}`
+      }
+      return item
+    })
 
     if (data.length < 2)
       break
@@ -184,6 +231,17 @@ async function variationClick(msgId: number | undefined, index: number) {
     roomId: roomData.value.roomId,
   }
   const { data } = await api.getRoomMidjourneyItem(String(msgId))
+  if (data.status !== 'MJ_SUCCESS') {
+    const imgUrl_c = `${baseURL}${data.compressedImageUrl}`
+    const imgUrl_o = `${baseURL}${data.originalImageUrl}`
+    const time = new Date().getTime()
+    data.compressedImageUrl = `${imgUrl_c}?time=${time}`
+    data.originalImageUrl = `${imgUrl_o}?time=${time}`
+  }
+  else {
+    data.compressedImageUrl = `${baseURL}${data.compressedImageUrl}`
+    data.originalImageUrl = `${baseURL}${data.originalImageUrl}`
+  }
   for (const index in messageList.value) {
     if (messageList.value[index].id === msgId)
       messageList.value[index] = data
@@ -201,6 +259,17 @@ async function upscaleClick(msgId: number | undefined, index: number) {
     roomId: roomData.value.roomId,
   }
   const { data } = await api.getRoomMidjourneyItem(String(msgId))
+  if (data.status !== 'MJ_SUCCESS') {
+    const imgUrl_c = `${baseURL}${data.compressedImageUrl}`
+    const imgUrl_o = `${baseURL}${data.originalImageUrl}`
+    const time = new Date().getTime()
+    data.compressedImageUrl = `${imgUrl_c}?time=${time}`
+    data.originalImageUrl = `${imgUrl_o}?time=${time}`
+  }
+  else {
+    data.compressedImageUrl = `${baseURL}${data.compressedImageUrl}`
+    data.originalImageUrl = `${baseURL}${data.originalImageUrl}`
+  }
   for (const index in messageList.value) {
     if (messageList.value[index].id === msgId)
       messageList.value[index] = data
@@ -377,6 +446,17 @@ async function newMessageInterval(id: string, time = 10000) {
 
   // step 2 第一次进来请求一次数据
   const { data } = await api.getRoomMidjourneyItem(id)
+  if (data.status !== 'MJ_SUCCESS') {
+    const imgUrl_c = `${baseURL}${data.compressedImageUrl}`
+    const imgUrl_o = `${baseURL}${data.originalImageUrl}`
+    const time = new Date().getTime()
+    data.compressedImageUrl = `${imgUrl_c}?time=${time}`
+    data.originalImageUrl = `${imgUrl_o}?time=${time}`
+  }
+  else {
+    data.compressedImageUrl = `${baseURL}${data.compressedImageUrl}`
+    data.originalImageUrl = `${baseURL}${data.originalImageUrl}`
+  }
   for (const index in messageList.value) {
     if (String(messageList.value[index].id) === id)
       messageList.value[index] = data
@@ -385,6 +465,18 @@ async function newMessageInterval(id: string, time = 10000) {
   // step 3 维护messageIntervalDatas.value对象
   messageIntervalDatas.value[id] = setInterval(async () => {
     const { data } = await api.getRoomMidjourneyItem(id)
+    if (data.status !== 'MJ_SUCCESS') {
+      const imgUrl_c = `${baseURL}${data.compressedImageUrl}`
+      const imgUrl_o = `${baseURL}${data.originalImageUrl}`
+      const time = new Date().getTime()
+      data.compressedImageUrl = `${imgUrl_c}?time=${time}`
+      data.originalImageUrl = `${imgUrl_o}?time=${time}`
+    }
+    else {
+      data.compressedImageUrl = `${baseURL}${data.compressedImageUrl}`
+      data.originalImageUrl = `${baseURL}${data.originalImageUrl}`
+    }
+
     for (const index in messageList.value) {
       if (String(messageList.value[index].id) === id)
         messageList.value[index] = data
@@ -488,7 +580,7 @@ function getTimeDate(newDate: string, oldDate: string) {
               {{ item.createTime }}
             </n-ellipsis>
             <div flex justify-start>
-              <div p-20 rd-10 inline-block break-all class="bg-[#f4f6f8]" dark:bg-hex-24272e>
+              <div p-20 rd-10 inline-block break-all bg-hex-fff dark:bg-hex-24272e card-shadow>
                 <div max-w-600>
                   <span fw-bold min-w-70>
                     画图描述:
@@ -499,7 +591,7 @@ function getTimeDate(newDate: string, oldDate: string) {
                   <span fw-bold min-w-70>
                     任务状态:
                   </span>
-                  {{ `${isState(String(item.status))?.label} ${item.waitQueueLength ?? ''}` }}
+                  {{ `${isState(String(item.status))?.label}  ${item.waitQueueLength ? (`排队人数:${item.waitQueueLength}`) ?? '-' : ''}` }}
                   <n-button v-if="getrsBtnType(String(item.id), String(item.status))" type="success" ml-10 text :disabled="messageBtnTimeOut[String(item.id)]" size="tiny" strong w-60 @click="rsBtnClick(String(item.id), String(item.status))">
                     <n-icon size="20">
                       <icon-material-symbols:autorenew />
@@ -516,13 +608,27 @@ function getTimeDate(newDate: string, oldDate: string) {
                   </span>
                   {{ item.createTime }}{{ item.discordFinishTime ? `-${item.discordFinishTime}` : '' }}
                 </div>
-                <div v-if="item.responseContent" flex>
+                <div v-if="item.responseContent" flex items-center>
                   <span fw-bold min-w-70>
                     响应内容：
                   </span>
-                  <MdEditor v-model="item.responseContent" preview-only />
+                  <MdEditor v-model="item.responseContent" :theme="themeStyle" preview-only />
                 </div>
-                <div v-if="item.compressedImageUrl && item.originalImageUrl && !['MJ_IN_PROGRESS', 'MJ_WAIT_RECEIVED', 'SYS_QUEUING'].includes(String(item.status))" relative w-200 flex items-end>
+                <!-- item.compressedImageUrl && item.originalImageUrl && v-if="!['MJ_IN_PROGRESS', 'MJ_WAIT_RECEIVED', 'SYS_QUEUING'].includes(String(item.status))"   -->
+
+                <!-- <div>{{ item.compressedImageUrl }}</div>
+                <div>{{ item.originalImageUrl }}</div> -->
+                <div relative w-200 flex items-end>
+                  <!-- <n-image
+                    v-if="item.status !== 'MJ_SUCCESS'"
+                    mt-10
+                    b-rd-4
+                    :show-toolbar="false"
+                    :width="200"
+                    :height="200"
+                    :src="getTimeImgUrl(item.compressedImageUrl)"
+                    fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+                  /> -->
                   <n-image
                     lazy
                     mt-10
@@ -530,10 +636,13 @@ function getTimeDate(newDate: string, oldDate: string) {
                     :show-toolbar="false"
                     :width="200"
                     :height="200"
-                    :src="`${baseURL}${item.compressedImageUrl}`"
+                    :src="item.compressedImageUrl"
                     fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
                   />
-                  <n-button absolute bottom-0 right-0 type="primary" size="tiny" color="#767c82" @click="showModal = true; showModalUrl = `${baseURL}${item.originalImageUrl}`">
+                  <!-- <n-button v-if="item.status === 'MJ_SUCCESS'" absolute bottom-0 right-0 type="primary" size="tiny" color="#767c82" @click="showModal = true; showModalUrl = `${baseURL}${item.originalImageUrl}?time=${new Date().getTime()}`">
+                    查看原图
+                  </n-button> -->
+                  <n-button absolute bottom-0 right-0 type="primary" size="tiny" color="#767c82" @click="showModal = true; showModalUrl = String(item.originalImageUrl)">
                     查看原图
                   </n-button>
                 </div>
@@ -597,7 +706,7 @@ function getTimeDate(newDate: string, oldDate: string) {
               </n-ellipsis>
             </div>
             <div flex justify-end>
-              <div p-10 rd-10 inline-block break-all style="background-color: #fed784;  color: #3a3a3a;">
+              <div p-10 rd-10 inline-block break-all card-shadow style="background-color: #fed784;  color: #3a3a3a;">
                 {{ `/${item.action}${item.uvIndex ? `: ${item.uvIndex}` : ''} ${item.prompt ?? ''}` }}
               </div>
             </div>

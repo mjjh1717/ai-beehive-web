@@ -2,11 +2,11 @@
 import { onMounted, onUnmounted } from 'vue'
 import { useMessage } from 'naive-ui'
 import MdEditor from 'md-editor-v3'
-import 'md-editor-v3/lib/style.css'
+import type { Themes } from 'md-editor-v3'
 import api from './api'
 import type { RoomOpenAiChatMsgVO, RoomOpenaiChatListRequest, sendRequest } from './types/apiTypes'
 import roomHeader from '@/components/common/roomHeader.vue'
-import { useRoomStore } from '@/store'
+import { useRoomStore, useThemeStore } from '@/store'
 import { useScroll } from '~/src/utils/common/useScroll'
 const { scrollRef, scrollToBottom } = useScroll()
 
@@ -21,6 +21,24 @@ const roomData = ref({
 })
 
 const roomStore = useRoomStore()
+
+const themStore = useThemeStore()
+
+const themeStyle = ref<Themes>('light')
+watch(
+  () => themStore.darkMode,
+  (newValue) => {
+    if (newValue)
+      themeStyle.value = 'dark'
+
+    else
+
+      themeStyle.value = 'light'
+  },
+  {
+    immediate: true,
+  },
+)
 
 const ms = useMessage()
 
@@ -213,14 +231,11 @@ async function changData(talkdata: any, done = false) {
             />
           </div>
           <div>
-            <n-ellipsis min-width-140px>
+            <n-ellipsis min-width-140px mb-5>
               {{ item.createTime }}
             </n-ellipsis>
-            <div flex justify-start>
-              <div p-10 rd-10 inline-block break-all class="bg-[#f4f6f8]" dark:bg-hex-24272e>
-                <!-- {{ item.content }} -->
-                <MdEditor v-model="item.content" preview-only />
-              </div>
+            <div flex justify-start m-r-70>
+              <MdEditor v-model="item.content" preview-only :theme="themeStyle" rd-10 inline-block break-all card-shadow />
             </div>
           </div>
         </div>
@@ -228,12 +243,12 @@ async function changData(talkdata: any, done = false) {
         <div v-else flex justify-end items-start mb-20>
           <div>
             <div style="width: 100%;" flex justify-end>
-              <n-ellipsis min-width-140px>
+              <n-ellipsis min-width-140px mb-5>
                 {{ item.createTime }}
               </n-ellipsis>
             </div>
             <div flex justify-end>
-              <div p-10 rd-10 inline-block break-all style="background-color: #fed784;   color: #3a3a3a; ">
+              <div p-10 rd-10 inline-block break-all card-shadow style="background-color: #fed784;   color: #3a3a3a; ">
                 {{ item.content }}
               </div>
             </div>
@@ -249,7 +264,7 @@ async function changData(talkdata: any, done = false) {
       </div>
       <!-- 用户的提问 -->
       <div v-if="isSend" flex justify-end items-start mb-20>
-        <div p-10 rd-10 break-all style="background-color: #fed784;  color: #3a3a3a; ">
+        <div p-10 rd-10 break-all card-shadow style="background-color: #fed784;  color: #3a3a3a; ">
           {{ sendData }}
         </div>
         <div min-w-50 flex justify-end>
@@ -269,9 +284,9 @@ async function changData(talkdata: any, done = false) {
             fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
           />
         </div>
-        <div p-10 rd-10 break-all class="bg-[#f4f6f8]" dark:bg-hex-24272e>
+        <div break-all>
           <!-- {{ sendReturnData }} -->
-          <MdEditor v-if="sendReturnData" v-model="sendReturnData" preview-only />
+          <MdEditor v-if="sendReturnData" v-model="sendReturnData" preview-only :theme="themeStyle" rd-10 card-shadow />
         </div>
       </div>
       <!-- 与输入框的距离 -->

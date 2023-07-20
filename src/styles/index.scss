@@ -70,3 +70,12 @@ body {
     }
   }
 }
+
+.md-editor-dark {
+  --md-bk-color: #24272e !important;
+}
+
+.md-editor-content .md-editor-preview,
+.md-editor-content .md-editor-html {
+  font-size: 14px !important;
+}
