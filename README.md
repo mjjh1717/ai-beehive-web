@@ -150,4 +150,4 @@ pnpm commit
 
 # 📑 License
 
-MIT © [mjjh](LICENSE)
+Apache-2.0 license © [mjjh](LICENSE)
