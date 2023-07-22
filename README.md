@@ -1,4 +1,4 @@
-# 说文 [ai-beehive](https://github.com/mjjh1717/chatgpt-shuowen)
+# [ai-beehive](https://github.com/mjjh1717/chatgpt-shuowen)
 
 # ✨ 介绍
 
