@@ -1,4 +1,4 @@
-# 说文 [ai-beehive](https://github.com/mjjh1717/chatgpt-shuowen)
+# [ai-beehive](https://github.com/mjjh1717/chatgpt-shuowen)
 
 # ✨ 介绍
 
@@ -150,4 +150,4 @@ pnpm commit
 
 # 📑 License
 
-MIT © [mjjh](LICENSE)
+Apache-2.0 license © [mjjh](LICENSE)
