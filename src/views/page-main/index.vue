@@ -502,7 +502,7 @@ function getContent(isCanUse: boolean | undefined, status: string) {
                         </div>
                       </div>
                       <div p-10 mt-5 mb-10 class="bg-[#f2f2f2] dark:bg-hex-121212" f-c-c>
-                        <n-ellipsis :line-clamp="2" w-230 break-all overflow-hidden style="white-space:normal; ">
+                        <n-ellipsis h-40 :line-clamp="2" w-230 break-all overflow-hidden style="white-space:normal; ">
                           {{ item.introduce }}
                         </n-ellipsis>
                       </div>

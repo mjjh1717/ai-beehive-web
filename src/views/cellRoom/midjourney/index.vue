@@ -97,12 +97,12 @@ async function getRoomMessageList(params: RoomMidjourneyRequest) {
       const imgUrl_c = `${baseURL}${item.compressedImageUrl}`
       const imgUrl_o = `${baseURL}${item.originalImageUrl}`
       const time = new Date().getTime()
-      item.compressedImageUrl = `${imgUrl_c}?time=${time}`
-      item.originalImageUrl = `${imgUrl_o}?time=${time}`
+      item.compressedImageUrlPlus = `${imgUrl_c}?time=${time}`
+      item.originalImageUrlPlus = `${imgUrl_o}?time=${time}`
     }
     else {
-      item.compressedImageUrl = `${baseURL}${item.compressedImageUrl}`
-      item.originalImageUrl = `${baseURL}${item.originalImageUrl}`
+      item.compressedImageUrlPlus = `${baseURL}${item.compressedImageUrl}`
+      item.originalImageUrlPlus = `${baseURL}${item.originalImageUrl}`
     }
     return item
   })
@@ -147,17 +147,23 @@ function getScrollData(e: any) {
     loadingMore()
 }
 
-const sendData = ref(null)
+const sendData = ref<string | null>(null)
 const isSend = ref(false)
 const showModal = ref(false)
 const showModalUrl = ref('')
 
 function handleEnter(event: KeyboardEvent) {
-  if (event.code === 'Enter' && event.ctrlKey) {
-    event.preventDefault()
-    sendClick()
+  if (event.code === 'Enter') {
+    if (event.ctrlKey) {
+      sendData.value = `${sendData.value}\n`
+    }
+    else {
+      event.preventDefault()
+      sendClick()
+    }
   }
 }
+
 // 对话点击
 async function sendClick() {
   if (sendData.value) {
@@ -199,12 +205,12 @@ async function getNewData() {
         const imgUrl_c = `${baseURL}${item.compressedImageUrl}`
         const imgUrl_o = `${baseURL}${item.originalImageUrl}`
         const time = new Date().getTime()
-        item.compressedImageUrl = `${imgUrl_c}?time=${time}`
-        item.originalImageUrl = `${imgUrl_o}?time=${time}`
+        item.compressedImageUrlPlus = `${imgUrl_c}?time=${time}`
+        item.originalImageUrlPlus = `${imgUrl_o}?time=${time}`
       }
       else {
-        item.compressedImageUrl = `${baseURL}${item.compressedImageUrl}`
-        item.originalImageUrl = `${baseURL}${item.originalImageUrl}`
+        item.compressedImageUrlPlus = `${baseURL}${item.compressedImageUrl}`
+        item.originalImageUrlPlus = `${baseURL}${item.originalImageUrl}`
       }
       return item
     })
@@ -235,12 +241,12 @@ async function variationClick(msgId: number | undefined, index: number) {
     const imgUrl_c = `${baseURL}${data.compressedImageUrl}`
     const imgUrl_o = `${baseURL}${data.originalImageUrl}`
     const time = new Date().getTime()
-    data.compressedImageUrl = `${imgUrl_c}?time=${time}`
-    data.originalImageUrl = `${imgUrl_o}?time=${time}`
+    data.compressedImageUrlPlus = `${imgUrl_c}?time=${time}`
+    data.originalImageUrlPlus = `${imgUrl_o}?time=${time}`
   }
   else {
-    data.compressedImageUrl = `${baseURL}${data.compressedImageUrl}`
-    data.originalImageUrl = `${baseURL}${data.originalImageUrl}`
+    data.compressedImageUrlPlus = `${baseURL}${data.compressedImageUrl}`
+    data.originalImageUrlPlus = `${baseURL}${data.originalImageUrl}`
   }
   for (const index in messageList.value) {
     if (messageList.value[index].id === msgId)
@@ -263,12 +269,12 @@ async function upscaleClick(msgId: number | undefined, index: number) {
     const imgUrl_c = `${baseURL}${data.compressedImageUrl}`
     const imgUrl_o = `${baseURL}${data.originalImageUrl}`
     const time = new Date().getTime()
-    data.compressedImageUrl = `${imgUrl_c}?time=${time}`
-    data.originalImageUrl = `${imgUrl_o}?time=${time}`
+    data.compressedImageUrlPlus = `${imgUrl_c}?time=${time}`
+    data.originalImageUrlPlus = `${imgUrl_o}?time=${time}`
   }
   else {
-    data.compressedImageUrl = `${baseURL}${data.compressedImageUrl}`
-    data.originalImageUrl = `${baseURL}${data.originalImageUrl}`
+    data.compressedImageUrlPlus = `${baseURL}${data.compressedImageUrl}`
+    data.originalImageUrlPlus = `${baseURL}${data.originalImageUrl}`
   }
   for (const index in messageList.value) {
     if (messageList.value[index].id === msgId)
@@ -450,12 +456,12 @@ async function newMessageInterval(id: string, time = 10000) {
     const imgUrl_c = `${baseURL}${data.compressedImageUrl}`
     const imgUrl_o = `${baseURL}${data.originalImageUrl}`
     const time = new Date().getTime()
-    data.compressedImageUrl = `${imgUrl_c}?time=${time}`
-    data.originalImageUrl = `${imgUrl_o}?time=${time}`
+    data.compressedImageUrlPlus = `${imgUrl_c}?time=${time}`
+    data.originalImageUrlPlus = `${imgUrl_o}?time=${time}`
   }
   else {
-    data.compressedImageUrl = `${baseURL}${data.compressedImageUrl}`
-    data.originalImageUrl = `${baseURL}${data.originalImageUrl}`
+    data.compressedImageUrlPlus = `${baseURL}${data.compressedImageUrl}`
+    data.originalImageUrlPlus = `${baseURL}${data.originalImageUrl}`
   }
   for (const index in messageList.value) {
     if (String(messageList.value[index].id) === id)
@@ -469,12 +475,12 @@ async function newMessageInterval(id: string, time = 10000) {
       const imgUrl_c = `${baseURL}${data.compressedImageUrl}`
       const imgUrl_o = `${baseURL}${data.originalImageUrl}`
       const time = new Date().getTime()
-      data.compressedImageUrl = `${imgUrl_c}?time=${time}`
-      data.originalImageUrl = `${imgUrl_o}?time=${time}`
+      data.compressedImageUrlPlus = `${imgUrl_c}?time=${time}`
+      data.originalImageUrlPlus = `${imgUrl_o}?time=${time}`
     }
     else {
-      data.compressedImageUrl = `${baseURL}${data.compressedImageUrl}`
-      data.originalImageUrl = `${baseURL}${data.originalImageUrl}`
+      data.compressedImageUrlPlus = `${baseURL}${data.compressedImageUrl}`
+      data.originalImageUrlPlus = `${baseURL}${data.originalImageUrl}`
     }
 
     for (const index in messageList.value) {
@@ -629,20 +635,23 @@ function getTimeDate(newDate: string, oldDate: string) {
                     :src="getTimeImgUrl(item.compressedImageUrl)"
                     fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
                   /> -->
+                  <!-- {{ item.compressedImageUrlPlus }}
+                  {{ item.originalImageUrlPlus }} -->
                   <n-image
+                    v-if="item.compressedImageUrl"
                     lazy
                     mt-10
                     b-rd-4
                     :show-toolbar="false"
                     :width="200"
                     :height="200"
-                    :src="item.compressedImageUrl"
+                    :src="item.compressedImageUrlPlus"
                     fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
                   />
                   <!-- <n-button v-if="item.status === 'MJ_SUCCESS'" absolute bottom-0 right-0 type="primary" size="tiny" color="#767c82" @click="showModal = true; showModalUrl = `${baseURL}${item.originalImageUrl}?time=${new Date().getTime()}`">
                     查看原图
                   </n-button> -->
-                  <n-button absolute bottom-0 right-0 type="primary" size="tiny" color="#767c82" @click="showModal = true; showModalUrl = String(item.originalImageUrl)">
+                  <n-button v-if="item.originalImageUrl" absolute bottom-0 right-0 type="primary" size="tiny" color="#767c82" @click="showModal = true; showModalUrl = String(item.originalImageUrlPlus)">
                     查看原图
                   </n-button>
                 </div>
@@ -736,7 +745,7 @@ function getTimeDate(newDate: string, oldDate: string) {
           :disabled="isSend"
           show-count size="large"
           :autosize="{ minRows: 1, maxRows: 7 }"
-          placeholder="来说点啥吧..... ( Ctrl + Enter = 发送 ) "
+          placeholder="来说点啥吧..... ( Ctrl + Enter = 换行 ) "
           @keypress="handleEnter"
         />
         <!-- :color="`${roomData.color}`" -->

@@ -4,7 +4,7 @@ import { useMessage } from 'naive-ui'
 import MdEditor from 'md-editor-v3'
 import type { Themes } from 'md-editor-v3'
 import api from './api'
-import type { RoomOpenAiChatMsgVO, RoomOpenaiChatListRequest, sendRequest } from './types/apiTypes'
+import type { RoomWyqfChatListRequest, RoomWyqfChatMsgVO, sendRequest } from './types/apiTypes'
 import roomHeader from '@/components/common/roomHeader.vue'
 import { useRoomStore, useThemeStore } from '@/store'
 import { useScroll } from '~/src/utils/common/useScroll'
@@ -43,7 +43,7 @@ watch(
 
 const ms = useMessage()
 
-const paramsData = ref<RoomOpenaiChatListRequest>({
+const paramsData = ref<RoomWyqfChatListRequest>({
   cursor: '',
   isUseCursor: false,
   roomId: roomData.value.roomId,
@@ -52,7 +52,7 @@ const paramsData = ref<RoomOpenaiChatListRequest>({
 })
 const getMore = ref(false)
 const showGetMoreBtn = ref(true)
-const messageList = ref <RoomOpenAiChatMsgVO[]>(roomStore.messageListData)
+const messageList = ref <RoomWyqfChatMsgVO[]>(roomStore.messageListData)
 const firstGetListType = ref(roomStore.messageListData.length === 0)
 
 async function getDetail() {
@@ -84,8 +84,8 @@ watch(messageList, (value, oldValue) => {
   }
 })
 
-async function getRoomMessageList(params: RoomOpenaiChatListRequest) {
-  const { data } = await api.getRoomOpenaiChatList(params)
+async function getRoomMessageList(params: RoomWyqfChatListRequest) {
+  const { data } = await api.getRoomWyqfChatList(params)
 
   if (data.length > 0) {
     const oldList = toRaw(messageList.value)
@@ -147,7 +147,7 @@ async function sendClick() {
       roomId: roomData.value.roomId,
       content: sendData.value,
     }
-    const data = await api.RoomOpenaiChatSend(pushData, changData)
+    const data = await api.RoomWyqfChatSend(pushData, changData)
     // 此处的data只有错误的时候才会返回
     if (data && data.code !== 200) {
       ms.error(`请求失败!  ${data.message}`)
@@ -173,7 +173,7 @@ async function getNewData() {
       size: 2,
       isAsc: true,
     }
-    const { data } = await api.getRoomOpenaiChatList(pushData)
+    const { data } = await api.getRoomWyqfChatList(pushData)
 
     if (data.length < 2)
       break

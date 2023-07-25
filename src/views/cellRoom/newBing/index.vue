@@ -126,15 +126,20 @@ function getScrollData(e: any) {
     loadingMore()
 }
 
-const sendData = ref(null)
+const sendData = ref<string | null>(null)
 const sendReturnData = ref(null)
 const isSend = ref(false)
 const isNewTopic = ref(false)
 
 function handleEnter(event: KeyboardEvent) {
-  if (event.code === 'Enter' && event.ctrlKey) {
-    event.preventDefault()
-    sendClick()
+  if (event.code === 'Enter') {
+    if (event.ctrlKey) {
+      sendData.value = `${sendData.value}\n`
+    }
+    else {
+      event.preventDefault()
+      sendClick()
+    }
   }
 }
 
@@ -174,7 +179,8 @@ async function getNewData() {
     }
     const { data } = await api.getRoomNewBingList(pushData)
 
-    if (data.length < 2)
+    // todo
+    if (data.length < 1)
       break
 
     // 往栈存数据
@@ -201,12 +207,18 @@ async function changData(talkdata: any, done = false) {
     const lastIndex = talkdata.lastIndexOf('\n', talkdata.length - 2)
 
     try {
-      if (lastIndex !== -1)
-        sendReturnData.value = JSON.parse(talkdata.substring(lastIndex)).data.content
+      if (lastIndex !== -1) { sendReturnData.value = JSON.parse(talkdata.substring(lastIndex)).data.content }
+      else {
+        // await getNewData()
+        // 重置数据
+        sendData.value = null
+        sendReturnData.value = null
+        isSend.value = false
+      }
     }
     catch (error) {
       // json转换错误 (我只要不打印就没人知道,,,,,)
-      // console.error('error', error)
+      console.error('error', error)
     }
   }
 }
@@ -263,6 +275,11 @@ async function changData(talkdata: any, done = false) {
             </n-ellipsis>
             <div flex justify-start m-r-70>
               <MdEditor v-model="item.content" preview-only :theme="themeStyle" rd-10 inline-block break-all card-shadow />
+              <div w-50 flex items-center ml-10>
+                <span>{{ item.numUserMessagesInConversation }}</span>
+                共
+                <span>{{ item.maxNumUserMessagesInConversation }}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -316,13 +333,18 @@ async function changData(talkdata: any, done = false) {
         </div>
       </div>
       <!-- 与输入框的距离 -->
-      <!-- <div h-500 /> -->
+      <div h-50 />
     </div>
     <div>
       <!-- todo NAutoComplete / 提示 -->
       <!-- v-model:value="searchValue"  -->
       <!-- :on-input="searchClick" -->
-      <div p-10 flex items-center>
+      <div p-10 flex items-center relative>
+        <div absolute top--30 flex content-between>
+          <n-tag v-for="(item, index) of (messageList[messageList.length - 1]?.suggestResponses ?? [])" :key="index" m-r-10 :bordered="false" type="info" @click="sendData = item, sendClick()">
+            {{ item }}
+          </n-tag>
+        </div>
         <div>
           <!-- :rail-style="railStyle" -->
           <n-switch v-model:value="isNewTopic" size="large" w-100>
@@ -340,7 +362,7 @@ async function changData(talkdata: any, done = false) {
           :disabled="isSend"
           show-count size="large"
           :autosize="{ minRows: 1, maxRows: 8 }"
-          placeholder="来说点啥吧..... ( Ctrl + Enter = 发送 ) "
+          placeholder="来说点啥吧..... ( Ctrl + Enter = 换行 ) "
           @keypress="handleEnter"
         />
         <!--  :color="`${roomData.color}`" -->

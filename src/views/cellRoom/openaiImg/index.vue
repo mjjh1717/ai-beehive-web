@@ -58,7 +58,7 @@ const showGetMoreBtn = ref(true)
 const messageList = ref <RoomOpenAiImageMsgVO[]>(roomStore.messageListData)
 const firstGetListType = ref(roomStore.messageListData.length === 0)
 
-const sendData = ref(null)
+const sendData = ref<string | null>(null)
 const sendReturnData = ref(null)
 const isSend = ref(false)
 async function getDetail() {
@@ -157,11 +157,15 @@ async function getNewData() {
   // 滚动到底部
   scrollToBottom()
 }
-
 function handleEnter(event: KeyboardEvent) {
-  if (event.code === 'Enter' && event.ctrlKey) {
-    event.preventDefault()
-    sendClick()
+  if (event.code === 'Enter') {
+    if (event.ctrlKey) {
+      sendData.value = `${sendData.value}\n`
+    }
+    else {
+      event.preventDefault()
+      sendClick()
+    }
   }
 }
 
@@ -315,7 +319,7 @@ async function changData(talkdata: any, done = false) {
           :disabled="isSend"
           show-count size="large"
           :autosize="{ minRows: 1, maxRows: 8 }"
-          placeholder="来说点啥吧..... ( Ctrl + Enter = 发送 ) "
+          placeholder="来说点啥吧..... ( Ctrl + Enter = 换行 ) "
           @keypress="handleEnter"
         />
         <!-- :color="`${roomData.color}`" -->

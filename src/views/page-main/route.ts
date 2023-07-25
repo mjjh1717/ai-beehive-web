@@ -1,7 +1,7 @@
 /*
  * @Author: mjjh
- * @LastEditTime: 2023-07-11 23:34:57
- * @FilePath: \ai-beehive-web\src\views\page-main\route.ts
+ * @LastEditTime: 2023-07-25 23:26:19
+ * @FilePath: \chatgpt-shuowen\src\views\page-main\route.ts
  * @Description:
  */
 import type { RouteType } from '~/types/router'
@@ -86,6 +86,33 @@ export default {
           path: 'openaiImg',
           isHidden: true,
           component: () => import('../cellRoom/openaiImg/index.vue'),
+          meta: {
+            routerViewKey: 'main-page',
+          },
+        },
+        {
+          name: 'wxqf_bloomz_7b',
+          path: 'wyqfChat',
+          isHidden: true,
+          component: () => import('../cellRoom/wyqfChat/index.vue'),
+          meta: {
+            routerViewKey: 'main-page',
+          },
+        },
+        {
+          name: 'wxqf_ernie_bot',
+          path: 'wyqfChat',
+          isHidden: true,
+          component: () => import('../cellRoom/wyqfChat/index.vue'),
+          meta: {
+            routerViewKey: 'main-page',
+          },
+        },
+        {
+          name: 'wxqf_ernie_bot_turbo',
+          path: 'wyqfChat',
+          isHidden: true,
+          component: () => import('../cellRoom/wyqfChat/index.vue'),
           meta: {
             routerViewKey: 'main-page',
           },

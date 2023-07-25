@@ -66,9 +66,23 @@ export interface RoomListVO {
 * cell code
 */
 export enum CellCode1 {
+  AliTyqw = 'ali_tyqw',
+  Azure = 'Azure',
+  Bard = 'Bard',
+  ChatGLM = 'ChatGLM',
+  Claude = 'Claude',
   Midjourney = 'Midjourney',
   NewBing = 'new_bing',
-  OpenaiChat = 'openai_chat',
+  Null = 'null',
+  OpenaiChatWeb3_5 = 'openai_chat_web_3_5',
+  OpenaiChatWeb4 = 'openai_chat_web_4',
+  OpenaiChatapi3_5 = 'openai_chat_api_3_5',
+  OpenaiChatapi4 = 'openai_chat_api_4',
+  OpenaiImage = 'openai_image',
+  Poe = 'poe',
+  WxqfBloomz7B = 'wxqf_bloomz_7b',
+  WxqfErnieBot = 'wxqf_ernie_bot',
+  WxqfErnieBotTurbo = 'wxqf_ernie_bot_turbo',
 }
 
 /**
@@ -108,12 +122,23 @@ export interface addRoomVo {
 * cell code
 */
 export enum CellCode2 {
+  AliTyqw = 'ali_tyqw',
+  Azure = 'Azure',
+  Bard = 'Bard',
+  ChatGLM = 'ChatGLM',
+  Claude = 'Claude',
   Midjourney = 'Midjourney',
   NewBing = 'new_bing',
+  Null = 'null',
   OpenaiChatWeb3_5 = 'openai_chat_web_3_5',
   OpenaiChatWeb4 = 'openai_chat_web_4',
   OpenaiChatapi3_5 = 'openai_chat_api_3_5',
   OpenaiChatapi4 = 'openai_chat_api_4',
+  OpenaiImage = 'openai_image',
+  Poe = 'poe',
+  WxqfBloomz7B = 'wxqf_bloomz_7b',
+  WxqfErnieBot = 'wxqf_ernie_bot',
+  WxqfErnieBotTurbo = 'wxqf_ernie_bot_turbo',
 }
 
 /**

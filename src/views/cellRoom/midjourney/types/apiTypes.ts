@@ -96,6 +96,10 @@ export interface RoomMidjourneyMsgVO {
    */
   compressedImageUrl?: string
   /**
+   * 处理过后的压缩图片地址
+   */
+  compressedImageUrlPlus?: string
+  /**
    * 创建时间
    */
   createTime?: Date
@@ -123,6 +127,10 @@ export interface RoomMidjourneyMsgVO {
    * 原始图片地址
    */
   originalImageUrl?: string
+  /**
+   * 处理过后的原始图片地址
+   */
+  originalImageUrlPlus?: string
   /**
    * 用户输入
    */
