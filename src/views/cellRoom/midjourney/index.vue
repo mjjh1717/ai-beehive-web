@@ -562,7 +562,7 @@ function getTimeDate(newDate: string, oldDate: string) {
 
 <template>
   <div style="height: 100vh;" class="text-[#3a3a3a] dark:text-[#fff]" flex flex-col>
-    <roomHeader :color="roomData.color" :name="roomData.name" :cell-code="roomData.cellCode" :create-time="roomData.createTime" />
+    <roomHeader :color="roomData.color" :name="roomData.name" :cell-code="roomData.cellCode" :room-id="roomData.roomId" :create-time="roomData.createTime" />
     <div id="scrollRef" ref="scrollRef" relative flex-1 overflow-hidden overflow-y-auto p-r-24 p-l-24 p-t-24 class=" text-[#3a3a3a] dark:text-[#fff]" @scroll="getScrollData">
       <div v-if="getMore && showGetMoreBtn" absolute top-10 right-0 left-0 f-c-c>
         <n-button tertiary round size="small" @click="loadingMore">
@@ -715,7 +715,8 @@ function getTimeDate(newDate: string, oldDate: string) {
               </n-ellipsis>
             </div>
             <div flex justify-end>
-              <div p-10 rd-10 inline-block break-all card-shadow style="background-color: #fed784;  color: #3a3a3a;">
+              <div p-10 rd-10 inline-block break-all card-shadow whitespace-pre style="background-color: #fed784;  color: #3a3a3a;">
+                <!-- <MdEditor v-model="sendData" preview-only :theme="themeStyle" rd-10 card-shadow /> -->
                 {{ `/${item.action}${item.uvIndex ? `: ${item.uvIndex}` : ''} ${item.prompt ?? ''}` }}
               </div>
             </div>

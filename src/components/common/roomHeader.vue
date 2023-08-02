@@ -1,20 +1,62 @@
-<!--
- * @Author: mjjh
- * @LastEditTime: 2023-07-16 18:58:12
- * @FilePath: \ai-beehive-web\src\components\common\roomHeader.vue
- * @Description:
--->
 <script setup lang="ts">
+import { useMessage } from 'naive-ui'
+import type { CellConfigResponse, CellConfigVO, addRoomVo } from '~/src/views/page-main/types/types'
+import api from '~/src/views/page-main/api'
+const props = withDefaults(defineProps<Props>(), {})
+
+const ms = useMessage()
+
 interface Props {
   /** 图标名称(图片的文件名) */
   color: string
   name: string
   cellCode: string
   createTime: string
+  roomId: string
 }
-const props = withDefaults(defineProps<Props>(), {})
+const EditModalFormRef = ref()
+const showModalLoading = ref(false)
 
 const showEdit = ref(false)
+const editloading = ref(false)
+
+const editModalForm = ref<addRoomVo>({
+  roomId: props.roomId,
+  roomConfigParams: undefined,
+})
+
+const cellConfigList = ref<CellConfigVO[]> ()
+
+async function initData() {
+  showModalLoading.value = true
+  const { data }: CellConfigResponse = await api.getRoomConfig(props.roomId)
+  cellConfigList.value = data
+  showModalLoading.value = false
+}
+
+function resetEditData() {
+  editModalForm.value.roomConfigParams = undefined
+  cellConfigList.value = undefined
+}
+
+function editItem() {
+  EditModalFormRef.value?.validate(async (err: any) => {
+    if (err) {
+      ms.error('请填写完整数据')
+      return
+    }
+
+    editloading.value = true
+    if (!editModalForm.value.roomConfigParams)
+      editModalForm.value.roomConfigParams = []
+
+    api.editRoomConfig(editModalForm.value).finally(() => {
+      editloading.value = false
+      showEdit.value = false
+      resetEditData()
+    })
+  })
+}
 
 // todo 编辑按钮未绑定
 </script>
@@ -48,7 +90,7 @@ const showEdit = ref(false)
     </div>
     <div flex-1 />
     <!-- :color="`${props.color}`" -->
-    <n-button type="primary" @click="showEdit = true">
+    <n-button type="primary" @click="showEdit = true, initData()">
       <n-icon size="16">
         <icon-ri:edit-line />
       </n-icon>
@@ -57,17 +99,34 @@ const showEdit = ref(false)
 
     <n-modal
       v-model:show="showEdit"
-      preset="dialog"
-      title="房间参数编辑"
-      :style="{ width: 600 }"
-      :show-icon="false"
-      positive-text="确认"
-      negative-text="取消"
-      @positive-click="showEdit = false"
-      @negative-click="showEdit = false"
-      @mask-click="showEdit = false"
+      style="width: 960px"
+      title="编辑房间配置"
+      :bordered="false"
+      size="huge"
+      aria-modal="true"
+      preset="card"
+      :on-after-leave="resetEditData()"
     >
-      开发中........
+      <n-spin :show="showModalLoading">
+        <n-form v-show="!showModalLoading" ref="EditModalFormRef" :model="editModalForm">
+          <n-form-item>
+            <ConfigList v-model:newCellConfigList="editModalForm.roomConfigParams" :cell-config-list="cellConfigList ?? []" />
+          </n-form-item>
+        </n-form>
+      </n-spin>
+
+      <template #footer>
+        <footer flex justify-end>
+          <slot name="footer">
+            <NButton @click="showEdit = false, resetEditData()">
+              取消
+            </NButton>
+            <NButton :loading="editloading" ml-20 type="primary" @click="editItem()">
+              提交
+            </NButton>
+          </slot>
+        </footer>
+      </template>
     </n-modal>
   </div>
 </template>
