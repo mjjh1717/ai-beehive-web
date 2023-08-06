@@ -24,6 +24,7 @@ interface UserInfo {
   description?: string
   avatarUrl?: string
   role?: Array<string>
+  isShowNotice?: boolean
 }
 
 export const useUserStore = defineStore('user', {
@@ -54,15 +55,19 @@ export const useUserStore = defineStore('user', {
     role(): Array<string> {
       return this.userInfo.role || []
     },
+    isShowNotice(): boolean {
+      return this.userInfo.isShowNotice ?? false
+    },
   },
   actions: {
-    // TODO mock人员数据
     async getUserInfo() {
       try {
         const res: any = await api.getUser()
         if (res.code === 200) {
           const { baseUserId, nickname, status, email, description, avatarUrl } = res.data
-          this.userInfo = { baseUserId, nickname, status, email, description, avatarUrl }
+          const role = ['admin']
+          const isShowNotice = true
+          this.userInfo = { baseUserId, nickname, status, email, description, avatarUrl, role, isShowNotice }
           return Promise.resolve(res.data)
         }
         else {
@@ -72,6 +77,9 @@ export const useUserStore = defineStore('user', {
       catch (error) {
         return Promise.reject(error)
       }
+    },
+    changShow(flag: boolean) {
+      this.userInfo.isShowNotice = flag
     },
     async logout() {
       const { resetTabs } = useTabStore()
