@@ -1,0 +1,12 @@
+root = true
+# 匹配所有文件
+[*]
+# 在文件结尾插入新行
+insert_final_newline = false
+# 删除一行中的前后空格
+trim_trailing_whitespace = true
+
+# 匹配.vue文件
+[*.vue]
+indent_style = space
+indent_size = 2
