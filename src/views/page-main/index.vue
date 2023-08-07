@@ -6,7 +6,7 @@ import api from './api'
 import type { CellConfigResponse, CellConfigVO, CellImageVO, CellImgResponse, CellResponse, CellVO, RoomListVO, RoomResponse, addRoomVo } from './types/types'
 import { useCRUD } from '@/components/index.js'
 import { useRoomStore } from '@/store'
-import { setLocal, getLocal } from '~/src/utils'
+import { getLocal, setLocal } from '~/src/utils'
 
 withDefaults(defineProps<Props>(), {
   cellType: 'allCell',
@@ -80,24 +80,24 @@ function getScrollData(e: any) {
 }
 // 选中对应的聊天室
 const handleSelect = useDebounceFn(
-    (item: RoomListVO) => {
-      if (isActive(item.roomId))
-        return
+  (item: RoomListVO) => {
+    if (isActive(item.roomId))
+      return
 
-      if (isActiveCell.value)
-        isActiveCell.value = item.roomId
+    if (isActiveCell.value)
+      isActiveCell.value = item.roomId
 
-      // setp1 将对应的聊天室数据存入到store
-      roomStore.setRoomInfo(item)
-      // setp2 在mainpage钟根据对应的聊天室渲染对应格式的组件页面
+    // setp1 将对应的聊天室数据存入到store
+    roomStore.setRoomInfo(item)
+    // setp2 在mainpage钟根据对应的聊天室渲染对应格式的组件页面
 
-      router.push({
-        name: item.cellCode,
-        query: {
-          roomId: item.roomId,
-        },
-      })
-    }, 100,
+    router.push({
+      name: item.cellCode,
+      query: {
+        roomId: item.roomId,
+      },
+    })
+  }, 100,
 )
 
 // 判断当前是否是选中的聊天室
@@ -378,10 +378,10 @@ function getContent(isCanUse: boolean | undefined, status: string) {
         </n-layout-sider>
         <n-layout>
           <div @click="onChangeIsPackUp" class="unfold-fold">
-            <n-icon v-if="isPackUp" color="#FFAD0A" size="30">
+            <n-icon v-if="isPackUp" color="#FFAD0A" size="24">
               <icon-icon-park-outline:menu-unfold-one />
             </n-icon>
-            <n-icon v-else color="#FFAD0A" size="30">
+            <n-icon v-else color="#FFAD0A" size="24">
               <icon-icon-park-outline:menu-fold-one />
             </n-icon>
           </div>
@@ -577,9 +577,8 @@ function getContent(isCanUse: boolean | undefined, status: string) {
   height: 30px;
   top: 50%;
   transform: translateY(-50%);
-  left: 2px;
+  left: -2px;
   z-index: 99;
-  background-color: #ffffff;
   cursor: pointer;
 }
 .animation-unfold-fold{
