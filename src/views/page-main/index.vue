@@ -6,7 +6,7 @@ import api from './api'
 import type { CellConfigResponse, CellConfigVO, CellImageVO, CellImgResponse, CellResponse, CellVO, RoomListVO, RoomResponse, addRoomVo } from './types/types'
 import { useCRUD } from '@/components/index.js'
 import { useRoomStore } from '@/store'
-import { setLocal } from '~/src/utils'
+import { setLocal, getLocal } from '~/src/utils'
 
 withDefaults(defineProps<Props>(), {
   cellType: 'allCell',
@@ -30,6 +30,7 @@ const cellMenuList = ref<undefined | RoomListVO[]>([])
 const isActiveCell = ref(1)
 // 是否收起侧边栏
 const isPackUp = ref(true)
+isPackUp.value = !!getLocal('isPackUp')
 const searchValue = ref(undefined)
 
 // 函数1 获取列表数据函数
@@ -192,6 +193,7 @@ function prev() {
 // 侧边栏显示隐藏
 function onChangeIsPackUp() {
   isPackUp.value = !isPackUp.value
+  setLocal('isPackUp', isPackUp.value)
 }
 
 async function getCellList() {
