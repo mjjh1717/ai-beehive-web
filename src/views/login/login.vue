@@ -1,9 +1,3 @@
-<!--
- * @Author: mjjh
- * @LastEditTime: 2023-07-16 18:53:22
- * @FilePath: \ai-beehive-web\src\views\login\login.vue
- * @Description:
--->
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
 import { useMessage } from 'naive-ui'

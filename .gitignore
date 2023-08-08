@@ -15,6 +15,9 @@ dist-ssr
 .env.development
 .env.production
 
+package-lock.json
+pnpm-lock.yaml
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

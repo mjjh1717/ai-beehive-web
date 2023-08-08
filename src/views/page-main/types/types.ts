@@ -107,15 +107,17 @@ export interface editRoomVo {
  * 房间创建请求参数
  */
 export interface addRoomVo {
+  // id 编辑房间时候使用
+  roomId?: string
   /**
    * cell code
    */
-  cellCode: CellCode2 | undefined
+  cellCode?: CellCode2 | undefined
   /**
    * 房间配置参数列表
    */
-  roomConfigParams: RoomConfigParamRequest[] | undefined
-  roomInfo: RoomInfoRequest
+  roomConfigParams?: RoomConfigParamRequest[] | undefined
+  roomInfo?: RoomInfoRequest
 }
 
 /**
@@ -311,6 +313,12 @@ export interface CellConfigResponse {
 * Cell 配置项展示对象
 */
 export interface CellConfigVO {
+  // 编辑
+  value?: string
+
+  // 是否使用默认值
+  isUseDefaultValue?: boolean
+
   /**
    * 配置项编码
    */

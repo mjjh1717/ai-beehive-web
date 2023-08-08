@@ -6,7 +6,7 @@ import api from './api'
 import type { CellConfigResponse, CellConfigVO, CellImageVO, CellImgResponse, CellResponse, CellVO, RoomListVO, RoomResponse, addRoomVo } from './types/types'
 import { useCRUD } from '@/components/index.js'
 import { useRoomStore } from '@/store'
-import { setLocal } from '~/src/utils'
+import { getLocal, setLocal } from '~/src/utils'
 
 withDefaults(defineProps<Props>(), {
   cellType: 'allCell',
@@ -28,6 +28,9 @@ const pSize = ref(20)
 const total = ref<number>(0)
 const cellMenuList = ref<undefined | RoomListVO[]>([])
 const isActiveCell = ref(1)
+// 是否收起侧边栏
+const isPackUp = ref(true)
+isPackUp.value = !!getLocal('isPackUp')
 const searchValue = ref(undefined)
 
 // 函数1 获取列表数据函数
@@ -187,6 +190,12 @@ function prev() {
     ms.warning('到顶了')
 }
 
+// 侧边栏显示隐藏
+function onChangeIsPackUp() {
+  isPackUp.value = !isPackUp.value
+  setLocal('isPackUp', isPackUp.value)
+}
+
 async function getCellList() {
   const res: CellResponse = await api.getCellList()
   const resImg: CellImgResponse = await api.getCellImgList()
@@ -284,10 +293,12 @@ function getContent(isCanUse: boolean | undefined, status: string) {
     <section class="cus-scroll-y wh-full  flex-col bg-[#f5f5f5]" dark:bg-hex-121212>
       <n-layout flex-1 min-w-375 has-sider>
         <n-layout-sider
-          bordered
-          collapse-mode="width"
-          content-style="padding: 15px;"
-          width="350"
+            class="animation-unfold-fold"
+            :style="{ width: isPackUp ? '350px' : '0px' }"
+            bordered
+            collapse-mode="width"
+            content-style="padding: 15px;"
+            width="350"
         >
           <n-layout-header bordered pb-15>
             <n-input-group>
@@ -313,21 +324,21 @@ function getContent(isCanUse: boolean | undefined, status: string) {
               </div>
               <div v-for="(item, index) of cellMenuList" v-else :key="index" flex>
                 <n-card
-                  cursor-pointer
-                  size="small" hoverable mt-6
-                  :class="isActive(item.roomId) && ['bg-neutral-100', 'text-[#FFAD0A]', 'dark:bg-[#24272e]']"
-                  @click="handleSelect(item)"
+                    cursor-pointer
+                    size="small" hoverable mt-6
+                    :class="isActive(item.roomId) && ['bg-neutral-100', 'text-[#FFAD0A]', 'dark:bg-[#24272e]']"
+                    @click="handleSelect(item)"
                 >
                   <!-- :style="{ borderBottom: `2px solid ${item.color}` }" -->
                   <div flex items-center>
                     <!-- 顶部icon -->
                     <div min-w-30 f-c-c>
                       <n-avatar
-                        style="border: 2px solid #fff;"
-                        round
-                        size="small"
-                        :src="getCellImg(item.cellCode ?? '')"
-                        fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+                          style="border: 2px solid #fff;"
+                          round
+                          size="small"
+                          :src="getCellImg(item.cellCode ?? '')"
+                          fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
                       />
                     </div>
                     <div flex-1 ml-5 mr-5 style="overflow-x: hidden;">
@@ -366,6 +377,14 @@ function getContent(isCanUse: boolean | undefined, status: string) {
           </div>
         </n-layout-sider>
         <n-layout>
+          <div @click="onChangeIsPackUp" class="unfold-fold">
+            <n-icon v-if="isPackUp" color="#FFAD0A" size="24">
+              <icon-icon-park-outline:menu-unfold-one />
+            </n-icon>
+            <n-icon v-else color="#FFAD0A" size="24">
+              <icon-icon-park-outline:menu-fold-one />
+            </n-icon>
+          </div>
           <n-layout-content h-screen>
             <!-- <slot /> -->
             <!-- <n-watermark
@@ -390,24 +409,24 @@ function getContent(isCanUse: boolean | undefined, status: string) {
 
       <!-- 编辑/查看 -->
       <CrudModal
-        v-model:visible="modalVisible"
-        :title="modalTitle"
-        :loading="modalLoading"
-        :show-footer="modalAction !== 'view'"
-        width="960px"
-        @on-save="handleSave"
+          v-model:visible="modalVisible"
+          :title="modalTitle"
+          :loading="modalLoading"
+          :show-footer="modalAction !== 'view'"
+          width="960px"
+          @on-save="handleSave"
       >
         <n-form
-          ref="modalFormRef"
-          label-placement="top"
-          label-align="left"
-          :model="modalForm"
-          :disabled="modalAction === 'view'"
+            ref="modalFormRef"
+            label-placement="top"
+            label-align="left"
+            :model="modalForm"
+            :disabled="modalAction === 'view'"
         >
           <n-form-item
-            label="房间名称"
-            path="name"
-            :rule="{
+              label="房间名称"
+              path="name"
+              :rule="{
               required: true,
               message: '请输入房间名称',
               trigger: ['input', 'blur'],
@@ -434,14 +453,14 @@ function getContent(isCanUse: boolean | undefined, status: string) {
 
       <!-- 新增 -->
       <n-modal
-        v-model:show="showAddModal"
-        style="width: 960px"
-        title="新增房间"
-        :bordered="false"
-        size="huge"
-        aria-modal="true"
-        preset="card"
-        :on-after-leave=" resetAddData()"
+          v-model:show="showAddModal"
+          style="width: 960px"
+          title="新增房间"
+          :bordered="false"
+          size="huge"
+          aria-modal="true"
+          preset="card"
+          :on-after-leave=" resetAddData()"
       >
         <div flex>
           <n-steps v-model:current="current">
@@ -465,31 +484,31 @@ function getContent(isCanUse: boolean | undefined, status: string) {
               <n-radio-group v-model:value="AddModalForm.cellCode" flex-wrap>
                 <n-space item-style="display: flex;">
                   <n-watermark
-                    v-for="(item, index) in cellList"
-                    :key="index"
-                    :content="getContent(item.isCanUse, String(item.status))"
-                    cross
-                    selectable
-                    :font-size="16"
-                    :line-height="17"
-                    :width="160"
-                    :height="100"
-                    :x-offset="12"
-                    :y-offset="28"
-                    :rotate="-15"
+                      v-for="(item, index) in cellList"
+                      :key="index"
+                      :content="getContent(item.isCanUse, String(item.status))"
+                      cross
+                      selectable
+                      :font-size="16"
+                      :line-height="17"
+                      :width="160"
+                      :height="100"
+                      :x-offset="12"
+                      :y-offset="28"
+                      :rotate="-15"
                   >
                     <n-radio-button
-                      style="border: 1px solid #e0e0e6; border-radius: 5px;"
-                      :value="item.code"
-                      :disabled="!item.isCanUse || item.status !== 'published' "
+                        style="border: 1px solid #e0e0e6; border-radius: 5px;"
+                        :value="item.code"
+                        :disabled="!item.isCanUse || item.status !== 'published' "
                     >
                       <div mt-10 f-c-c w-250>
                         <n-avatar
-                          round
-                          style="border: 2px solid #fff;"
-                          :size="40"
-                          :src="item.imageUrl"
-                          fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+                            round
+                            style="border: 2px solid #fff;"
+                            :size="40"
+                            :src="item.imageUrl"
+                            fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
                         />
                         <div flex-1 ml-10>
                           <n-ellipsis style="max-width: 210px">
@@ -552,6 +571,17 @@ function getContent(isCanUse: boolean | undefined, status: string) {
   </transition>
 </template>
 
-<style lang="scss">
-
+<style lang="scss" scoped>
+.unfold-fold {
+  position: absolute;
+  height: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+  left: -2px;
+  z-index: 99;
+  cursor: pointer;
+}
+.animation-unfold-fold{
+  transition: all .6s ease-in-out;
+}
 </style>

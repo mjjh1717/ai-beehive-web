@@ -21,4 +21,8 @@ export default {
   getCellList: () => request.get('/cell/list'),
   getCellImgList: () => request.get('/cell/list_image'),
   getCellConfigList: (cellCode: string) => request.get(`/cell_config/list?cellCode=${cellCode}`),
+
+  // 获取房间配置
+  getRoomConfig: (roomId: string) => request.get(`/room_config_param/list?roomId=${roomId}`),
+  editRoomConfig: (data: addRoomVo) => request.post('/room_config_param/edit', data),
 }

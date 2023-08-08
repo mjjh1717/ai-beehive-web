@@ -8,6 +8,11 @@
 import { watch } from 'vue'
 
 interface CellConfigVO {
+  // 编辑
+  value?: string
+
+  // 是否使用默认值
+  isUseDefaultValue?: boolean
   /**
    * 配置项编码
    */
@@ -83,8 +88,8 @@ watch(
       const newList: RoomConfigVO[] = []
       for (const item of toRaw(value)) {
         newList.push({
-          value: item.isUserValueVisible && item.isHaveDefaultValue ? item.defaultValue : '',
-          isUseDefaultValue: (item.isHaveDefaultValue && item.isUserModifiable) ?? false,
+          value: item?.value ?? (item.isUserValueVisible && item.isHaveDefaultValue ? item.defaultValue : ''),
+          isUseDefaultValue: item?.isUseDefaultValue ?? (item.isHaveDefaultValue && item.isUserModifiable) ?? false,
           cellConfigCode: item.cellConfigCode ?? '',
         })
       }
