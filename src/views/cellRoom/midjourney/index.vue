@@ -581,7 +581,7 @@ function getTimeDate(newDate: string, oldDate: string) {
               fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
             />
           </div>
-          <div>
+          <div style="display: flex; flex-direction: column; max-width: 100%;">
             <n-ellipsis min-width-140px>
               {{ item.createTime }}
             </n-ellipsis>
